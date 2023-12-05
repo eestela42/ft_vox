@@ -8,12 +8,12 @@ SRCS =	main.cpp	\
 		glad.c		\
 		stb_image.cpp
 		
-CLASS = shader.cpp						\
-		textureLoader.cpp 				\
-		texture.cpp						\
-		window.cpp						\
-		inputHandler.cpp 				\
-		vertexArrayObject.cpp 			\
+CLASS = Shader.cpp						\
+		TextureLoader.cpp 				\
+		Texture.cpp						\
+		Window.cpp						\
+		InputHandler.cpp 				\
+		VertexArrayObject.cpp 			\
 		Game.cpp						\
 		VertexArrayObjectHandler.cpp 	\
 		ElementArrayBuffer.cpp 			
