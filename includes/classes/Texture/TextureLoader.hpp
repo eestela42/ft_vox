@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <classes/Texture.hpp>
+#include <classes/Texture/Texture.hpp>
 #include <stb/stb_image.h>
 
 class TextureLoader

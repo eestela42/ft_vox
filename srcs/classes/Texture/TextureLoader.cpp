@@ -1,4 +1,4 @@
-#include <classes/TextureLoader.hpp>
+#include <classes/Texture/TextureLoader.hpp>
 
 bool TextureLoader::isReady = false;
 

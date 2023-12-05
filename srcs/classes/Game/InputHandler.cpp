@@ -1,4 +1,4 @@
-#include <classes/InputHandler.hpp>
+#include <classes/Game/InputHandler.hpp>
 
 InputHandler::InputHandler(GLFWwindow *window) : window(window) {
     MapKeys();

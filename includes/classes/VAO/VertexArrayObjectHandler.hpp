@@ -1,6 +1,6 @@
 #pragma once
 
-#include <classes/VertexArrayObject.hpp>
+#include <classes/VAO/VertexArrayObject.hpp>
 
 class VertexArrayObjectHandler {
 public:

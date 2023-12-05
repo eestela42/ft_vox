@@ -1,4 +1,4 @@
-#include <classes/VertexArrayObject.hpp>
+#include <classes/VAO/VertexArrayObject.hpp>
 
 VertexArrayObject::VertexArrayObject() {
     glGenVertexArrays(1, &VAO);

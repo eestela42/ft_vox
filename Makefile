@@ -1,25 +1,39 @@
-NAME = vox
+NAME = ft_vox
 CC = g++
 
 CFLAGS =  -std=c++11
 OPENGL = -lglfw3 -lGL -lX11
 
-SRCS =	main.cpp	\
-		glad.c		\
-		stb_image.cpp
-		
-CLASS = Shader.cpp						\
-		TextureLoader.cpp 				\
-		Texture.cpp						\
-		Window.cpp						\
-		InputHandler.cpp 				\
-		VertexArrayObject.cpp 			\
-		Game.cpp						\
-		VertexArrayObjectHandler.cpp 	\
-		ElementArrayBuffer.cpp 			
 
-SOURCES = $(addprefix srcs/, $(SRCS)) \
-			$(addprefix srcs/classes/, $(CLASS))
+CPP_GAME = 		Game.cpp					\
+				InputHandler.cpp
+
+CPP_TEXTURE = 	Texture.cpp					\
+				TextureLoader.cpp
+
+CPP_VAO = 		VertexArrayObject.cpp		\
+				VertexArrayObjectHandler.cpp 
+
+CPP_WORLD = 	Chunk.cpp 					\
+				RLE.cpp						\
+				PerlinNoise.cpp
+
+
+CLASSES = 	$(addprefix Game/, $(CPP_GAME))			\
+			$(addprefix Texture/, $(CPP_TEXTURE))	\
+			$(addprefix VAO/, $(CPP_VAO))			\
+			$(addprefix World/, $(CPP_WORLD))		\
+			ElementArrayBuffer.cpp 					\
+			Shader.cpp								\
+			Window.cpp
+
+
+SRCS =	main.cpp		\
+		glad.c			\
+		stb_image.cpp
+
+SOURCES = 	$(addprefix srcs/classes/, $(CLASSES)) 		\
+			$(addprefix srcs/, $(SRCS))
 
 all: COMP
 

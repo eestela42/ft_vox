@@ -13,9 +13,9 @@ class Game : I_Input
 		Game();
 		~Game();
 
-		void SendKeys(u_char *keyState) override;
-		glm::quat GetCameraQuaternion() const;
-		glm::vec3 GetCameraPosition() const;
+		void 		SendKeys(u_char *keyState) override;
+		glm::quat 	GetCameraQuaternion() const;
+		glm::vec3 	GetCameraPosition() const;
 	private:
 		glm::quat cameraQuaternion = glm::angleAxis(float(0), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -10.0f);

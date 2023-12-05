@@ -1,4 +1,4 @@
-#include <classes/VertexArrayObjectHandler.hpp>
+#include <classes/VAO/VertexArrayObjectHandler.hpp>
 
 VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
