@@ -1,7 +1,7 @@
 #include <main.hpp>
 
 int main(int argc, char **argv) {
-	Window *window = new Window("vox", DrawMode::FILL);
+	Window *window = new Window("ft_vox", DrawMode::FILL);
 
 	InputHandler *inputHandler = new InputHandler(window->GetWindow());
 	Game *game = new Game();
