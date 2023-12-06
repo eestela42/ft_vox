@@ -12,25 +12,25 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
-  
 
 class Shader
 {
-    public:
-    unsigned int ID; // the program ID
-  
-	Shader(const char* folderPath);
-    void Use();// use/activate the shader
+	public:
+		/** @brief Compiles the shader program found at the path.*/ 
+		Shader(const std::string &folderPath);
+		void Use();
 
-    void SetBool(const std::string &name, bool value) const;  
-    void SetInt(const std::string &name, int value) const;   
-    void SetFloat(const std::string &name, float value) const;
-    void SetFloat4(const std::string &name, float value1, float value2, float value3, float value4) const;
-    void Setmat4(const std::string &name, glm::mat4 value) const;
+		void SetBool(const std::string &name, bool value) const;  
+		void SetInt(const std::string &name, int value) const;   
+		void SetFloat(const std::string &name, float value) const;
+		void SetFloat4(const std::string &name, float value1, float value2, float value3, float value4) const;
+		void Setmat4(const std::string &name, glm::mat4 value) const;
 
-    private:
+	private:
+		unsigned int ID; // the program ID
+			
 		u_int CompileSingleShader(const char *path, GLenum type, std::string sType);
-        void CheckCompileErrors(unsigned int shader, std::string type);
+		void CheckCompileErrors(unsigned int shader, std::string type);
 };
   
 #endif

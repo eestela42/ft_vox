@@ -4,7 +4,7 @@
 #define FGMT 1 << 1
 #define GMTR 1 << 2
 
-Shader::Shader(const char* folderPath) {
+Shader::Shader(const std::string &folderPath) {
 	u_char activeShaders = 0;
 	ID = glCreateProgram();
 

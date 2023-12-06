@@ -8,8 +8,8 @@ int main(int argc, char **argv) {
 	inputHandler->AddCallback((I_Input*)game);
 	inputHandler->AddCallback((I_Input*)window);
 
-	Shader *shader = new Shader("shaders/default_shaders");
-	shader->Use();
+	ShaderHandler *shaderHandler = new ShaderHandler("shaders");
+	Shader *shader = shaderHandler->GetShader("default_shaders");
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 

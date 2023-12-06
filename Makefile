@@ -26,6 +26,7 @@ CLASSES = 	$(addprefix Game/, $(CPP_GAME))			\
 			$(addprefix World/, $(CPP_WORLD))		\
 			ElementBufferObject.cpp 				\
 			VertexBufferObject.cpp 					\
+			ShaderHandler.cpp						\
 			Shader.cpp								\
 			Window.cpp
 

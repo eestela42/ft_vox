@@ -31,7 +31,7 @@
 #include <classes/VAO/VertexArrayObject.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 
-#include <classes/Shader.hpp>
+#include <classes/ShaderHandler.hpp>
 #include <classes/Window.hpp>
 
 #include <iostream>
