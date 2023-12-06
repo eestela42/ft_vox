@@ -1,39 +1,15 @@
 #include <classes/VAO/VertexArrayObject.hpp>
 
-VertexArrayObject::VertexArrayObject() {
-    glGenVertexArrays(1, &VAO);
+VertexArrayObject::VertexArrayObject(VertexBufferObject *VBO, ElementBufferObject *EBO) {
+	this->VBO = VBO;
+    this->EBO = EBO;
+	indicesSize = EBO->GetSize();
+
+	glGenVertexArrays(1, &VAO);
+	
     Bind();
-}
-
-VertexArrayObject::VertexArrayObject(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) : VertexArrayObject()  {
-    SetupVBO(vertices);
-    EBO = new ElementArrayBuffer(indices);
-}
-
-VertexArrayObject::VertexArrayObject(ElementArrayBuffer *EBO, const std::vector<float>& vertices) : VertexArrayObject() {
-    this->EBO = EBO;
+    VBO->Bind();
     EBO->Bind();
-    SetupVBO(vertices);
-}
-
-VertexArrayObject::VertexArrayObject(unsigned int VBO, const std::vector<unsigned int>& indices) : VertexArrayObject() {
-    this->VBO = VBO;
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    EBO = new ElementArrayBuffer(indices);
-}
-
-VertexArrayObject::VertexArrayObject(unsigned int VBO, ElementArrayBuffer *EBO) : VertexArrayObject() {
-    this->VBO = VBO;
-    this->EBO = EBO;
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    EBO->Bind();
-}
-
-void VertexArrayObject::SetupVBO(const std::vector<float>& vertices) {
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-    std::cout << "VBO " << vertices.size() * sizeof(float) << " " << vertices.data() << std::endl;
 }
 
 void VertexArrayObject::AddVertexAttribute(u_int location, u_int size, GLenum type) {
@@ -53,12 +29,16 @@ unsigned int VertexArrayObject::GetVAO() {
     return VAO;
 }
 
-unsigned int VertexArrayObject::GetVBO() {
+VertexBufferObject *VertexArrayObject::GetVBO() {
     return VBO;
 }
 
-ElementArrayBuffer *VertexArrayObject::GetEBO() {
+ElementBufferObject *VertexArrayObject::GetEBO() {
     return EBO;
+}
+
+size_t VertexArrayObject::GetIndicesSize() {
+	return indicesSize;
 }
 
 void VertexArrayObject::Bind() {
@@ -74,6 +54,6 @@ void VertexArrayObject::Unbind() {
 
 VertexArrayObject::~VertexArrayObject() {
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    VBO->DeleteBuffers();
     EBO->DeleteBuffers();
 }

@@ -1,21 +1,21 @@
-#include <classes/ElementArrayBuffer.hpp>
+#include <classes/ElementBufferObject.hpp>
 
 // Parameterized constructor
-ElementArrayBuffer::ElementArrayBuffer(const std::vector<unsigned int>& indices){
-	indicesSize = indices.size() * sizeof(unsigned int);
+ElementBufferObject::ElementBufferObject(const std::vector<unsigned int>& indices){
+	indicesSize = indices.size() * sizeof(indices[0]);
     glGenBuffers(1, &index);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
 }
 
-void ElementArrayBuffer::Bind() {
+void ElementBufferObject::Bind() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
 }
 
-void ElementArrayBuffer::DeleteBuffers() {
+void ElementBufferObject::DeleteBuffers() {
 	glDeleteBuffers(1, &index);
 }
 
-int ElementArrayBuffer::GetSize() const {
+int ElementBufferObject::GetSize() const {
     return indicesSize;
 }

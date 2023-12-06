@@ -7,31 +7,28 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <classes/ElementArrayBuffer.hpp>
+#include <classes/ElementBufferObject.hpp>
+#include <classes/VertexBufferObject.hpp>
 
 class VertexArrayObject {
 public:
-    VertexArrayObject(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
-    VertexArrayObject(ElementArrayBuffer *EBO, const std::vector<float>& vertices);
-    VertexArrayObject(unsigned int VBO, const std::vector<unsigned int>& indices);
-    VertexArrayObject(unsigned int VBO, ElementArrayBuffer *EBO);
-    ~VertexArrayObject();
+    VertexArrayObject(VertexBufferObject *VBO, ElementBufferObject *EBO);
+	~VertexArrayObject();
 
     void AddVertexAttribute(u_int location, u_int size, GLenum type);
 
     void Bind();
     void Unbind();
 	unsigned int GetVAO();
-    unsigned int GetVBO();
-    ElementArrayBuffer *GetEBO();
+    VertexBufferObject *GetVBO();
+    ElementBufferObject *GetEBO();
+	size_t GetIndicesSize();
 private:
-    VertexArrayObject();
     unsigned int VAO;
-    unsigned int VBO;
-    ElementArrayBuffer *EBO;
-	std::size_t indexesSize;
+    VertexBufferObject *VBO;
+    ElementBufferObject *EBO;
+	std::size_t indicesSize;
     std::vector<glm::uvec2> locationList;
     int totalStride = 0;
-
-    void SetupVBO(const std::vector<float>& vertices);
+	
 };
