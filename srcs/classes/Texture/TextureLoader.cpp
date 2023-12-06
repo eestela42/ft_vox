@@ -19,14 +19,14 @@ Texture TextureLoader::LoadTexture(std::string fileName) {
         return Texture(textureID, width, height, nrChannels);
     } else {
         std::cout << "Failed to load texture : " << fileName << std::endl;
-        exit(1);
+        assert(!"TextureLoader::LoadTexture stbi failed to load the texture");
     }
 }
 
 void TextureLoader::Init() {
     if (!glfwGetCurrentContext()) {
         std::cout << "TextureLoader cannot be used before a glfw context has been initialized" << std::endl;
-        exit(1);
+        assert(!"TextureLoader::Init() glfwGetCurrentContext failed to load the current context");
     }
     stbi_set_flip_vertically_on_load(true);
     isReady = true;

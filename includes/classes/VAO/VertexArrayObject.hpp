@@ -37,7 +37,7 @@ private:
 template <typename T>
 void VertexArrayObject::AddVertexAttribute(u_int location, u_int amount, T valueTemplate) {
 	if (typeid(valueTemplate) != typeid(float) && typeid(valueTemplate) != typeid(int)) {
-		exit(1);
+		assert(!"VertexArrayObject::AddVertexAttribute Type not supported");
 	}
 	GLenum glType = GL_FLOAT;
 	if (typeid(valueTemplate) == typeid(int)) {

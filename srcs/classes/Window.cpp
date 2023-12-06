@@ -8,7 +8,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) //call
 Window::Window(const char *name, DrawMode drawMode) {
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
-        exit(1);
+        assert(!"Window::Window glfwInit failed");
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);  //OpenGL version ->4.6
@@ -20,14 +20,14 @@ Window::Window(const char *name, DrawMode drawMode) {
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        exit(1);
+        assert(!"Window::Window glfwCreateWindow failed");
     }
     glfwMakeContextCurrent(window); // Set active context to the window we created
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) //Load OpenGL function pointers with GLFW OS pointer
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
-        exit(1);
+        assert(!"Window::Window gladLoadGLLoader failed");
     }
 
     glEnable(GL_DEPTH_TEST);

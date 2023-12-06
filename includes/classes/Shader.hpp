@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
   
 
 class Shader
@@ -18,7 +19,7 @@ class Shader
     public:
     unsigned int ID; // the program ID
   
-    Shader(const char* vertexPath, const char* fragmentPath); // constructor reads and builds the shader
+	Shader(const char* folderPath);
     void Use();// use/activate the shader
 
     void SetBool(const std::string &name, bool value) const;  
@@ -28,6 +29,7 @@ class Shader
     void Setmat4(const std::string &name, glm::mat4 value) const;
 
     private:
+		u_int CompileSingleShader(const char *path, GLenum type, std::string sType);
         void CheckCompileErrors(unsigned int shader, std::string type);
 };
   

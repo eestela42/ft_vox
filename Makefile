@@ -1,7 +1,8 @@
 NAME = ft_vox
 CC = g++
 
-CFLAGS =  -std=c++11
+CFLAGS =
+
 OPENGL = -lglfw3 -lGL -lX11
 
 

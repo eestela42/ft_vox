@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 	inputHandler->AddCallback((I_Input*)game);
 	inputHandler->AddCallback((I_Input*)window);
 
-	Shader *shader = new Shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
+	Shader *shader = new Shader("shaders/default_shaders");
 	shader->Use();
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <classes/Texture/Texture.hpp>
 #include <stb/stb_image.h>
+#include <assert.h>
 
 class TextureLoader
 {
