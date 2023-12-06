@@ -11,7 +11,7 @@
 
 		/*****	 World	*****/
 
-# include <classes/World/RLE.hpp>
+# include <classes/World/ChunkRLE.hpp>
 # include <classes/World/PerlinNoise.hpp>
 # include <classes/World/Chunk.hpp>
 

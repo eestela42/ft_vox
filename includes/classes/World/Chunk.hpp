@@ -10,6 +10,7 @@
 
 class Chunk
 {
+
 protected :
 	int posX;
 	int posY;
@@ -27,8 +28,8 @@ public :
 
 	Chunk();
 
-	std::vector<u_char> &GetVertexData();
-	std::vector<u_int> &GetShapeAssemblyData();
+	std::vector<u_char>&	GetVertexData();
+	std::vector<u_int>&		GetShapeAssemblyData();
 
 	void Generate();
 	void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList);

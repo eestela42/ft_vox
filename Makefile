@@ -15,7 +15,7 @@ CPP_VAO = 		VertexArrayObject.cpp		\
 				VertexArrayObjectHandler.cpp 
 
 CPP_WORLD = 	Chunk.cpp 					\
-				RLE.cpp						\
+				ChunkRLE.cpp						\
 				PerlinNoise.cpp
 
 
