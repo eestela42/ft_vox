@@ -23,7 +23,8 @@ CLASSES = 	$(addprefix Game/, $(CPP_GAME))			\
 			$(addprefix Texture/, $(CPP_TEXTURE))	\
 			$(addprefix VAO/, $(CPP_VAO))			\
 			$(addprefix World/, $(CPP_WORLD))		\
-			ElementArrayBuffer.cpp 					\
+			ElementBufferObject.cpp 				\
+			VertexBufferObject.cpp 					\
 			Shader.cpp								\
 			Window.cpp
 

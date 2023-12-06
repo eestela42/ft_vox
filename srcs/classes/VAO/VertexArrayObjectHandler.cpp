@@ -4,7 +4,7 @@ VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
 void VertexArrayObjectHandler::Draw() {
 	if (activeVAO) {
-		glDrawElements(GL_TRIANGLES, vaoList[activeVAO - 1]->GetEBO()->GetSize(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, vaoList[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
 	}
 }
 

@@ -3,14 +3,14 @@
 #include <vector>
 #include <glad/glad.h>
 
-class ElementArrayBuffer {
+class VertexBufferObject {
 public:
-    ElementArrayBuffer(const std::vector<unsigned int>& indices);
+    VertexBufferObject(const std::vector<float>& vertices);
 
 	void Bind();
 	void DeleteBuffers();
     int GetSize() const;
 private:
     unsigned int index;
-    int indicesSize;
+    int verticesSize;
 };
