@@ -12,19 +12,6 @@ VertexArrayObject::VertexArrayObject(VertexBufferObject *VBO, ElementBufferObjec
     EBO->Bind();
 }
 
-void VertexArrayObject::AddVertexAttribute(u_int location, u_int size, GLenum type) {
-    locationList.push_back(glm::uvec2(location, size));
-    GLsizei offset = totalStride;
-    totalStride += size * sizeof(type);
-    
-    int tempStride = 0;
-    for (std::vector<glm::uvec2>::iterator iterator = locationList.begin(); iterator != locationList.end(); iterator++) {
-        glVertexAttribPointer(iterator->x, iterator->y, type, GL_FALSE, totalStride, (void *)(u_long)tempStride);
-        tempStride += iterator->y * 4;
-    }
-    glEnableVertexAttribArray(location);
-}
-
 unsigned int VertexArrayObject::GetVAO() {
     return VAO;
 }
@@ -47,7 +34,7 @@ void VertexArrayObject::Bind() {
 
 void VertexArrayObject::Unbind() {
     glBindVertexArray(0);
-    for (std::vector<glm::uvec2>::iterator iterator = locationList.begin(); iterator != locationList.end(); iterator++) {
+    for (std::vector<glm::uvec4>::iterator iterator = locationList.begin(); iterator != locationList.end(); iterator++) {
         glDisableVertexAttribArray(iterator->x);
     }
 }
