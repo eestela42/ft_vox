@@ -15,20 +15,21 @@ protected :
 	int posX;
 	int posY;
 
-	u_char *data;
+	u_char *data = (u_char*)""; //Warning, this will cause segfault if modified before instantiation
 	bool isCompiled = false;
-	std::vector<u_char> vertexData;
+	std::vector<float> vertexData;
 	std::vector<u_int> shapeAssemblyData;
 
-	void DataCompiler();
+	void CompileData();
 public :
+	static constexpr char * shaderName = (char*)"default_shaders";
 	static u_int const sizeX = 16;
 	static u_int const sizeY = 16;
 	static u_int const sizeZ = 256;
 
 	Chunk();
 
-	std::vector<u_char>&	GetVertexData();
+	std::vector<float>&	GetVertexData();
 	std::vector<u_int>&		GetShapeAssemblyData();
 
 	void Generate();

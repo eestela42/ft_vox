@@ -1,14 +1,13 @@
 #version 460 core
 
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
 
-out vec2 TexCoord;
+out float vertexID;
 
 uniform mat4 matrix;
 
 void main()
 {
-    TexCoord = aTexCoord;
+	vertexID = gl_VertexID;
     gl_Position = matrix * vec4(aPos, 1.0);
 }

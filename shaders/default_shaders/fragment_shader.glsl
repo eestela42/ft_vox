@@ -1,11 +1,9 @@
 #version 460 core
 
-in vec2 TexCoord;
+in float vertexID;
 
 out vec4 FragColor;
 
-uniform sampler2D ourTexture;
-
 void main() {
-    FragColor = texture(ourTexture, TexCoord);
+    FragColor = vec4(float(int(vertexID) % 256) / 256, float(int(vertexID) % (256 * 256) / 256) / 256 , float(int(vertexID) / (256 * 256)) / 256, 1);
 }

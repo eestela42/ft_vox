@@ -68,7 +68,7 @@ void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
 	}
 }
 
-void	ChunkRLE::DataCompiler()
+void	ChunkRLE::CompileData()
 {
 	int x, y, z;
 	for (int pos = 0; pos < sizeX * sizeY * 2; pos+=2) // tant que dans le RLE
@@ -122,16 +122,6 @@ ChunkRLE::~ChunkRLE()
 ChunkRLE::ChunkRLE() : Chunk()
 {
 	this->data = NULL;
-}
-
-std::vector<u_char>&	ChunkRLE::GetVertexData()
-{
-
-}
-
-std::vector<u_int> &	ChunkRLE::GetShapeAssemblyData()
-{
-
 }
 
 int ChunkRLE::calcX(int pos)
