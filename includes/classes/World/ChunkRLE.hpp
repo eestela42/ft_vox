@@ -23,7 +23,7 @@ protected :
 	ChunkRLE* 				_neighbours[4]; // 0: North, 1: East, 2: South, 3: West
 
 public :
-	static constexpr char * shaderName = (char*)"test";
+	static constexpr char * shaderName = (char*)"RLE";
 
 	~ChunkRLE();
 	ChunkRLE();

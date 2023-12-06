@@ -9,17 +9,19 @@ int main(int argc, char **argv) {
 	inputHandler->AddCallback((I_Input*)window);
 
 	ShaderHandler *shaderHandler = new ShaderHandler("shaders");
-	Shader *shader = shaderHandler->GetShader("default_shaders");
+	Shader *shader = shaderHandler->GetShader(Chunk::shaderName);
 	shader->Use();
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
-	Chunk chunk;
-	VertexArrayObject *VAO_1 = new VertexArrayObject(new VertexBufferObject(chunk.GetVertexData()), new ElementBufferObject(chunk.GetShapeAssemblyData()));
-	u_int vao_1 = vertexArrayObjectHandler->AddVAO(VAO_1);
-	VAO_1->AddVertexAttribute(0, 3, 1.0f);
-
-	vertexArrayObjectHandler->Bind(vao_1);
-
+	std::vector<u_int> chunkMap;
+	for (int x = 0; x < 48; x++) {
+		for (int y = 0; y < 48; y++) {
+			Chunk *chunk = new Chunk(x, y);
+			VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(chunk->GetVertexData()), new ElementBufferObject(chunk->GetShapeAssemblyData()));
+			chunkMap.push_back(vertexArrayObjectHandler->AddVAO(VAO));
+			VAO->AddVertexAttribute(0, 3, 1.0f);
+		}
+	}
 
 	while(window->ShouldContinue())
 	{
@@ -30,8 +32,11 @@ int main(int argc, char **argv) {
 		glm::mat4 matrix = glm::mat4(1.0f);
 		matrix = proj * glm::translate(matrix, game->GetCameraPosition()) * glm::toMat4(game->GetCameraQuaternion());
 		shader->Setmat4("matrix", matrix);
-
-		vertexArrayObjectHandler->Draw();
+		for (auto const& x : chunkMap)
+		{
+			vertexArrayObjectHandler->Bind(x);
+			vertexArrayObjectHandler->Draw();
+		}
 		window->SwapBuffersAndPollEvents();
 	}
 	return 0;

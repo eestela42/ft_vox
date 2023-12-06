@@ -9,5 +9,5 @@ uniform mat4 matrix;
 void main()
 {
 	vertexID = gl_VertexID;
-    gl_Position = matrix * vec4(aPos, 1.0);
+    gl_Position = matrix * vec4(aPos.x, aPos.z, aPos.y, 1.0);
 }

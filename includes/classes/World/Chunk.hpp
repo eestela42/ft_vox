@@ -22,12 +22,13 @@ protected :
 
 	void CompileData();
 public :
-	static constexpr char * shaderName = (char*)"default_shaders";
+	static constexpr char * shaderName = (char*)"default";
 	static u_int const sizeX = 16;
 	static u_int const sizeY = 16;
 	static u_int const sizeZ = 256;
 
 	Chunk();
+	Chunk(u_int x, u_int y);
 
 	std::vector<float>&	GetVertexData();
 	std::vector<u_int>&		GetShapeAssemblyData();

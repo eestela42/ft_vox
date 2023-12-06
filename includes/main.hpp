@@ -35,5 +35,6 @@
 #include <classes/Window.hpp>
 
 #include <iostream>
+#include <map>
 
 #endif
