@@ -1,130 +1,119 @@
 #include <classes/World/Chunk.hpp>
 
-Chunk::Chunk() : posX(0), posY(0) {
+std::vector<std::vector<Chunk*>> Chunk::loadedChunks;
+
+Chunk::Chunk() : posX(0), posY(0){}
+
+Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
+	loadChunk();
+}
+
+void Chunk::PublicGenerate() {
+	isGenerated = true;
 	Generate();
-	CompileData();
+	isCompiled = false;
 }
 
-Chunk::Chunk(u_int x, u_int y) : posX(x), posY(y) {
-	Generate();
-	CompileData();
+void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
+	isGenerated = true;
+	Generate(positionList, sizeList);
+	isCompiled = false;
 }
 
-void CreateCube(std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
-	vData.push_back(0 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(0 + z); 
-
-    //Other vertices
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(1 + z); 
-
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(1 + z); 
-
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(0 + z); 
-
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(0 + z); 
-
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(1 + z); 
-
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(1 + z); 
-
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(0 + z); 
-
-    // Indices
-    iData.push_back(0 + offset);
-    iData.push_back(1 + offset);
-    iData.push_back(2 + offset);
-
-    iData.push_back(0 + offset);
-    iData.push_back(2 + offset);
-    iData.push_back(3 + offset);
-
-    iData.push_back(2 + offset);
-    iData.push_back(3 + offset);
-    iData.push_back(4 + offset);
-
-    iData.push_back(2 + offset);
-    iData.push_back(4 + offset);
-    iData.push_back(5 + offset);
-
-    iData.push_back(4 + offset);
-    iData.push_back(5 + offset);
-    iData.push_back(6 + offset);
-
-    iData.push_back(4 + offset);
-    iData.push_back(6 + offset);
-    iData.push_back(7 + offset);
-
-    iData.push_back(6 + offset);
-    iData.push_back(7 + offset);
-    iData.push_back(0 + offset);
-
-    iData.push_back(6 + offset);
-    iData.push_back(0 + offset);
-    iData.push_back(1 + offset);
-
-    iData.push_back(1 + offset);
-    iData.push_back(2 + offset);
-    iData.push_back(5 + offset);
-
-    iData.push_back(1 + offset);
-    iData.push_back(5 + offset);
-    iData.push_back(6 + offset);
-
-    iData.push_back(0 + offset);
-    iData.push_back(3 + offset);
-    iData.push_back(4 + offset);
-
-    iData.push_back(0 + offset);
-    iData.push_back(4 + offset);
-    iData.push_back(7 + offset);
+void Chunk::PublicGenerate(u_int seed) {
+	isGenerated = true;
+	Generate(seed);
+	isCompiled = false;
 }
 
-void Chunk::CompileData() {
-	for (int z = 0; z < sizeZ; z++) {
-		for (int y = 0; y < sizeY; y++) {
-			for (int x = 0; x < sizeX; x++) {
-				if (data[z * sizeY * sizeX + y * sizeX + x]) {
+void	Chunk::loadChunk()
+{
+	if (loadedChunks.size()) {
+		loadedChunks[posX % loadedChunks.size()][posY % loadedChunks.size()] = this;
+	}
+}
 
-					CreateCube(vertexData, shapeAssemblyData, x, y, z, (z * sizeY * sizeX + y * sizeX + x) * 8, posX * sizeX, posY * sizeY);
-				}
+void	Chunk::setRenderDistance(int renderDistance)
+{
+	if (renderDistance == loadedChunks.size()) {
+		return ;
+	}
+	std::vector<std::vector<Chunk*>> oldChunks = loadedChunks;
+
+	loadedChunks.assign(renderDistance * 2 + 1, std::vector<Chunk*>());
+	for (int x = 0; x < renderDistance * 2 + 1; x++)
+	{
+		loadedChunks[x].resize(renderDistance * 2 + 1, nullptr);
+		for (int y = 0; y < renderDistance * 2 + 1; y++)
+			loadedChunks[x][y] = NULL;
+	}
+
+	if (renderDistance > oldChunks.size()) {
+		for (std::vector<std::vector<Chunk*>>::iterator iterator = oldChunks.begin(); iterator != oldChunks.end(); iterator++) {
+			for (std::vector<Chunk*>::iterator iterator2 = iterator->begin(); iterator2 != iterator->end(); iterator2++) {
+				(*iterator2)->loadChunk();
 			}
 		}
 	}
 }
 
-void Chunk::Generate() {
-	data = (u_char*)calloc(sizeX * sizeY * sizeZ, sizeof(*data));
-	for (int z = 0; z < sizeZ; z++) {
-		for (int y = 0; y < sizeY; y++) {
-			for (int x = 0; x < sizeX; x++) {
-				if(z < posY + posX + 1) {
-					data[z * sizeY * sizeX + y * sizeX + x] = 1;
-				}
+Chunk *Chunk::GetNeighbor(int x, int y) {
+	return (loadedChunks[x % loadedChunks.size()][y % loadedChunks.size()]);
+}
+
+void Chunk::SetReady() {
+	Chunk *neighborChunk = GetNeighbor(posX, posY + 1);
+	if (neighborChunk != neighborChunks[0])
+		isCompiled = false;
+	neighborChunks[0] = neighborChunk;
+
+	neighborChunk = GetNeighbor(posX + 1, posY);
+	if (neighborChunk != neighborChunks[1])
+		isCompiled = false;
+	neighborChunks[1] = neighborChunk;
+
+	neighborChunk = GetNeighbor(posX, posY - 1);
+	if (neighborChunk != neighborChunks[2])
+		isCompiled = false;
+	neighborChunks[2] = neighborChunk;
+
+	neighborChunk = GetNeighbor(posX - 1, posY);
+	if (neighborChunk != neighborChunks[3])
+		isCompiled = false;
+	neighborChunks[3] = neighborChunk;
+	
+	if (!isGenerated) {
+		PublicGenerate();
+	}
+	if (!isCompiled) {
+		isCompiled = true;
+		for (int i = 0; i < 4; i++) {
+			if (neighborChunks[i]) {
+				neighborChunks[i]->SetReady();
 			}
 		}
+		CompileData();
+		didUpdate = true;
 	}
+}
+
+bool Chunk::IsGenerated() {
+	return isGenerated;
+}
+
+bool Chunk::DidUpdate() {
+	return didUpdate;
 }
 
 std::vector<float>&	Chunk::GetVertexData() {
+	SetReady();
+	didUpdate = false;
 	return vertexData;
 }
 
 std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
+	SetReady();
+	didUpdate = false;
 	return shapeAssemblyData;
 }
 

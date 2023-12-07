@@ -17,6 +17,7 @@ C_FILES = $(shell find $(SRCS_DIR) -name '*.c')
 
 SRCS_DIR = srcs
 OBJS_DIR = objects-dependances
+DEPS_DIR = objects-dependances
 
 ################################################################################
 #                              Commands and arguments                          #
@@ -106,5 +107,7 @@ re: fclean all
 		all
 
 .PHONY: all clean fclean re
+
+DEP_FILES = $(CPP_DEPS) $(C_DEPS)
 
 -include $(DEP_FILES)

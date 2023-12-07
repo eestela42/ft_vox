@@ -14,10 +14,11 @@ int main(int argc, char **argv) {
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 	std::vector<u_int> chunkMap;
+	Chunk::setRenderDistance(game->GetRenderDistance());
 	for (int x = 0; x < game->GetRenderDistance() * 2 + 1; x++) {
 		for (int y = 0; y < game->GetRenderDistance() * 2 + 1; y++) {
 			std::cout << "Generating chunk " << x << " " << y << std::endl;
-			Chunk *chunk = new Chunk(x, y);
+			Chunk *chunk = new ChunkDefault(x, y);
 			VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(chunk->GetVertexData()), new ElementBufferObject(chunk->GetShapeAssemblyData()));
 			chunkMap.push_back(vertexArrayObjectHandler->AddVAO(VAO));
 			VAO->AddVertexAttribute(0, 3, 1.0f);
