@@ -13,7 +13,7 @@
 
 # include <classes/World/ChunkRLE.hpp>
 # include <classes/World/PerlinNoise.hpp>
-# include <classes/World/Chunk.hpp>
+# include <classes/World/ChunkDefault.hpp>
 
 
 		/*****	 Game		*****/

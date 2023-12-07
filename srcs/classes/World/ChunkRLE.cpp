@@ -1,8 +1,6 @@
 #include <classes/World/ChunkRLE.hpp>
 #include <map>
 
-std::vector<std::vector<ChunkRLE*>>* ChunkRLE::loadedChunks = NULL;
-
 		/*****	2 - methods 		*****/
 void CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
 	
@@ -141,6 +139,19 @@ void CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iDat
 
 }
 
+/* 
+ * Here you need to implement a method that checks whether a specific point in the chunk is filled so neighbors are able to render properly
+ * Because neighbors might not be the same Chunk type as you, every chunk has to implement this since it is a virtual method
+ * I know it doesn't fit RLE much, but you could optimize this with static variables, remembering where you left off last call
+*/
+bool ChunkRLE::isFilled(int x, int y, int z) {
+	if (!IsGenerated()) { //This is supposed to be impossible right now WHATEVER you do, but it costs nothing
+		return false;
+	}
+	return false; // Temporary false return
+}
+
+
 u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
 {
 
@@ -206,15 +217,6 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 	}
 
 	return (this->data);
-}
-
-std::vector<float>&	ChunkRLE::GetVertexData()
-{
-	return (this->vertexData);
-}
-std::vector<u_int>&		ChunkRLE::GetShapeAssemblyData()
-{
-	return (this->shapeAssemblyData);
 }
 
 void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
@@ -320,28 +322,6 @@ void	ChunkRLE::CompileData()
 
 		/*****	1 - constructors 		*****/
 
-void	ChunkRLE::setRenderDistance(int renderDistance)
-{
-	std::vector<std::vector<ChunkRLE*>> *chunk = new std::vector<std::vector<ChunkRLE*>>();
-	chunk->resize(renderDistance * 2 + 1);
-	for (int x = 0; x < renderDistance * 2 + 1; x++)
-	{
-		(*chunk)[x].resize(renderDistance * 2 + 1);
-
-		for (int y = 0; y < renderDistance * 2 + 1; y++)
-			(*chunk)[x][y] = NULL;
-	}
-	loadedChunks = chunk;
-}
-
-void	ChunkRLE::loadChunk()
-{
-	int sizeLoaded = loadedChunks->size();
-	(*loadedChunks)[posX % sizeLoaded][posY % sizeLoaded] = this;
-
-
-}
-
 ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 {
 
@@ -350,28 +330,28 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 	switch (cardinal)
 	{
 	case 0:
-		neighbour = (*loadedChunks)[posX % loadedChunks->size()][(posY + 1) % loadedChunks->size()];
+		neighbour = (ChunkRLE*)loadedChunks[posX % loadedChunks.size()][(posY + 1) % loadedChunks.size()];
 		if (neighbour && neighbour->posY == this->posY + 1)
 		{
 			return (neighbour);
 		}
 		return (NULL);
 	case 1:
-		neighbour = (*loadedChunks)[(posX + 1) % loadedChunks->size()][posY % loadedChunks->size()];
+		neighbour = (ChunkRLE*)loadedChunks[(posX + 1) % loadedChunks.size()][posY % loadedChunks.size()];
 		if (neighbour && neighbour->posX == this->posX+1)
 		{
 			return (neighbour);
 		}
 		return (NULL);
 	case 2:
-		neighbour = (*loadedChunks)[posX % loadedChunks->size()][(posY - 1) % loadedChunks->size()];
+		neighbour = (ChunkRLE*)loadedChunks[posX % loadedChunks.size()][(posY - 1) % loadedChunks.size()];
 		if (neighbour && neighbour->posY == this->posY - 1)
 		{
 			return (neighbour);
 		}
 		return (NULL);
 	case 3:
-		neighbour = (*loadedChunks)[(posX - 1) % loadedChunks->size()][posY % loadedChunks->size()];
+		neighbour = (ChunkRLE*)loadedChunks[(posX - 1) % loadedChunks.size()][posY % loadedChunks.size()];
 		if (neighbour && neighbour->posX == this->posX - 1)
 		{
 			return (neighbour);
@@ -387,18 +367,14 @@ ChunkRLE::~ChunkRLE()
 {
 }
 
-ChunkRLE::ChunkRLE() : Chunk()
+ChunkRLE::ChunkRLE() : Chunk(0,0)
 {
 	this->data = NULL;
 	this->rubans_id = new u_int[256];
 }
 
-ChunkRLE::ChunkRLE(int posX, int posY)
+ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
 {
-	this->posX = posX;
-	this->posY = posY;
-
-	loadChunk();
 	this->data = NULL;
 	this->rubans_id = new u_int[256];
 }
@@ -520,6 +496,3 @@ void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 
 void 					ChunkRLE::Generate(u_int seed)
 {}
-
-
-

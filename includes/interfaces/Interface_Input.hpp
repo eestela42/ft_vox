@@ -21,11 +21,14 @@
 #define KEY_ROTATE_Z_POSITIVE	13
 #define KEY_ROTATE_Z_NEGATIVE	14
 
-#define KEY_LAST				14
+#define KEY_SPACE				15
+
+#define KEY_LAST				15
+
 
 class I_Input {
 public:
-    virtual void SendKeys(unsigned char *keyState) = 0;
+    virtual void SendKeys(unsigned char *keyState, double mouseMoveX, double mouseMoveY) = 0;
 };
 
 #endif

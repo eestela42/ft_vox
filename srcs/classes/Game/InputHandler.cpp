@@ -2,6 +2,7 @@
 
 InputHandler::InputHandler(GLFWwindow *window) : window(window) {
     MapKeys();
+    glfwGetCursorPos(window, &posX, &posY);
 }
 
 void InputHandler::AddCallback(I_Input *newCallback) {
@@ -10,6 +11,13 @@ void InputHandler::AddCallback(I_Input *newCallback) {
 
 void InputHandler::HandleInput()
 {
+	double newPosX, newPosY, mouseMoveX, mouseMoveY;
+    glfwGetCursorPos(window, &newPosX, &newPosY);
+	mouseMoveX = newPosX - posX;
+	mouseMoveY = newPosY - posY;
+	posX = newPosX;
+	posY = newPosY;
+
 	for (u_int i = 0; i < GLFW_KEY_LAST; i++) {
 		if (keyMap[i]) {
 			u_int key = keyMap[i];
@@ -29,7 +37,7 @@ void InputHandler::HandleInput()
 	}
 
 	for (std::vector<I_Input*>::iterator iterator = callbackVector.begin(); iterator != callbackVector.end(); iterator++) {
-		(*iterator)->SendKeys(keyState);
+		(*iterator)->SendKeys(keyState, mouseMoveX, mouseMoveY);
     }
 }
 
@@ -43,6 +51,7 @@ void InputHandler::MapKeys() {
 
     keyMap[GLFW_KEY_ENTER] = KEY_ENTER;
     keyMap[GLFW_KEY_ESCAPE] = KEY_ESCAPE;
+	keyMap[GLFW_KEY_SPACE] = KEY_SPACE;
 
     keyMap[GLFW_KEY_KP_8] = KEY_ROTATE_X_NEGATIVE;
     keyMap[GLFW_KEY_KP_5] = KEY_ROTATE_X_POSITIVE;

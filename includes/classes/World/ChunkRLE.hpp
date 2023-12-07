@@ -12,7 +12,7 @@
 # include <classes/World/Chunk.hpp>
 
 	
-class ChunkRLE : protected Chunk
+class ChunkRLE : public Chunk
 {
 
 protected :
@@ -26,16 +26,16 @@ protected :
 	u_int 					sizeData = 0;
   
 public :
-	static std::vector<std::vector<ChunkRLE*>>* loadedChunks;
+
 
 	static constexpr char * shaderName = (char*)"default";
 
-	static void 			setRenderDistance(int renderDistance);
 
 	~ChunkRLE();
 	ChunkRLE();
 	ChunkRLE(int posX, int posY);
 
+	bool					isFilled(int x, int y, int z) override;
 	u_int					GetRubanPos(int x, int y, int z);
 	void					loadChunk();
 
@@ -48,16 +48,12 @@ public :
 	int 					calcX(int pos);
 	int 					calcY(int pos);
 
+	void 					CompileData() override;
 
-	std::vector<float>&		GetVertexData();
-	std::vector<u_int>&		GetShapeAssemblyData();
-
-	void 					CompileData();
-
-	void 					Generate();
+	void 					Generate() override;
 	void 					Generate(std::vector<glm::ivec3> positionList,
-											std::vector<glm::ivec3> sizeList);
-	void 					Generate(u_int seed);
+											std::vector<glm::ivec3> sizeList) override;
+	void 					Generate(u_int seed) override;
 
 };
 

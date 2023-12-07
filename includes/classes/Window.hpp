@@ -26,7 +26,7 @@ class Window : I_Input
         int ShouldContinue();
         void Clear();
         void SwapBuffersAndPollEvents();
-		void SendKeys(u_char *keyState) override;
+		void SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
     private:
         GLFWwindow *window;
 };
