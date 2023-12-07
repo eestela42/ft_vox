@@ -25,6 +25,7 @@ class InputHandler
         GLFWwindow *window;
         int keyMap[GLFW_KEY_LAST + 1] = {0};
 		u_char keyState[KEY_LAST + 1] = {0};
+		double posX, posY;
 
         void MapKeys();
 };

@@ -30,7 +30,9 @@ Window::Window(const char *name, DrawMode drawMode) {
         assert(!"Window::Window gladLoadGLLoader failed");
     }
 
-    glEnable(GL_DEPTH_TEST);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Tell OpenGL that we want to capture and hide the cursor
+    
+	glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT); // Tell OpenGL the size of the drawing window
     glClearColor(0.2f, 0.3f, 0.6f, 1.0f); // Sets clear color
     if (drawMode == DrawMode::LINE) {
@@ -60,7 +62,7 @@ void Window::SwapBuffersAndPollEvents() {
     glfwPollEvents(); //Checks for event and calls callbacks (framebuffer_size_callback wouldn't be called if it wasn't for this function)
 }
 
-void Window::SendKeys(u_char *keyState) {
+void Window::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	if(keyState[KEY_ESCAPE] & KEY_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
