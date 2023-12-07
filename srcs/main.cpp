@@ -14,8 +14,8 @@ int main(int argc, char **argv) {
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 	std::vector<u_int> chunkMap;
-	for (int x = 0; x < 24; x++) {
-		for (int y = 0; y < 24; y++) {
+	for (int x = 0; x < 48; x++) {
+		for (int y = 0; y < 48; y++) {
 			std::cout << "Generating chunk " << x << " " << y << std::endl;
 			ChunkRLE *chunk = new ChunkRLE(x, y);
 			chunk->Generate();
