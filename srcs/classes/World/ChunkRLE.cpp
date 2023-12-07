@@ -1,50 +1,206 @@
 #include <classes/World/ChunkRLE.hpp>
 #include <map>
+void CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
+	
+	iData.push_back(0 + offset);
+    iData.push_back(1 + offset);
+    iData.push_back(2 + offset);
 
+    iData.push_back(0 + offset);
+    iData.push_back(2 + offset);
+    iData.push_back(3 + offset);
 
-u_char* 	ChunkRLE::GetAdjacentRuban(int &pos, u_char direction)
+	// 0: north 1: east 2: south 3: west 4: top 5: bottom
+	switch (type)
+	{
+		case 0 :
+		{
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(0 + z);
+
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(1 + z); 
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(1 + z); 
+
+			vData.push_back(1 + x + offsetX);
+			vData.push_back(1 + y + offsetY);
+			vData.push_back(0 + z);
+			
+			break;
+		}
+		case 1 :
+		{
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(1 + z);
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(1 + x + offsetX);
+			vData.push_back(1 + y + offsetY);
+			vData.push_back(1 + z);
+			break;
+		}
+		case 2 :
+		{
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(0 + z);
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(1 + z); 
+
+			vData.push_back(0 + x + offsetX);
+			vData.push_back(0 + y + offsetY);
+			vData.push_back(1 + z);
+			break;
+		}
+		case 3 :
+		{
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(1 + z);
+
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(0 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(0 + x + offsetX);
+			vData.push_back(1 + y + offsetY);
+			vData.push_back(1 + z);
+			break;
+		}
+		case 4 :
+		{
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(0 + y + offsetY);
+			vData.push_back(0 + z);
+
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(0 + z); 
+
+			vData.push_back(1 + x + offsetX);
+			vData.push_back(0 + y + offsetY);
+			vData.push_back(0 + z);
+			
+			break;
+		}
+		case 5 :
+		{
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(0 + y + offsetY);
+			vData.push_back(1 + z);
+
+			vData.push_back(0 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(1 + z); 
+
+			vData.push_back(1 + x + offsetX); 
+			vData.push_back(1 + y + offsetY); 
+			vData.push_back(1 + z); 
+
+			vData.push_back(1 + x + offsetX);
+			vData.push_back(0 + y + offsetY);
+			vData.push_back(1 + z);
+
+			break;
+		}
+	}
+
+}
+
+u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int &pos, u_char direction)
 {
-	switch(direction)
+	switch(direction) //pos du neighbour
 	{
 		case 0: //north
-			pos += sizeX * 2;
+		{
+			if (y >= sizeY-1){	//find north neighbour
+				if (!this->_neighbours[0])
+					return (NULL);
+			pos = calcX(pos) * 2; //NOT GOOD
+			return (this->_neighbours[0]->data);
+			}
+			// pos += sizeX * 2;
+			break;
+		}
 		case 1: //east
-			pos += 2;
+		{
+			if (x == sizeX - 1) //find east neighbour
+			{	
+				if (!this->_neighbours[1])
+					return (NULL);
+				pos = calcY(pos) * sizeX * 2;//NOT GOOD
+				return (this->_neighbours[1]->data);
+			}
+			// pos += 2;
+			break;
+		}
 		case 2: //south
-			pos -= sizeX * 2;
+		{
+			if (y == 0)
+			{	//find south neighbour
+				if (!this->_neighbours[2])
+					return (NULL);
+				pos = (sizeX * (sizeY - 1) + calcX(pos)) * 2;//NOT GOOD
+				return (this->_neighbours[2]->data);
+			}
+			// pos -= sizeX * 2;
+			break;
+		}
 		case 3: //west
-			pos -= 2;
+		{
+			if (x == 0)//find west neighbour
+			{
+				if (!this->_neighbours[3])
+					return (NULL);
+				pos = ((calcY(pos) + 1) * sizeX - 1) * 2;//NOT GOOD
+				return (this->_neighbours[3]->data);
+			}
+			// pos -= 2;
+			break;
+		}
 	}
 
-	if (direction == 1 && pos % sizeX == sizeX - 1){	//find east neighbour
-		if (!this->_neighbours[1])
-			return (NULL);
-		pos = calcY(pos) * sizeX * 2;
-	}
-	else if (direction == 3 && pos % sizeX == 0){	//find west neighbour
-		if (!this->_neighbours[3])
-			return (NULL);
-		pos = ((calcY(pos) + 1) * sizeX - 1) * 2;
-	}
-
-	else if (direction == 0 && pos >= sizeX * sizeY){	//find north neighbour
-		if (!this->_neighbours[0])
-			return (NULL);
-		pos = calcX(pos) * 2;
-	}
-	else if (direction == 2 && pos / sizeX == 0){	//find south neighbour
-		if (!this->_neighbours[2])
-			return (NULL);
-		pos = (sizeX * (sizeY - 1) + calcX(pos)) * 2;
-	}
 	return (this->data);
 }
 
-
+std::vector<float>&	ChunkRLE::GetVertexData()
+{
+	return (this->vertexData);
+}
+std::vector<u_int>&		ChunkRLE::GetShapeAssemblyData()
+{
+	return (this->shapeAssemblyData);
+}
 
 void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
 {
-	//over = pos de end du voisin != z + incr , mais est == z + over
 	if (!over && z + incr <= z_max) // si tout va bien
 	{
 		z += incr;
@@ -66,50 +222,80 @@ void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
 		z += incr - over;
 		pos += 2;
 	}
+
 }
+
+
 
 void	ChunkRLE::CompileData()
 {
-	int x, y, z;
-	for (int pos = 0; pos < sizeX * sizeY * 2; pos+=2) // tant que dans le RLE
-	{
+	int nbr_points = 0;
+	int pos = 0;
+	for (int y = 0; y < sizeY; y++) {
+	for (int x = 0; x < sizeX; x++) {
 		//pour chaque X-Y
-		x = pos/2 % sizeX;
-		y = pos/2 / sizeX;
-		z = 0;
+		int z = 0;
 
 		int neighb_pos[4] = {0, 0, 0, 0};
 		int neighb_z[4] = {0, 0, 0, 0};
 		int neighb_over[4] = {0, 0, 0, 0};
 
-		while (z != sizeZ) //sur toute la hauteure
+		while (z < (sizeZ - 1)) //sur toute la hauteure
 		{
 			int z_max = z + data[pos + 1];
+			if (data[pos])
+			{
+				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, nbr_points, posX * sizeX, posY * sizeY);
+				nbr_points += 4;
+			}
 			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
 			{
-				u_char* ruban = this->GetAdjacentRuban(pos, neighb);
+				neighb_pos[neighb] = pos; // prends la pos dans data puis si data = voisin->data prends la pos (et si toujours dans data prend pose voisin dans data)
+				u_char* ruban = this->GetAdjacentRuban(x, y, neighb_pos[neighb], neighb);
 				int END = z_max;
 				
 				while (neighb_z[neighb] < z_max) //tant que le voisin n'est pas plus haut que la fin du ruban
 				{
-					if (this->data[pos] == 0 || (ruban && ruban[pos] != 0))
+					if (this->data[pos] == 0 || (ruban && ruban[neighb_pos[neighb]] != 0))
 					{
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[pos + 1], z_max, neighb_over[neighb]);
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], z_max - z, z_max, neighb_over[neighb]);
 						continue ;
 					}
-					int neigh_size = ruban[pos + 1];
+
+					int neigh_size;
+					if (ruban)
+						neigh_size = ruban[neighb_pos[neighb] + 1];
+					else
+						neigh_size = sizeZ - z;
 
 					if ( neighb_over[neighb])
 						neigh_size =  neighb_over[neighb];
 
 					if (neighb_z[neighb] + neigh_size <= z_max)
 						END = neighb_z[neighb] + neigh_size;
+
+					for (int i = neighb_z[neighb]; i < END; i++)
+					{
+						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, nbr_points, posX * sizeX, posY * sizeY);
+						nbr_points += 4;
+					}
+					if (!ruban)
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], END - neighb_z[neighb], z_max, neighb_over[neighb]);
+					else
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[neighb_pos[neighb] + 1], z_max, neighb_over[neighb]);
 					
-					// create face from neighb to END
-					incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[pos + 1], z_max, neighb_over[neighb]);
 				}
 			}
+			
+			if (data[pos] && z < sizeZ - 1 && data[pos +2] == 0)
+			{
+				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_max-1, nbr_points, posX * sizeX, posY * sizeY);
+				nbr_points += 4;
+			}
+			pos += 2;
+			z = z_max;
 		}
+	}
 	}
 }
 
@@ -121,6 +307,19 @@ ChunkRLE::~ChunkRLE()
 
 ChunkRLE::ChunkRLE() : Chunk()
 {
+	this->_neighbours[0] = NULL;
+	this->_neighbours[1] = NULL;
+	this->_neighbours[2] = NULL;
+	this->_neighbours[3] = NULL;
+	this->data = NULL;
+}
+
+ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
+{
+	this->_neighbours[0] = NULL;
+	this->_neighbours[1] = NULL;
+	this->_neighbours[2] = NULL;
+	this->_neighbours[3] = NULL;
 	this->data = NULL;
 }
 
@@ -138,10 +337,10 @@ void 					ChunkRLE::Generate()
 {
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
 
-	int max_z = 10;
+	int max_z = 254;
 	for (int pos = 0; pos < sizeX * sizeY * 4; pos+=4)
 	{
-		data[pos] = 1;
+		data[pos] = 12;
 		data[pos + 1] = max_z;
 		data[pos + 2] = 0;
 		data[pos + 3] = (sizeZ - 1) - max_z;

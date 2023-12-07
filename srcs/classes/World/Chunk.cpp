@@ -1,13 +1,11 @@
 #include <classes/World/Chunk.hpp>
 
 Chunk::Chunk() : posX(0), posY(0) {
-	Generate();
-	CompileData();
+	
 }
 
 Chunk::Chunk(u_int x, u_int y) : posX(x), posY(y) {
-	Generate();
-	CompileData();
+	
 }
 
 void CreateCube(std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
@@ -99,6 +97,7 @@ void Chunk::CompileData() {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {
 				if (data[z * sizeY * sizeX + y * sizeX + x]) {
+
 					CreateCube(vertexData, shapeAssemblyData, x, y, z, (z * sizeY * sizeX + y * sizeX + x) * 8, posX * sizeX, posY * sizeY);
 				}
 			}

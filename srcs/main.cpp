@@ -14,9 +14,12 @@ int main(int argc, char **argv) {
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 	std::vector<u_int> chunkMap;
-	for (int x = 0; x < 48; x++) {
-		for (int y = 0; y < 48; y++) {
-			Chunk *chunk = new Chunk(x, y);
+	for (int x = 0; x < 24; x++) {
+		for (int y = 0; y < 24; y++) {
+			std::cout << "Generating chunk " << x << " " << y << std::endl;
+			ChunkRLE *chunk = new ChunkRLE(x, y);
+			chunk->Generate();
+			chunk->CompileData();
 			VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(chunk->GetVertexData()), new ElementBufferObject(chunk->GetShapeAssemblyData()));
 			chunkMap.push_back(vertexArrayObjectHandler->AddVAO(VAO));
 			VAO->AddVertexAttribute(0, 3, 1.0f);

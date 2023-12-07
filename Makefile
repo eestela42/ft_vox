@@ -1,56 +1,110 @@
-NAME = ft_vox
-CC = g++
+################################################################################
+#                               Filename output                                #
+################################################################################
 
-CFLAGS =
+NAME		=	ft_vox
 
+################################################################################
+#                               Sources filenames                              #
+################################################################################
+
+CPP_FILES = $(shell find $(SRCS_DIR) -name '*.cpp')
+C_FILES = $(shell find $(SRCS_DIR) -name '*.c')
+
+################################################################################
+#                         Sources and objects directories                      #
+################################################################################
+
+SRCS_DIR = srcs
+OBJS_DIR = objects-dependances
+
+################################################################################
+#                              Commands and arguments                          #
+################################################################################
+
+CC			=	g++
+CFLAGS = -Llibs -Iincludes -MMD -MP
 OPENGL = -lglfw3 -lGL -lX11
+RM			=	rm -rf
+
+################################################################################
+#                                 Defining colors                              #
+################################################################################
+
+_RED		=	\033[31m
+_GREEN		=	\033[32m
+_YELLOW		=	\033[33m
+_CYAN		=	\033[96m
+_NC			=	\033[0m
+
+################################################################################
+#                                  Dependances                                 #
+################################################################################
+
+CPP_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(CPP_OBJS))
+C_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(C_OBJS))
+
+$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.cpp
+	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
+	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
+
+$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.c
+	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
+	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
 
 
-CPP_GAME = 		Game.cpp					\
-				InputHandler.cpp
 
-CPP_TEXTURE = 	Texture.cpp					\
-				TextureLoader.cpp
+################################################################################
+#                                    Objects                                    #
+################################################################################
 
-CPP_VAO = 		VertexArrayObject.cpp		\
-				VertexArrayObjectHandler.cpp 
-
-CPP_WORLD = 	Chunk.cpp 					\
-				ChunkRLE.cpp						\
-				PerlinNoise.cpp
+CPP_OBJS = $(patsubst $(SRCS_DIR)/%.cpp,$(OBJS_DIR)/%.o,$(CPP_FILES))
+C_OBJS = $(patsubst $(SRCS_DIR)/%.c,$(OBJS_DIR)/%.o,$(C_FILES))
 
 
-CLASSES = 	$(addprefix Game/, $(CPP_GAME))			\
-			$(addprefix Texture/, $(CPP_TEXTURE))	\
-			$(addprefix VAO/, $(CPP_VAO))			\
-			$(addprefix World/, $(CPP_WORLD))		\
-			ElementBufferObject.cpp 				\
-			VertexBufferObject.cpp 					\
-			ShaderHandler.cpp						\
-			Shader.cpp								\
-			Window.cpp
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
+	@ echo "\t$(_YELLOW) compiling... $*.c$(_NC)"
+	@$(CC) $(CFLAGS) $(OPENGL) -c $< -o $@
+
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
+	@ echo "\t$(_YELLOW) compiling... $*.cpp$(_NC)"
+	@$(CC) $(CFLAGS) $(OPENGL) -c $< -o $@
+
+################################################################################
+#                                   Command                                    #
+################################################################################
+
+all: init $(NAME)
+
+init:
+	@ if test -f $(NAME);\
+		then echo "$(_CYAN)[program already created]$(_NC)";\
+		else \
+		echo "$(_YELLOW)[Initialize program]$(_NC)";\
+		$(shell mkdir -p $(sort $(dir $(CPP_OBJS))) $(sort $(dir $(C_OBJS)))) \
+	fi
 
 
-SRCS =	main.cpp		\
-		glad.c			\
-		stb_image.cpp
 
-SOURCES = 	$(addprefix srcs/classes/, $(CLASSES)) 		\
-			$(addprefix srcs/, $(SRCS))
-
-all: COMP
-
-COMP: $(SOURCES)
-	$(CC) $(CFLAGS) $(SOURCES) -Llibs -Iincludes $(OPENGL) -o $(NAME)
+$(NAME): $(CPP_OBJS) $(C_OBJS)
+	@ echo "\t$(_YELLOW)[Creating program]$(_NC)"
+	@$(CC) $(CFLAGS) $(CPP_OBJS) $(C_OBJS) $(OPENGL) -o $(NAME)
+	@ echo "$(_GREEN)[program created & ready]$(_NC)"
 
 clean:
-	rm -rf $(NAME)
+	echo "$(_RED)[cleaning up .out & objects files]"
+	@$(RM) $(OBJS_DIR)
+	@$(RM) $(DEPS_DIR)
 
 fclean: clean
-	rm -rf sources/classes/*.o
-	rm -rf sources/*.o
-
+	@ echo "$(_RED)[cleaning up .out, objects & library files]$(_NC)"
+	@$(RM) $(NAME)
 
 re: fclean all
 
+.SILENT:
+		all
+
 .PHONY: all clean fclean re
+
+-include $(DEP_FILES)

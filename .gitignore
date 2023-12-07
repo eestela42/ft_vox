@@ -1,3 +1,4 @@
 *.o
 ft_vox
 .vscode/
+objects-dependances/
