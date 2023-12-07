@@ -35,6 +35,9 @@ public :
 	ChunkRLE();
 	ChunkRLE(int posX, int posY);
 
+
+	void 					CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData,
+												int x, int y, int z, int offset, int offsetX, int offsetY);
 	bool					isFilled(int x, int y, int z) override;
 	u_int					GetRubanPos(int x, int y, int z);
 	void					loadChunk();

@@ -5,6 +5,8 @@ ChunkDefault::ChunkDefault() : Chunk(0, 0) {}
 ChunkDefault::ChunkDefault(u_int x, u_int y) : Chunk(x, y) {}
 
 void ChunkDefault::CreateCube(std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
+	
+	offset = vData.size() / 3;
 	vData.push_back(0 + x + offsetX); 
     vData.push_back(0 + y + offsetY); 
     vData.push_back(0 + z); 

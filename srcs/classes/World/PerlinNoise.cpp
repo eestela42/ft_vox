@@ -72,7 +72,7 @@ void	PerlinNoise::noise2d(int nWidth, int nheight, float *fSeed, int nOctaves, f
 				fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * fScale;
 				fScale = fScale / fBias;
 			}
-			fOutput[x + y * nWidth] = fNoise / fScaleAcc;
+			fOutput[x + y * nWidth] = std::abs(fNoise / fScaleAcc);
 			}
 	}
 }
