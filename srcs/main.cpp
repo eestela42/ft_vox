@@ -14,12 +14,10 @@ int main(int argc, char **argv) {
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 	std::vector<u_int> chunkMap;
-	for (int x = 0; x < 48; x++) {
-		for (int y = 0; y < 48; y++) {
+	for (int x = 0; x < game->GetRenderDistance() * 2 + 1; x++) {
+		for (int y = 0; y < game->GetRenderDistance() * 2 + 1; y++) {
 			std::cout << "Generating chunk " << x << " " << y << std::endl;
-			ChunkRLE *chunk = new ChunkRLE(x, y);
-			chunk->Generate();
-			chunk->CompileData();
+			Chunk *chunk = new Chunk(x, y);
 			VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(chunk->GetVertexData()), new ElementBufferObject(chunk->GetShapeAssemblyData()));
 			chunkMap.push_back(vertexArrayObjectHandler->AddVAO(VAO));
 			VAO->AddVertexAttribute(0, 3, 1.0f);
@@ -33,7 +31,7 @@ int main(int argc, char **argv) {
 
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 250.0f);
 		glm::mat4 matrix = glm::mat4(1.0f);
-		matrix = proj * glm::translate(matrix, game->GetCameraPosition()) * glm::toMat4(game->GetCameraQuaternion());
+		matrix = proj * game->GetCameraView();
 		shader->Setmat4("matrix", matrix);
 		for (auto const& x : chunkMap)
 		{

@@ -13,13 +13,25 @@ class Game : I_Input
 		Game();
 		~Game();
 
-		void 		SendKeys(u_char *keyState) override;
-		glm::quat 	GetCameraQuaternion() const;
-		glm::vec3 	GetCameraPosition() const;
+		void 		SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
+		glm::mat4	GetCameraView() const;
+
+		int			GetRenderDistance() const;
 	private:
-		glm::quat cameraQuaternion = glm::angleAxis(float(0), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -10.0f);
+		static glm::vec3 const cameraUp;
+		float yaw = -90;
+		float pitch = 0;
+		glm::vec3 cameraPosition = glm::vec3(0, 0, 0);
+		glm::vec3 cameraDirection = glm::vec3(	cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+												sin(glm::radians(pitch)),
+												sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+		glm::mat4 view = glm::lookAt(	cameraPosition,
+										cameraPosition + cameraDirection,
+										glm::vec3(0, 1, 0));
+		
+		int renderDistance = 5;
 		const float speed = 0.05f;
+		const float sensitivity = 0.05f;
 };
 
 #endif
