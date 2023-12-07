@@ -1,5 +1,9 @@
 #include <classes/World/ChunkRLE.hpp>
 #include <map>
+
+std::vector<std::vector<ChunkRLE*>>* ChunkRLE::loadedChunks = NULL;
+
+		/*****	2 - methods 		*****/
 void CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
 	
 	iData.push_back(0 + offset);
@@ -134,55 +138,65 @@ void CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iDat
 
 }
 
-u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int &pos, u_char direction)
+u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
 {
+
+	ChunkRLE* 				neighbours[4];
+
+	neighbours[0] = GetNeighbour(0);
+	neighbours[1] = GetNeighbour(1);
+	neighbours[2] = GetNeighbour(2);
+	neighbours[3] = GetNeighbour(3);
 	switch(direction) //pos du neighbour
 	{
 		case 0: //north
 		{
 			if (y >= sizeY-1){	//find north neighbour
-				if (!this->_neighbours[0])
+				if (!neighbours[0] || neighbours[0]->data == NULL)
 					return (NULL);
-			pos = calcX(pos) * 2; //NOT GOOD
-			return (this->_neighbours[0]->data);
+			pos = neighbours[0]->GetRubanPos(x, 0, z);
+			return (neighbours[0]->data);
 			}
-			// pos += sizeX * 2;
+			pos = GetRubanPos(x, y + 1, z);
 			break;
 		}
 		case 1: //east
 		{
 			if (x == sizeX - 1) //find east neighbour
 			{	
-				if (!this->_neighbours[1])
+				if (!neighbours[1] || neighbours[1]->data == NULL)
 					return (NULL);
-				pos = calcY(pos) * sizeX * 2;//NOT GOOD
-				return (this->_neighbours[1]->data);
+
+				pos = neighbours[1]->GetRubanPos(0, y, z);
+				return (neighbours[1]->data);
 			}
-			// pos += 2;
+			pos = GetRubanPos(x+1, y, z);
 			break;
 		}
 		case 2: //south
 		{
 			if (y == 0)
 			{	//find south neighbour
-				if (!this->_neighbours[2])
+				if (!neighbours[2] || neighbours[2]->data == NULL)
 					return (NULL);
-				pos = (sizeX * (sizeY - 1) + calcX(pos)) * 2;//NOT GOOD
-				return (this->_neighbours[2]->data);
+				
+				pos = neighbours[2]->GetRubanPos(x, sizeY - 1, z);
+				return (neighbours[2]->data);
 			}
-			// pos -= sizeX * 2;
+			pos = GetRubanPos(x, y-1, z);
 			break;
 		}
 		case 3: //west
 		{
 			if (x == 0)//find west neighbour
 			{
-				if (!this->_neighbours[3])
+				if (!neighbours[3] || neighbours[3]->data == NULL)
 					return (NULL);
-				pos = ((calcY(pos) + 1) * sizeX - 1) * 2;//NOT GOOD
-				return (this->_neighbours[3]->data);
+				
+				pos = neighbours[3]->GetRubanPos(sizeX - 1, y, z);
+				return (neighbours[3]->data);
 			}
-			// pos -= 2;
+			pos = GetRubanPos(x-1, y, z);
 			break;
 		}
 	}
@@ -229,6 +243,7 @@ void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
 
 void	ChunkRLE::CompileData()
 {
+	
 	int nbr_points = 0;
 	int pos = 0;
 	for (int y = 0; y < sizeY; y++) {
@@ -243,15 +258,17 @@ void	ChunkRLE::CompileData()
 		while (z < (sizeZ - 1)) //sur toute la hauteure
 		{
 			int z_max = z + data[pos + 1];
-			if (data[pos])
-			{
+			if (!z || (data[pos] && !data[pos - 2]))
+			{	//create bottom face
 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, nbr_points, posX * sizeX, posY * sizeY);
 				nbr_points += 4;
 			}
 			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
 			{
-				neighb_pos[neighb] = pos; // prends la pos dans data puis si data = voisin->data prends la pos (et si toujours dans data prend pose voisin dans data)
-				u_char* ruban = this->GetAdjacentRuban(x, y, neighb_pos[neighb], neighb);
+				neighb_pos[neighb] = pos; // prend la pos dans data puis si data = voisin->data prends la pos (et si toujours dans data prend pose voisin dans data)
+				u_char* ruban = this->GetAdjacentRuban(x, y, z, neighb_pos[neighb], neighb);
+
+
 				int END = z_max;
 				
 				while (neighb_z[neighb] < z_max) //tant que le voisin n'est pas plus haut que la fin du ruban
@@ -262,20 +279,20 @@ void	ChunkRLE::CompileData()
 						continue ;
 					}
 
-					int neigh_size;
+					int neighb_size;
 					if (ruban)
-						neigh_size = ruban[neighb_pos[neighb] + 1];
-					else
-						neigh_size = sizeZ - z;
+						neighb_size = ruban[neighb_pos[neighb] + 1];
+					else // if no neighbour we draw all the ruban anyway
+						neighb_size = sizeZ - z;
 
-					if ( neighb_over[neighb])
-						neigh_size =  neighb_over[neighb];
+					if (neighb_over[neighb]) // need to inspect more this
+						neighb_size =  neighb_over[neighb];
 
-					if (neighb_z[neighb] + neigh_size <= z_max)
-						END = neighb_z[neighb] + neigh_size;
+					if (neighb_z[neighb] + neighb_size <= z_max) 
+						END = neighb_z[neighb] + neighb_size;
 
 					for (int i = neighb_z[neighb]; i < END; i++)
-					{
+					{	//create side faces
 						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, nbr_points, posX * sizeX, posY * sizeY);
 						nbr_points += 4;
 					}
@@ -287,8 +304,8 @@ void	ChunkRLE::CompileData()
 				}
 			}
 			
-			if (data[pos] && z < sizeZ - 1 && data[pos +2] == 0)
-			{
+			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
+			{	//create top face
 				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_max-1, nbr_points, posX * sizeX, posY * sizeY);
 				nbr_points += 4;
 			}
@@ -297,9 +314,74 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
+
 }
 
 		/*****	1 - constructors 		*****/
+
+void	ChunkRLE::setRenderDistance(int renderDistance)
+{
+	std::vector<std::vector<ChunkRLE*>> *chunk = new std::vector<std::vector<ChunkRLE*>>();
+	chunk->resize(renderDistance * 2 + 1);
+	for (int x = 0; x < renderDistance * 2 + 1; x++)
+	{
+		(*chunk)[x].resize(renderDistance * 2 + 1);
+
+		for (int y = 0; y < renderDistance * 2 + 1; y++)
+			(*chunk)[x][y] = NULL;
+	}
+	loadedChunks = chunk;
+}
+
+void	ChunkRLE::loadChunk()
+{
+	int sizeLoaded = loadedChunks->size();
+	(*loadedChunks)[posX % sizeLoaded][posY % sizeLoaded] = this;
+
+
+}
+
+ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
+{
+
+	ChunkRLE*	neighbour = NULL;
+	
+	switch (cardinal)
+	{
+	case 0:
+		neighbour = (*loadedChunks)[posX % loadedChunks->size()][(posY + 1) % loadedChunks->size()];
+		if (neighbour && neighbour->posY == this->posY + 1)
+		{
+			return (neighbour);
+		}
+		return (NULL);
+	case 1:
+		neighbour = (*loadedChunks)[(posX + 1) % loadedChunks->size()][posY % loadedChunks->size()];
+		if (neighbour && neighbour->posX == this->posX+1)
+		{
+			return (neighbour);
+		}
+		if (neighbour)
+		return (NULL);
+	case 2:
+		neighbour = (*loadedChunks)[posX % loadedChunks->size()][(posY - 1) % loadedChunks->size()];
+		if (neighbour && neighbour->posY == this->posY - 1)
+		{
+			return (neighbour);
+		}
+		return (NULL);
+	case 3:
+		neighbour = (*loadedChunks)[(posX - 1) % loadedChunks->size()][posY % loadedChunks->size()];
+		if (neighbour && neighbour->posX == this->posX - 1)
+		{
+			return (neighbour);
+		}
+		return (NULL);
+	}
+	
+	return (NULL);
+	
+}
 
 ChunkRLE::~ChunkRLE()
 {
@@ -307,21 +389,20 @@ ChunkRLE::~ChunkRLE()
 
 ChunkRLE::ChunkRLE() : Chunk()
 {
-	this->_neighbours[0] = NULL;
-	this->_neighbours[1] = NULL;
-	this->_neighbours[2] = NULL;
-	this->_neighbours[3] = NULL;
 	this->data = NULL;
+	this->rubans_id = new u_int[256];
 }
 
-ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
+ChunkRLE::ChunkRLE(int posX, int posY)
 {
-	this->_neighbours[0] = NULL;
-	this->_neighbours[1] = NULL;
-	this->_neighbours[2] = NULL;
-	this->_neighbours[3] = NULL;
+	this->posX = posX;
+	this->posY = posY;
+
+	loadChunk();
 	this->data = NULL;
+	this->rubans_id = new u_int[256];
 }
+
 
 int ChunkRLE::calcX(int pos)
 {
@@ -333,18 +414,41 @@ int ChunkRLE::calcY(int pos)
 	return ((pos/2) / this->sizeX);
 }
 
+u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
+{
+	int ret = this->rubansIndexes[x][y];
+	int pos = 0;
+	// std::cout << "z = " << z << std::endl;
+	// std::cout << "sizeData = " << sizeData << std::endl;
+	while (pos <= z)
+	{
+		// std::cout << "in ret = " << ret << std::endl;
+		pos += this->data[ret + 1];
+		ret += 2;
+	}
+	if (ret >= sizeData)
+		ret = sizeData - 2;
+	// std::cout << "ruban pos " << pos << std::endl;
+	// std::cout << "ruban ret " << ret << std::endl;
+	return (ret - 2);
+}
+
 void 					ChunkRLE::Generate()
 {
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
 
-	int max_z = 254;
+	int max_z = 10;
 	for (int pos = 0; pos < sizeX * sizeY * 4; pos+=4)
 	{
+		rubansIndexes[pos / 4 % sizeX ][pos / 4 / sizeX] = pos;
+		this->rubans_id[pos/4] = pos;
 		data[pos] = 12;
 		data[pos + 1] = max_z;
 		data[pos + 2] = 0;
 		data[pos + 3] = (sizeZ - 1) - max_z;
 	}
+	this->sizeData = sizeX * sizeY * 4;
+	
 }
 
 void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
@@ -352,9 +456,9 @@ void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 {
 	std::vector<u_char> rubans;
 	rubans.resize(sizeX * sizeY * 2);
-	for (int x = 0; x < sizeX; x++)
+	for (int y = 0; y < sizeY; y++)
 	{
-		for (int y = 0; y < sizeY; y++)
+		for (int x = 0; x < sizeX; x++)
 		{
 			std::vector<u_char> objRubans;
 			for (int obj = 0; obj < positionList.size(); obj++) // trouver tous les rubans en cette pos
@@ -367,6 +471,7 @@ void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 						objRubans.push_back(sizeList[obj].z);
 				}
 			}
+			this->rubans_id[x * sizeY + y] = rubans.size();
 			int z = 0;
 			int filled = 0;
 			while (objRubans.size())

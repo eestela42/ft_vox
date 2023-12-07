@@ -17,18 +17,33 @@ class ChunkRLE : protected Chunk
 
 protected :
 
+	u_char* 				GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction);
 
-	u_char* 				GetAdjacentRuban(int x, int y, int &pos, u_char direction);
+	u_int* 					rubans_id;
+	
+	u_int 					rubansIndexes[16][16];
 
-	ChunkRLE* 				_neighbours[4]; // 0: North, 1: East, 2: South, 3: West
-
+	u_int 					sizeData = 0;
+  
 public :
+	static std::vector<std::vector<ChunkRLE*>>* loadedChunks;
 
 	static constexpr char * shaderName = (char*)"default";
+
+	static void 			setRenderDistance(int renderDistance);
 
 	~ChunkRLE();
 	ChunkRLE();
 	ChunkRLE(int posX, int posY);
+
+	u_int					GetRubanPos(int x, int y, int z);
+	void					loadChunk();
+
+	ChunkRLE*				GetNeighbour(int cardinal);
+
+
+
+	void					BindNeighbour(int direction, ChunkRLE* chunk);
 	
 	int 					calcX(int pos);
 	int 					calcY(int pos);
