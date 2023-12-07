@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
 	std::vector<ChunkRLE*> chunks;
 
-	int size = 5;
+	int size = 1;
 	ChunkRLE::setRenderDistance((size - 1)/2);
 	for (int x = 0; x < size; x++) {
 		for (int y = 0; y < size; y++) {
