@@ -9,7 +9,7 @@ class ChunkDefault : public Chunk
 		ChunkDefault(u_int x, u_int y);
 		bool isFilled(int x, int y, int z) override;
 	private:
-		void CreateCube(std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY);
+		void CreateCube(u_char faces, int x, int y, int z, int offsetX, int offsetY);
 		
 		void CompileData() override;
 		void Generate() override;

@@ -38,8 +38,6 @@ protected :
 	
 	bool IsGenerated();
 
-	virtual bool isFilled(int x, int y, int z) = 0;
-
 public :
 	/** @brief Not yet ready to be sized down dynamically without neighbor loss issues*/
 	static void setRenderDistance(int renderDistance);
@@ -48,6 +46,8 @@ public :
 	static u_int const sizeY = 16;
 	static u_int const sizeZ = 256;
 
+	virtual bool isFilled(int x, int y, int z) = 0;
+	bool IsRealNeighbor(int chunkX, int chunkY);
 	virtual void PublicGenerate() final;
 	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
 	virtual void PublicGenerate(u_int seed) final;

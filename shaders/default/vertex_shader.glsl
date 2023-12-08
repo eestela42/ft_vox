@@ -2,12 +2,12 @@
 
 layout (location = 0) in vec3 aPos;
 
-out float vertexID;
+out vec4 vertexID;
 
 uniform mat4 matrix;
 
 void main()
 {
-	vertexID = gl_VertexID;
+	vertexID = vec4(float(gl_VertexID % 256) / 256, float(gl_VertexID % (256 * 256) / 256) / 256 , float(gl_VertexID / (256 * 256)) / 256, 1);
     gl_Position = matrix * vec4(aPos.x, aPos.z, -aPos.y, 1.0);
 }

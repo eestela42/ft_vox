@@ -57,6 +57,13 @@ void	Chunk::setRenderDistance(int renderDistance)
 	}
 }
 
+bool Chunk::IsRealNeighbor(int chunkX, int chunkY) {
+	if ((std::abs(chunkX - posX) == 1 && chunkY == posY) || (std::abs(chunkY - posY) == 1 && chunkX == posX)) {
+		return true;
+	}
+	return false;
+}
+
 Chunk *Chunk::GetNeighbor(int x, int y) {
 	return (loadedChunks[x % loadedChunks.size()][y % loadedChunks.size()]);
 }
