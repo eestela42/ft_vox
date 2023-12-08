@@ -25,6 +25,13 @@ void VertexArrayObjectHandler::Bind(u_int VAO) {
 	}
 }
 
+void VertexArrayObjectHandler::Unbind() {
+	if (activeVAO) {
+		vaoList[activeVAO - 1]->Unbind();
+	}
+	glBindVertexArray(0);
+}
+
 VertexArrayObject *VertexArrayObjectHandler::GetVAO(u_int VAO) {
 	return (vaoList[VAO - 1]);
 }

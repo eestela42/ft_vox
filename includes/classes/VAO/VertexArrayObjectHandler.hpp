@@ -11,6 +11,7 @@ public:
 	VertexArrayObject *GetVAO(u_int VAO);
 	u_int AddVAO(VertexArrayObject*);
 	void Bind(u_int VAO);
+	void Unbind();
 private:
 	std::vector<VertexArrayObject*> vaoList;
 	std::vector<u_int> vaoListIndices;

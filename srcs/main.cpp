@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
 			VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(chunks[x + y * size]->GetVertexData()), new ElementBufferObject(chunks[x + y * size]->GetShapeAssemblyData()));
 			chunkMap.push_back(vertexArrayObjectHandler->AddVAO(VAO));
 			VAO->AddVertexAttribute(0, 3, 1.0f);
+			vertexArrayObjectHandler->Unbind();
 		}
 	}
 
