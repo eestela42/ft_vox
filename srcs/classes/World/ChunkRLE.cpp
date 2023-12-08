@@ -453,40 +453,42 @@ u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
 
 void 					ChunkRLE::Generate()
 {
-	PerlinNoise addrNoise;
+	u_int seed = 63854;
+
+	PerlinNoise addrNoise(seed);
 	PerlinNoise *noise = &addrNoise;
 
-    int size_p = 512;
-	float addrSeed[size_p*size_p];
-	float addrOutput[size_p*size_p];
+	PerlinNoise addrNoise2(seed + 13);
+	PerlinNoise *noise2 = &addrNoise2;
 
-    float *fSeed = addrSeed;
-    float *fOutput = addrOutput;
+	PerlinNoise addrNoise3(seed + 17);
+	PerlinNoise *noise3 = &addrNoise3;
 
-    u_int seed = 634384;
-    std::srand(seed);
-    for (int x = 0; x < size_p; x++)
-        for (int y = 0; y < size_p; y++)
-            fSeed[x + y * size_p] = (float)(std::rand() - posX * posY) / (float)RAND_MAX;
-
-    noise->noise2d(size_p, size_p, fSeed, 5, 2.0f, fOutput);
-
-	int zero = (posX * sizeX + posY * sizeY * sizeX) % size_p;
 
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
 
 	int max_z = 5;
 	int pos = 0;
+
+	int x_tab = 0;
+	int y_tab = 0;
 	for (int y = 0; y < sizeY; y++){
 	for (int x = 0; x < sizeX; x++)
 	{
 		rubansIndexes[x][y] = pos;
 		this->rubans_id[pos/4] = pos;
-		
+		double p_x = (double)(posX * sizeX + x)/((double)(sizeX * 7));
+		double p_y = (double)(posY * sizeY + y)/((double)(sizeY * 7));
+
+
+		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) *16)
+							+ (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 29)
+							+ (int)(noise2->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 29);
+
 		data[pos] = 12;
-		data[pos + 1] = 9 + (int)(6 * fOutput[zero + pos/4]) % 255;
+		data[pos + 1] = outPut % 255;
 		data[pos + 2] = 0;
-		data[pos + 3] = (sizeZ - 1) -  (9 +(int)(6 * fOutput[zero + pos/4]) % 255);
+		data[pos + 3] = (sizeZ - 1) -  outPut % 255;
 		
 		pos += 4;
 	}
