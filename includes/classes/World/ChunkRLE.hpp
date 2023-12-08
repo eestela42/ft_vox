@@ -54,6 +54,8 @@ public :
 	void 					CompileData() override;
 
 	void 					Generate() override;
+	void 					Generate(float *gen, int start);
+
 	void 					Generate(std::vector<glm::ivec3> positionList,
 											std::vector<glm::ivec3> sizeList) override;
 	void 					Generate(u_int seed) override;
