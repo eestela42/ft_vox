@@ -29,7 +29,7 @@ class Game : I_Input
 										cameraPosition + cameraDirection,
 										glm::vec3(0, 1, 0));
 		
-		int renderDistance = 1;
+		int renderDistance = 5;
 		const float speed = 0.05f;
 		const float sensitivity = 0.05f;
 };

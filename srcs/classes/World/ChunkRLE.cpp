@@ -27,7 +27,7 @@ void ChunkRLE::CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_
 	{
 		case 0 :
 		{
-			// std::cout << "north chunk " << posX << " " << posY << " block " << x << " " << y << " " << z << std::endl;
+			// std::cout << "----north chunk " << posX << " " << posY << " block " << x << " " << y << " " << z << std::endl;
 			vData.push_back(0 + x + offsetX); 
 			vData.push_back(1 + y + offsetY); 
 			vData.push_back(0 + z);
@@ -165,6 +165,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 
 	ChunkRLE* 				neighbours;
 
+
 	switch(direction) //pos du neighbour
 	{
 		case 0: //north
@@ -257,7 +258,7 @@ void	ChunkRLE::CompileData()
 	
 	int nbr_points = 0; // pas bien
 	int pos = 0;
-	// std::cout << "----------------------------------------CHUNK " << posX << " " << posY << std::endl;
+	std::cout << "----------------------------------------COMPILE CHUNK " << posX << " " << posY << std::endl;
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
 		// std::cout << "----block x " << x << " y " << y << std::endl;
@@ -269,8 +270,6 @@ void	ChunkRLE::CompileData()
 		int neighb_over[4] = {0, 0, 0, 0};
 		while (z < (sizeZ - 1)) //sur toute la hauteure
 		{
-			std::cout << "------chunk " << posX << " " << posY << " block " << x << " " << y << " " << z << std::endl;
-			std::cout << "----z = data[pos + 1] " << z << " = " << (int)data[pos + 1] << std::endl;
 			int z_max = z + data[pos + 1];
 			if (!z || (data[pos] && !data[pos - 2]))
 			{	//create bottom face
@@ -279,7 +278,6 @@ void	ChunkRLE::CompileData()
 			}
 			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
 			{
-				std::cout << "--get adj x " << x << " y " << y << " z " << z << " neighb " << (int)neighb << std::endl;
 				u_char* ruban = this->GetAdjacentRuban(x, y, z, neighb_pos[neighb], neighb);
 
 				int END = z_max;
@@ -410,30 +408,32 @@ u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
 {
 	int ret = this->rubansIndexes[x][y];
 	int pos = 0;
-	std::cout << "x = " << x << " y = " << y << " z = " << z << std::endl;
-	std::cout << "ret = " << ret << std::endl;
-	std::cout << "sizeData = " << sizeData << std::endl;
+	// std::cout << "x = " << x << " y = " << y << " z = " << z << std::endl;
+	// std::cout << "ret = " << ret << std::endl;
+	// std::cout << "sizeData = " << sizeData << std::endl;
 	while (pos <= z && ret < sizeData)
 	{
-		std::cout << "in ret = " << ret << std::endl;
+		// std::cout << "in ret = " << ret << std::endl;
 		pos += this->data[ret + 1];
 		ret += 2;
 	}
 	if (ret >= sizeData)
 	{
-		std::cout << "OVERFLOW " << x << " " << y << " " << z  << std::endl;
+		// std::cout << "OVERFLOW " << x << " " << y << " " << z  << std::endl;
 		ret = sizeData;
 	}
-	std::cout << "ruban pos " << pos << std::endl;
-	std::cout << "ruban ret " << ret << std::endl;
+	// std::cout << "ruban pos " << pos << std::endl;
+	// std::cout << "ruban ret " << ret << std::endl;
 	return (ret - 2);
 }
 
 void 					ChunkRLE::Generate()
 {
+		std::cout << "----------------------------------------GEN " << posX << " " << posY << std::endl;
+
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
 
-	int max_z = 10;
+	int max_z = 200;
 	for (int pos = 0; pos < sizeX * sizeY * 4; pos+=4)
 	{
 		// if (pos == 25*4)
