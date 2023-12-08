@@ -9,7 +9,6 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
-	std::cout << "Generating chunk " << posX << " " << posY << std::endl;
 	isGenerated = true;
 	Generate();
 	isCompiled = false;

@@ -3,7 +3,6 @@
 
 // Parameterized constructor
 ElementBufferObject::ElementBufferObject(const std::vector<unsigned int>& indices){
-	std::cout << "indices size : " << indices.size() << std::endl;
 	indicesSize = indices.size() * sizeof(indices[0]);
     glGenBuffers(1, &index);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);

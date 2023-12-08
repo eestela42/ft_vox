@@ -17,7 +17,7 @@ C_FILES = $(shell find $(SRCS_DIR) -name '*.c')
 
 SRCS_DIR = srcs
 OBJS_DIR = objects-dependances
-DEPS_DIR = objects-dependances
+DEPS_DIR = $(OBJS_DIR)
 
 ################################################################################
 #                              Commands and arguments                          #
@@ -39,29 +39,13 @@ _CYAN		=	\033[96m
 _NC			=	\033[0m
 
 ################################################################################
-#                                  Dependances                                 #
-################################################################################
-
-CPP_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(CPP_OBJS))
-C_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(C_OBJS))
-
-$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.cpp
-	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
-	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
-
-$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.c
-	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
-	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
-
-
-
-################################################################################
 #                                    Objects                                    #
 ################################################################################
 
 CPP_OBJS = $(patsubst $(SRCS_DIR)/%.cpp,$(OBJS_DIR)/%.o,$(CPP_FILES))
 C_OBJS = $(patsubst $(SRCS_DIR)/%.c,$(OBJS_DIR)/%.o,$(C_FILES))
 
+$(shell mkdir -p $(sort $(dir $(CPP_OBJS))) $(sort $(dir $(C_OBJS))))
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@ echo "\t$(_YELLOW) compiling... $*.c$(_NC)"
@@ -70,6 +54,24 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@ echo "\t$(_YELLOW) compiling... $*.cpp$(_NC)"
 	@$(CC) $(CFLAGS) $(OPENGL) -c $< -o $@
+
+################################################################################
+#                                  Dependances                                 #
+################################################################################
+
+CPP_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(CPP_OBJS))
+C_DEPS = $(patsubst $(OBJS_DIR)/%.o,$(DEPS_DIR)/%.d,$(C_OBJS))
+DEP_FILES = $(CPP_DEPS) $(C_DEPS)
+
+$(shell mkdir -p $(sort $(dir $(DEP_FILES))))
+
+$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.cpp | $(DEPS_DIR)
+	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
+	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
+
+$(DEPS_DIR)/%.d: $(SRCS_DIR)/%.c | $(DEPS_DIR)
+	@ echo "\t$(_YELLOW) compiling... $*.d$(_NC)"
+	@$(CC) $(CFLAGS) -MM $< -MT $(@:.d=.o) -MF $@
 
 ################################################################################
 #                                   Command                                    #
@@ -84,8 +86,6 @@ init:
 		echo "$(_YELLOW)[Initialize program]$(_NC)";\
 		$(shell mkdir -p $(sort $(dir $(CPP_OBJS))) $(sort $(dir $(C_OBJS)))) \
 	fi
-
-
 
 $(NAME): $(CPP_OBJS) $(C_OBJS)
 	@ echo "\t$(_YELLOW)[Creating program]$(_NC)"
@@ -107,7 +107,5 @@ re: fclean all
 		all
 
 .PHONY: all clean fclean re
-
-DEP_FILES = $(CPP_DEPS) $(C_DEPS)
 
 -include $(DEP_FILES)

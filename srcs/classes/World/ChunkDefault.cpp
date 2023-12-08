@@ -90,7 +90,6 @@ void ChunkDefault::CreateCube(std::vector<float> &vData, std::vector<u_int> &iDa
 }
 
 void ChunkDefault::CompileData() {
-	std::cout << "xxxxxxxxDEFAUT COMP DATA" << std::endl;
 	for (int z = 0; z < sizeZ; z++) {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {

@@ -144,7 +144,6 @@ void ChunkRLE::CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_
 			return;
 		}
 	}
-	std::cout << "ERROR: wrong face type" << std::endl;
 }
 
 /* 
@@ -258,7 +257,6 @@ void	ChunkRLE::CompileData()
 	
 	int nbr_points = 0; // pas bien
 	int pos = 0;
-	std::cout << "----------------------------------------COMPILE CHUNK " << posX << " " << posY << std::endl;
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
 		// std::cout << "----block x " << x << " y " << y << std::endl;
@@ -327,7 +325,6 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
-	std::cout << "--- " << posX << " " << posY <<  "size points " << nbr_points << " veretxes" << std::endl;
 
 }
 
@@ -429,7 +426,6 @@ u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
 
 void 					ChunkRLE::Generate()
 {
-		std::cout << "----------------------------------------GEN " << posX << " " << posY << std::endl;
 
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
 
