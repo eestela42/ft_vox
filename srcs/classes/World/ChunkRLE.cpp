@@ -9,53 +9,27 @@ void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char ori
 {
 	for (char i = 0; i < 4; i++)
 	{
-		u_int data[3];
-		for (int i = 0; i < 3; i++)
-			data[i] = 0;
+		vertexes.push_back(posX);
+		vertexes.push_back(posY);
+		vertexes.push_back(pos);
+		vertexes.push_back(orientation);
+		vertexes.push_back(type);
+		
+		float zero_texture[2] = {0.0, 0.0};
 
-		data[0] = this->posX << 8;
-		data[0] += (this->posY >> 16) & 0x000000FF;
-		data[1] = (this->posY & 0x0000FFFF) << 16;
-		data[1] += (pos >> 2) & 0x0000FFFF;
-		int tmp = 0;
-		tmp = (orientation << 8) + type;
-		data[2] = tmp << 14;
-		data[2] += pos << 30;
-		//faire les casts
+		float size_texture = 128;
+		float width_Texture = 2048;
 
-		float outData[3];
-		// std::cout << "data[0] : " << data[0] << std::endl;
+		float tmp = ((type - 1) * size_texture) / width_Texture;
+		zero_texture[0] = tmp - floor(tmp);
+		zero_texture[0] = tmp / width_Texture;
 
-		vertexes.push_back(data[0]);
-		vertexes.push_back(data[1]);
-		vertexes.push_back(data[2]);
-
-		int data1 = data[0];
-		int data2 = data[1];
-		int data3 = data[2];
-
-		int chunk_x = 0;
-		int chunk_y = 0;
-		int pos = 0;
-		int face = 0;
-		int type = 0;
-		int point = 0;
-		chunk_x = data1 >> 8;
-		chunk_y = (data1 << 16) & 0x00FF0000;
-		chunk_y = (data2 >> 16) & 0x0000FFFF; 
-		pos = (data2 & 0x0000FFFF) << 2;
-		pos += (data3 & 0xC0000000) >> 30;
-		face = (data3 >> 22) & 0x000000FF;
-		type = (data3 >> 14) & 0x000000FF;
-
-
-		// std::cout << "data[0] : " << data[0] << std::endl;
 	}
 }
 
 void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
 	
-	offset = vData.size() / 3;
+	offset = vData.size() / 5;
 
 	iData.push_back(0 + offset);
     iData.push_back(1 + offset);
@@ -72,6 +46,7 @@ void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vect
 	int vx = pos % sizeX;
 	int vy = (pos % (sizeX * sizeY)) / sizeY;
 	int vz = pos / (sizeX * sizeY);
+	
 
 	createPointVertex(vData, pos, orientation, type);
 
@@ -275,13 +250,6 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
-			std::cout << " ----in compile data \n";
-
-	for (int i = 0; i < 5; i++)
-	{
-		std::cout << vertexData[i] << " ";
-	}
-	std::cout << std::endl;
 }
 
 		/*****	1 - constructors 		*****/
@@ -438,14 +406,14 @@ void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
 		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 12));
 
 
-		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 8)
-							// + (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 14)
-							+ (int)(noise2->newNoise2d(5 * p_x, 5 * p_y, 0.65) * 9);
+		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 54)
+							+ (int)(noise2->newNoise2d(16.23 * p_x, 75.59 * p_y, 0.65) * 6)
+							+ (int)(noise2->newNoise2d(5 * p_x, 5 * p_y, 0.65) * 36);
 
-		data[pos] = pos % 255;
-		data[pos + 1] = outPut % 255;
+		data[pos] = (outPut * 7) % 255 ;
+		data[pos + 1] = outPut % 255 + 1;
 		data[pos + 2] = 0;
-		data[pos + 3] = (sizeZ - 1) -  outPut % 255;
+		data[pos + 3] = sizeZ -  (outPut % 255);
 		
 		pos += 4;
 	}

@@ -29,8 +29,8 @@ class Game : I_Input
 										cameraPosition + cameraDirection,
 										glm::vec3(0, 1, 0));
 		
-		int renderDistance = 2;
-		const float speed = 0.10f;
+		int renderDistance = 10;
+		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
 };
 

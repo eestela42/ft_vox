@@ -41,7 +41,6 @@ void VertexArrayObject::AddVertexAttribute(u_int location, u_int amount, T value
 	}
 	GLenum glType = GL_FLOAT;
 	if (typeid(valueTemplate) == typeid(int)) {
-		std::cout << "use int\n";
 		glType = GL_INT;
 	}
 	locationList.push_back(glm::uvec4(location, amount, sizeof(valueTemplate), glType));
@@ -51,7 +50,6 @@ void VertexArrayObject::AddVertexAttribute(u_int location, u_int amount, T value
     int tempStride = 0;
     for (std::vector<glm::uvec4>::iterator iterator = locationList.begin(); iterator != locationList.end(); iterator++) {
 		if (iterator->w == GL_FLOAT) {
-			std::cout << "FLOAT AAAA" << std::endl;
 			glVertexAttribPointer(iterator->x, iterator->y, iterator->w, GL_FALSE, totalStride, (void *)(u_long)tempStride);
 		}
 		else if (iterator->w == GL_INT) {

@@ -1,9 +1,9 @@
 #version 460 core
-layout (location = 0) in int data1; // 3 byes
-layout (location = 1) in int data2; // 3 byes
-layout (location = 2) in int data3; // 10 bits = 2 bytes + 2 bits
- // 2 bytes
-
+layout (location = 0) in int chunk_x; 
+layout (location = 1) in int chunk_y; 
+layout (location = 2) in int pos; 
+layout (location = 3) in int face; 
+layout (location = 4) in int type; 
 
 out vec2 TexCoord;
 out float vertexID;
@@ -19,23 +19,10 @@ uniform mat4 matrix;
 
 void main()
 {
-
-
-	int chunk_x = 0;
-	int chunk_y = 0;
-	int pos = 0;
-	int face = 0;
-	int type = 0;
+	
 	int point = 0;
 	point = gl_VertexID % 4;
-//XXXY YYPP P0FT
-	chunk_x = data1 >> 8;
-	chunk_y = (data1 << 16) & 0x00FF0000;
-	chunk_y = (data2 >> 16) & 0x0000FFFF; 
-	pos = (data2 & 0x0000FFFF) << 2;
-	pos += (data3 & 0xC0000000) >> 30;
-	face = (data3 >> 22) & 0x000000FF;
-	type = (data3 >> 14) & 0x000000FF;
+
 
 	vec2 zero_texture = vec2(0.0, 0.0);
 
@@ -135,7 +122,6 @@ void main()
 	newPos.y = z + points[point].y;
 	newPos.z = y + points[point].z;
 	
-	newPos.y = newPos.y;
 
 	gl_Position = matrix * vec4(newPos, 1.0);
 	

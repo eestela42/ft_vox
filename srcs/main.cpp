@@ -64,6 +64,8 @@ int main(int argc, char **argv) {
 			VAO->AddVertexAttribute(0, 1, (int)1);
 			VAO->AddVertexAttribute(1, 1, (int)1);
 			VAO->AddVertexAttribute(2, 1, (int)1);
+			VAO->AddVertexAttribute(3, 1, (int)1);
+			VAO->AddVertexAttribute(4, 1, (int)1);
 			vertexArrayObjectHandler->Unbind();
 		}
 	}
