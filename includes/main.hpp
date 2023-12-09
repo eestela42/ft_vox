@@ -25,6 +25,7 @@
 		/*****	 Texture	*****/
 
 # include <classes/Texture/TextureLoader.hpp>
+# include <classes/Texture/Texture.hpp>
 
 		/*****	 VAO		*****/		
 

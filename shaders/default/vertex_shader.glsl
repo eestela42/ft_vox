@@ -3,7 +3,6 @@
 layout (location = 0) in vec3 aPos;
 
 out float vertexID;
-
 uniform mat4 matrix;
 
 void main()

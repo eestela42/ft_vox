@@ -5,7 +5,7 @@
 
 class VertexBufferObject {
 public:
-    VertexBufferObject(const std::vector<float>& vertices);
+    VertexBufferObject(const std::vector<int>& vertices);
 
 	void Bind();
 	void DeleteBuffers();

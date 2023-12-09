@@ -1,4 +1,5 @@
 #include <classes/World/Chunk.hpp>
+#include <classes/World/PerlinNoise.hpp>
 
 std::vector<std::vector<Chunk*>> Chunk::loadedChunks;
 
@@ -11,6 +12,12 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 void Chunk::PublicGenerate() {
 	isGenerated = true;
 	Generate();
+	isCompiled = false;
+}
+
+void Chunk::PublicGenerateTest(PerlinNoise *noise, PerlinNoise *noise2){
+	isGenerated = true;
+	GenerateTest(noise, noise2);
 	isCompiled = false;
 }
 
@@ -105,7 +112,7 @@ bool Chunk::DidUpdate() {
 	return didUpdate;
 }
 
-std::vector<float>&	Chunk::GetVertexData() {
+std::vector<int>&	Chunk::GetVertexData() {
 	SetReady();
 	didUpdate = false;
 	return vertexData;

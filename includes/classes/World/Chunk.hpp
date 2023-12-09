@@ -6,6 +6,8 @@
 #include <vector>
 #include <cmath>
 #include <glm/glm.hpp>
+#include <classes/World/PerlinNoise.hpp>
+
 
 
 class Chunk
@@ -22,6 +24,7 @@ private:
 	void loadChunk();
 	virtual void CompileData() = 0;
 	virtual void Generate() = 0;
+	virtual void GenerateTest(PerlinNoise *noise, PerlinNoise *noise2) = 0;
 	virtual void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) = 0;
 	virtual void Generate(u_int seed) = 0;
 protected :
@@ -31,7 +34,7 @@ protected :
 	
 	Chunk* neighborChunks[4] = {0};
 	u_char *data = (u_char*)""; //Warning, this will cause segfault if modified before instantiation
-	std::vector<float> vertexData;
+	std::vector<int> vertexData;
 	std::vector<u_int> shapeAssemblyData;
 	int posX;
 	int posY;
@@ -49,10 +52,11 @@ public :
 	static u_int const sizeZ = 256;
 
 	virtual void PublicGenerate() final;
+	virtual void PublicGenerateTest(PerlinNoise *noise, PerlinNoise *noise2);
 	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
 	virtual void PublicGenerate(u_int seed) final;
 
-	virtual std::vector<float>&	GetVertexData() final;
+	virtual std::vector<int>&	GetVertexData() final;
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
 	virtual bool DidUpdate() final;
 

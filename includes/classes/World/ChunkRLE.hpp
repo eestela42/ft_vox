@@ -28,16 +28,17 @@ protected :
 public :
 
 
-	static constexpr char * shaderName = (char*)"default";
+	static constexpr char * shaderName = (char*)"RLE";
 
 
 	~ChunkRLE();
 	ChunkRLE();
 	ChunkRLE(int posX, int posY);
 
+	void 					createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type);
 
-	void 					CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData,
-												int x, int y, int z, int offset, int offsetX, int offsetY);
+	void 					CreateFaceRLE(int oreientation, std::vector<int> &vData, std::vector<u_int> &iData,
+												int x, int y, int z, int offset, u_char type);
 	bool					isFilled(int x, int y, int z) override;
 	u_int					GetRubanPos(int x, int y, int z);
 	void					loadChunk();
@@ -54,6 +55,7 @@ public :
 	void 					CompileData() override;
 
 	void 					Generate() override;
+	void 					GenerateTest(PerlinNoise *noise, PerlinNoise *noise2);
 	void 					Generate(float *gen, int start);
 
 	void 					Generate(std::vector<glm::ivec3> positionList,

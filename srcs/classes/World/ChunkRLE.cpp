@@ -1,9 +1,59 @@
 #include <classes/World/ChunkRLE.hpp>
 #include <map>
 #include <classes/World/PerlinNoise.hpp>
+#include <iostream>
+#include <cstring>
 
 		/*****	2 - methods 		*****/
-void ChunkRLE::CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
+void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
+{
+	for (char i = 0; i < 4; i++)
+	{
+		u_int data[3];
+		for (int i = 0; i < 3; i++)
+			data[i] = 0;
+
+		data[0] = this->posX << 8;
+		data[0] += (this->posY >> 16) & 0x000000FF;
+		data[1] = (this->posY & 0x0000FFFF) << 16;
+		data[1] += (pos >> 2) & 0x0000FFFF;
+		int tmp = 0;
+		tmp = (orientation << 8) + type;
+		data[2] = tmp << 14;
+		data[2] += pos << 30;
+		//faire les casts
+
+		float outData[3];
+		// std::cout << "data[0] : " << data[0] << std::endl;
+
+		vertexes.push_back(data[0]);
+		vertexes.push_back(data[1]);
+		vertexes.push_back(data[2]);
+
+		int data1 = data[0];
+		int data2 = data[1];
+		int data3 = data[2];
+
+		int chunk_x = 0;
+		int chunk_y = 0;
+		int pos = 0;
+		int face = 0;
+		int type = 0;
+		int point = 0;
+		chunk_x = data1 >> 8;
+		chunk_y = (data1 << 16) & 0x00FF0000;
+		chunk_y = (data2 >> 16) & 0x0000FFFF; 
+		pos = (data2 & 0x0000FFFF) << 2;
+		pos += (data3 & 0xC0000000) >> 30;
+		face = (data3 >> 22) & 0x000000FF;
+		type = (data3 >> 14) & 0x000000FF;
+
+
+		// std::cout << "data[0] : " << data[0] << std::endl;
+	}
+}
+
+void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
 	
 	offset = vData.size() / 3;
 
@@ -16,126 +66,16 @@ void ChunkRLE::CreateFaceRLE(int type, std::vector<float> &vData, std::vector<u_
     iData.push_back(3 + offset);
 
 	// 0: north 1: east 2: south 3: west 4: top 5: bottom
-	switch (type)
-	{
-		case 0 :
-		{
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(0 + z);
 
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(1 + z); 
 
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(1 + z); 
+	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
+	int vx = pos % sizeX;
+	int vy = (pos % (sizeX * sizeY)) / sizeY;
+	int vz = pos / (sizeX * sizeY);
 
-			vData.push_back(1 + x + offsetX);
-			vData.push_back(1 + y + offsetY);
-			vData.push_back(0 + z);
-			
-			return;
-		}
-		case 1 :
-		{
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(1 + z);
+	createPointVertex(vData, pos, orientation, type);
 
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(1 + x + offsetX);
-			vData.push_back(1 + y + offsetY);
-			vData.push_back(1 + z);
-			return;
-		}
-		case 2 :
-		{
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(0 + z);
-
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(1 + z); 
-
-			vData.push_back(0 + x + offsetX);
-			vData.push_back(0 + y + offsetY);
-			vData.push_back(1 + z);
-			return;
-		}
-		case 3 :
-		{
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(1 + z);
-
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(0 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(0 + x + offsetX);
-			vData.push_back(1 + y + offsetY);
-			vData.push_back(1 + z);
-			return;
-		}
-		case 4 :
-		{
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(0 + y + offsetY);
-			vData.push_back(0 + z);
-
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(0 + z); 
-
-			vData.push_back(1 + x + offsetX);
-			vData.push_back(0 + y + offsetY);
-			vData.push_back(0 + z);
-			
-			return;
-		}
-		case 5 :
-		{
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(0 + y + offsetY);
-			vData.push_back(1 + z);
-
-			vData.push_back(0 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(1 + z); 
-
-			vData.push_back(1 + x + offsetX); 
-			vData.push_back(1 + y + offsetY); 
-			vData.push_back(1 + z); 
-
-			vData.push_back(1 + x + offsetX);
-			vData.push_back(0 + y + offsetY);
-			vData.push_back(1 + z);
-
-			return;
-		}
-	}
+	
 }
 
 /* 
@@ -272,7 +212,7 @@ void	ChunkRLE::CompileData()
 			int z_end = z + data[pos + 1];
 			if (!z || (data[pos] && !data[pos]))
 			{	//create bottom face
-				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), posX * sizeX, posY * sizeY);
+				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
 				nbr_points += 4;
 			}
 			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
@@ -318,17 +258,16 @@ void	ChunkRLE::CompileData()
 
 					for (; to_draw--; i++)
 					{	//create side faces
-						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, vertexData.size(), posX * sizeX, posY * sizeY);
+						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, vertexData.size(), data[pos]);
 						nbr_points += 4;
 					}
 					
 					//end while
 				}
 			}
-			
 			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
 			{	//create top face
-				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end-1, vertexData.size(), posX * sizeX, posY * sizeY);
+				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end-1, vertexData.size(), data[pos]);
 				nbr_points += 4;
 			}
 			pos += 2;
@@ -336,7 +275,13 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
+			std::cout << " ----in compile data \n";
 
+	for (int i = 0; i < 5; i++)
+	{
+		std::cout << vertexData[i] << " ";
+	}
+	std::cout << std::endl;
 }
 
 		/*****	1 - constructors 		*****/
@@ -426,34 +371,10 @@ u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
 	return (pos - 2);
 }
 
-// void 					ChunkRLE::Generate()
-// {
-
-// 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
-
-// 	int max_z = 5;
-// 	int pos = 0;
-// 	for (int y = 0; y < sizeY; y++){
-// 	for (int x = 0; x < sizeX; x++)
-// 	{
-// 		rubansIndexes[x][y] = pos;
-// 		this->rubans_id[pos/4] = pos;
-		
-// 		data[pos] = 12;
-// 		data[pos + 1] = (max_z * ((posX + posY) % 34 + 1)) % 255;
-// 		data[pos + 2] = 0;
-// 		data[pos + 3] = (sizeZ - 1) -  (max_z * ((posX + posY) % 34 + 1)) % 255;
-		
-// 		pos += 4;
-// 	}
-// 	}
-// 	this->sizeData = sizeX * sizeY * 4;
-	
-// }
 
 void 					ChunkRLE::Generate()
 {
-	u_int seed = 63854;
+	u_int seed = 988456;
 
 	PerlinNoise addrNoise(seed);
 	PerlinNoise *noise = &addrNoise;
@@ -477,13 +398,13 @@ void 					ChunkRLE::Generate()
 	{
 		rubansIndexes[x][y] = pos;
 		this->rubans_id[pos/4] = pos;
-		double p_x = (double)(posX * sizeX + x)/((double)(sizeX * 7));
-		double p_y = (double)(posY * sizeY + y)/((double)(sizeY * 7));
+		double p_x = (double)((posX * sizeX + x))/((double)(sizeX * 7));
+		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 7));
 
 
-		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) *16)
-							+ (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 29)
-							+ (int)(noise2->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 29);
+		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 15)
+							+ (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 14)
+							+ (int)(noise2->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 16);
 
 		data[pos] = 12;
 		data[pos + 1] = outPut % 255;
@@ -496,6 +417,43 @@ void 					ChunkRLE::Generate()
 	this->sizeData = sizeX * sizeY * 4;
 	
 }
+
+void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
+{
+	u_int seed = 988456;
+
+	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
+
+	int max_z = 5;
+	int pos = 0;
+
+	int x_tab = 0;
+	int y_tab = 0;
+	for (int y = 0; y < sizeY; y++){
+	for (int x = 0; x < sizeX; x++)
+	{
+		rubansIndexes[x][y] = pos;
+		this->rubans_id[pos/4] = pos;
+		double p_x = (double)((posX * sizeX + x))/((double)(sizeX * 12));
+		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 12));
+
+
+		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 8)
+							// + (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 14)
+							+ (int)(noise2->newNoise2d(5 * p_x, 5 * p_y, 0.65) * 9);
+
+		data[pos] = pos % 255;
+		data[pos + 1] = outPut % 255;
+		data[pos + 2] = 0;
+		data[pos + 3] = (sizeZ - 1) -  outPut % 255;
+		
+		pos += 4;
+	}
+	}
+	this->sizeData = sizeX * sizeY * 4;
+	
+}
+
 
 void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 										std::vector<glm::ivec3> sizeList)
