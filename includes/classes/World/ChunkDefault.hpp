@@ -12,6 +12,7 @@ class ChunkDefault : public Chunk
 		bool isFilled(int x, int y, int z) override;
 		bool IsRealNeighbor(int chunkX, int chunkY);
 	private:
+		std::vector<float> vertexData;
 		void CreateCube(u_char faces, int x, int y, int z, int offsetX, int offsetY);
 		
 		void CompileData() override;

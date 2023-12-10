@@ -207,6 +207,8 @@ void ChunkDefault::CompileData() {
 			}
 		}
 	}
+	dataStruct.data = (u_char *)vertexData.data();
+	dataStruct.size = vertexData.size() * 4;
 }
 
 bool ChunkDefault::isFilled(int x, int y, int z) {

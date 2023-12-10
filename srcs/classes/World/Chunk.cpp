@@ -139,10 +139,10 @@ bool Chunk::DidUpdate() {
 	return didUpdate;
 }
 
-std::vector<float>&	Chunk::GetVertexData() {
+t_vertexData &Chunk::GetVertexData() {
 	SetReady();
 	didUpdate = false;
-	return vertexData;
+	return dataStruct;
 }
 
 std::vector<u_int>&		Chunk::GetShapeAssemblyData() {

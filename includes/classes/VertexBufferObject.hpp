@@ -2,10 +2,11 @@
 
 #include <vector>
 #include <glad/glad.h>
+#include <classes/vertexData.hpp>
 
 class VertexBufferObject {
 public:
-    VertexBufferObject(const std::vector<float>& vertices);
+    VertexBufferObject(t_vertexData& vertexData);
 
 	void Bind();
 	void DeleteBuffers();

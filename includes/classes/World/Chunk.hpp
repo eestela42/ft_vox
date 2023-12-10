@@ -6,10 +6,9 @@
 #include <vector>
 #include <cmath>
 #include <glm/glm.hpp>
+#include <classes/vertexData.hpp>
 
-
-class Chunk
-{
+class Chunk {
 private:
 	Chunk();
 
@@ -35,8 +34,8 @@ protected :
 	Chunk* neighborChunks[4] = {0};
 	u_int neighborChunksID[4] = {0};
 	u_char *data = (u_char*)""; //Warning, this will cause segfault if modified before instantiation
-	std::vector<float> vertexData;
 	std::vector<u_int> shapeAssemblyData;
+	t_vertexData dataStruct;
 	int posX;
 	int posY;
 	
@@ -57,7 +56,7 @@ public :
 	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
 	virtual void PublicGenerate(u_int seed) final;
 
-	virtual std::vector<float>&	GetVertexData() final;
+	virtual t_vertexData &GetVertexData() final;
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
 	virtual bool DidUpdate() final;
 
