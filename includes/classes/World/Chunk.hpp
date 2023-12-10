@@ -13,6 +13,8 @@ class Chunk
 private:
 	Chunk();
 
+	static u_int idCount;
+	u_int id;
 	bool didUpdate = false;
 	bool isCompiled = false;
 	bool isGenerated = false;
@@ -20,6 +22,7 @@ private:
 	Chunk *GetNeighbor(int x, int y);
 	void SetReady();
 	void loadChunk();
+	void UnloadChunk();
 	virtual void CompileData() = 0;
 	virtual void Generate() = 0;
 	virtual void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) = 0;
@@ -30,6 +33,7 @@ protected :
 	Chunk(int posX, int posY);
 	
 	Chunk* neighborChunks[4] = {0};
+	u_int neighborChunksID[4] = {0};
 	u_char *data = (u_char*)""; //Warning, this will cause segfault if modified before instantiation
 	std::vector<float> vertexData;
 	std::vector<u_int> shapeAssemblyData;
@@ -41,6 +45,7 @@ protected :
 public :
 	/** @brief Not yet ready to be sized down dynamically without neighbor loss issues*/
 	static void setRenderDistance(int renderDistance);
+	static const std::vector<std::vector<Chunk*>> &GetLoadedChunks();
 	static constexpr char * shaderName = (char*)"default";
 	static u_int const sizeX = 16;
 	static u_int const sizeY = 16;
@@ -56,7 +61,7 @@ public :
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
 	virtual bool DidUpdate() final;
 
-	virtual ~Chunk() = 0;
+	virtual ~Chunk();
 };
 
 #endif

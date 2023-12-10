@@ -1,4 +1,5 @@
 #include <classes/World/ChunkDefault.hpp>
+#include <classes/Game/Game.hpp>
 
 ChunkDefault::ChunkDefault() : Chunk(0, 0) {}
 
@@ -132,6 +133,9 @@ void ChunkDefault::CreateCube(u_char faces, int x, int y, int z, int offsetX, in
 }
 
 void ChunkDefault::CompileData() {
+	shapeAssemblyData.clear();
+	vertexData.clear();
+	
 	for (int z = 0; z < sizeZ; z++) {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {
@@ -159,7 +163,6 @@ void ChunkDefault::CompileData() {
 						}
 					}
 
-
 					if (y != 0) { //back
 						if (!isFilled(x, y - 1, z)) {
 							faces |= BACK;
@@ -182,7 +185,6 @@ void ChunkDefault::CompileData() {
 						}
 					}
 
-					
 					if (z != 0) { //bottom
 						if (!isFilled(x, y, z - 1)) {
 							faces |= BOTTOM;
@@ -219,7 +221,7 @@ void ChunkDefault::Generate() {
 	for (int z = 0; z < sizeZ; z++) {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {
-				if(z < posY + posX + 1) {
+				if(z < std::abs(posY) + std::abs(posX) + 1) {
 					data[z * sizeY * sizeX + y * sizeX + x] = 1;
 				}
 			}
