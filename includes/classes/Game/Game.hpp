@@ -21,7 +21,6 @@ class Game : I_Input
 		Window *window;
 		InputHandler *inputHandler;
 		ShaderHandler *shaderHandler;
-		Shader *activeShader;
 		VertexArrayObjectHandler *vertexArrayObjectHandler;
 		ChunkInstantiator *instantiator;
 

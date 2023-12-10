@@ -12,6 +12,14 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
+#include <vector>
+
+typedef struct vertexAttribute
+{
+	u_int location;
+	u_int size;
+	GLenum type;
+} t_vertexAttribute;
 
 class Shader
 {
@@ -26,10 +34,15 @@ class Shader
 		void SetFloat4(const std::string &name, float value1, float value2, float value3, float value4) const;
 		void Setmat4(const std::string &name, glm::mat4 value) const;
 
+		std::vector<t_vertexAttribute> &GetVertexAttributes();
+		static Shader *GetActiveShader();
 	private:
+		static Shader *activeShader;
 		unsigned int ID; // the program ID
+		std::vector<t_vertexAttribute> attributes;
 			
 		u_int CompileSingleShader(const char *path, GLenum type, std::string sType);
+		void parseAttributes(const char *path);
 		void CheckCompileErrors(unsigned int shader, std::string type);
 };
   

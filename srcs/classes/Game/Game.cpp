@@ -10,14 +10,12 @@ Game::Game() {
 	inputHandler->AddCallback((I_Input*)window);
 
 	shaderHandler = new ShaderHandler("shaders");
-	activeShader = shaderHandler->GetShader(Chunk::shaderName);
-	activeShader->Use();
 
 	vertexArrayObjectHandler = new VertexArrayObjectHandler();
 
 	Chunk::setRenderDistance(renderDistance);
 
-	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance);
+	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
 }
 
 void Game::StartLoop() {
@@ -35,7 +33,12 @@ void Game::Loop() {
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 1000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
 	matrix = proj * GetCameraView();
-	activeShader->Setmat4("matrix", matrix);
+	if (Shader::GetActiveShader()) {
+		Shader::GetActiveShader()->Setmat4("matrix", matrix);
+	}
+	else {
+		assert(!"The loop is running and there are no active shader");
+	}
 
 	vertexArrayObjectHandler->DrawAll();
 
