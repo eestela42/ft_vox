@@ -28,8 +28,8 @@ void main()
 
 
 	float tmp = ((type - 1) * size_texture) / width_Texture;
-	zero_texture = vec2(tmp - floor(tmp),
-						tmp / width_Texture);
+	zero_texture = vec2((type % 16 * 128) / width_Texture,
+						1 - (type / 16 * 128) / width_Texture);
 
 	vec2 texCoords[4];
 	

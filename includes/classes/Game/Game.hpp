@@ -19,7 +19,7 @@ class Game : I_Input
 		int			GetRenderDistance() const;
 	private:
 		static glm::vec3 const cameraUp;
-		float yaw = -90;
+		float yaw = 90;
 		float pitch = 0;
 		glm::vec3 cameraPosition = glm::vec3(0, 0, 0);
 		glm::vec3 cameraDirection = glm::vec3(	cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
@@ -29,7 +29,7 @@ class Game : I_Input
 										cameraPosition + cameraDirection,
 										glm::vec3(0, 1, 0));
 		
-		int renderDistance = 10;
+		int renderDistance = 15;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
 };

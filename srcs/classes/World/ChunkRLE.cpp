@@ -14,15 +14,6 @@ void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char ori
 		vertexes.push_back(pos);
 		vertexes.push_back(orientation);
 		vertexes.push_back(type);
-		
-		float zero_texture[2] = {0.0, 0.0};
-
-		float size_texture = 128;
-		float width_Texture = 2048;
-
-		float tmp = ((type - 1) * size_texture) / width_Texture;
-		zero_texture[0] = tmp - floor(tmp);
-		zero_texture[0] = tmp / width_Texture;
 
 	}
 }
@@ -142,115 +133,194 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 	return (this->data);
 }
 
-void	incrementNeighb(int &pos, int &z, int incr, int z_max, int &over)
+void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size, int& over)
 {
-	if (!over && z + incr <= z_max) // si tout va bien
+	if (over + incr >= neighb_size)
 	{
-		z += incr;
-		pos += 2;
-	}
-	else if (!over && z + incr > z_max) // si next voisin > z_max
-	{
-		over = (z + incr) - z_max;
-		z = z_max;
-	}
-	else if (over && z + over >= z_max) // si deja over et toujours over
-	{
-		over -= z_max - z;
-		z = z_max;
-	}
-	else if (over && z + over < z_max) // si etait over mais ne va plus l'etre
-	{
+		neighb_pos += 2;
+		neighb_z += neighb_size;
+		incr -= neighb_size - over;
 		over = 0;
-		z += incr - over;
-		pos += 2;
+		return ;
 	}
-
+	over += incr;
+	incr = 0;
 }
-
-
 
 void	ChunkRLE::CompileData()
 {
-	int nbr_points = 0; // pas bien
-	int pos = 0;
-	for (int y = 0; y < sizeY; y++) {
-	for (int x = 0; x < sizeX; x++) {
-		//pour chaque X-Y
-		int z = 0;
+	vertexData.clear();
+	shapeAssemblyData.clear();
 
-		int neighb_pos[4] = {0, 0, 0, 0};
-		int neighb_z[4] = {0, 0, 0, 0};
-		int neighb_over[4] = {0, 0, 0, 0};
-		while (z < (sizeZ - 1)) //sur toute la hauteure
+	u_int pos = 0;
+
+	for (u_int y = 0; y < sizeY; y++) {
+	for (u_int x = 0; x < sizeX; x++)
+	{
+		u_int z = 0;
+		int neighb_pos[4] = {0, 0, 0, 0}; 	//pos du ruban actuel
+		int neighb_z[4] = {0, 0, 0, 0};		//z du neighbour
+		int neighb_over[4] = {0, 0, 0, 0};	//nbr a add au z pour savoir le vrai z
+		while (z < sizeZ - 1)
 		{
-			int z_end = z + data[pos + 1];
-			if (!z || (data[pos] && !data[pos]))
-			{	//create bottom face
+			u_int z_end  = z + data[pos + 1];
+			if ((!z && data[pos]) || (data[pos] && !data[pos - 2]))
 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
-				nbr_points += 4;
-			}
-			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
+			for (u_int neighb = 0; neighb < 4; neighb++)
 			{
-				u_char* ruban = this->GetAdjacentRuban(x, y, z, neighb_pos[neighb], neighb);
-				int count = 0;
-				while (neighb_z[neighb] < z_end) //tant que le voisin n'est pas plus haut que la fin du ruban
+				u_char *ruban = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb);
+				while (neighb_z[neighb] + neighb_over[neighb] < z_end)
 				{
-					if (this->data[pos] == 0)
+
+					int real_z = neighb_z[neighb] + neighb_over[neighb];
+					int neighb_size = data[pos + 1];
+					int to_draw = z_end - z;
+					if (ruban)
+						neighb_size = ruban[neighb_pos[neighb] + 1];
+					if (data[pos] == 0) // si main est air alors on passe au suivant
 					{
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], z_end - z, z_end, neighb_over[neighb]);
+						if (ruban)
+						{
+							int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
+							if (real_z + real_size < z_end)
+								to_draw = real_size;
+							else
+								to_draw = real_size - (real_z + real_size - z_end);
+						}
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
-					if (ruban && ruban[neighb_pos[neighb]] != 0)
+
+					if (ruban && ruban[neighb_pos[neighb]] != 0) // si voisin block alors on va au neigh suivant si moins que main end
 					{
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[neighb_pos[neighb] + 1], z_end, neighb_over[neighb]);
+						int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
+						if (real_z + real_size < z_end)
+							to_draw = real_size;
+						else
+							to_draw = real_size - (real_z + real_size - z_end);
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
-					int to_draw = 0;
-					int neighb_size = 0;
-					if (!ruban)
-						to_draw = z_end - z;
 					if (ruban)
 					{
-						neighb_size = ruban[neighb_pos[neighb] + 1];
-						
-						if (neighb_over[neighb]) // really ?
-							neighb_size =  neighb_over[neighb];
-
-						if (neighb_z[neighb] + neighb_size <= z_end) 
-							to_draw = neighb_size;
+						int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
+						to_draw = 0;
+						if (real_z + real_size <= z_end)
+							to_draw = real_size;
 						else
-							to_draw = z_end - neighb_z[neighb];
-						
+							to_draw = real_size - (real_z + real_size - z_end);
 					}
-					int i = neighb_z[neighb];
-
-					if (!ruban)
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, z_end, neighb_over[neighb]);
-					else
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[neighb_pos[neighb] + 1], z_end, neighb_over[neighb]);
-
-
-					for (; to_draw--; i++)
-					{	//create side faces
-						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, vertexData.size(), data[pos]);
-						nbr_points += 4;
+					for (int i = 0; to_draw - i; i++)
+						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z + i, vertexData.size(), data[pos]);
+					while (to_draw)
+					{
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
+						if (ruban)
+							neighb_size = ruban[neighb_pos[neighb] + 1];
 					}
-					
-					//end while
 				}
 			}
 			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
-			{	//create top face
 				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end-1, vertexData.size(), data[pos]);
-				nbr_points += 4;
-			}
 			pos += 2;
 			z = z_end;
 		}
 	}
 	}
 }
+	
+
+// void	ChunkRLE::CompileData()
+// {
+// 	int nbr_points = 0; // pas bien
+// 	int pos = 0;
+// 	vertexData.clear();
+// 	shapeAssemblyData.clear();
+// 	for (int y = 0; y < sizeY; y++) {
+// 	for (int x = 0; x < sizeX; x++) {
+// 		//pour chaque X-Y
+// 		int z = 0;
+
+// 		int neighb_pos[4] = {0, 0, 0, 0};
+// 		int neighb_z[4] = {0, 0, 0, 0};
+// 		int neighb_over[4] = {0, 0, 0, 0};
+
+// 		std::cout << " Pos x " << x << " y " << y << std::endl;
+
+// 		while (z < (sizeZ - 1)) //sur toute la hauteure
+// 		{
+// 			int z_end = z + data[pos + 1];
+// 			if (z && data[pos] && !data[pos - 2])
+// 			{	//create bottom face
+// 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
+// 				nbr_points += 4;
+// 			}
+// 			std::cout << std::endl << "z " << z << " z_end " << z_end << std::endl;
+// 			for (u_char neighb = 0; neighb < 4; neighb++) // pour chaque voisin (gerer si deja over)
+// 			{
+// 				std::cout << "neighb " << (int)neighb << std::endl;
+// 				u_char* ruban = this->GetAdjacentRuban(x, y, z, neighb_pos[neighb], neighb);
+// 				int count = 0;
+// 				while (neighb_z[neighb] < z_end) //tant que le voisin n'est pas plus haut que la fin du ruban
+// 				{
+// 					if (this->data[pos] == 0)
+// 					{
+// 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], z_end - z, z_end, neighb_over[neighb]);
+// 						continue ;
+// 					}
+
+// 					if (ruban && ruban[neighb_pos[neighb]] != 0)
+// 					{
+// 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], ruban[neighb_pos[neighb] + 1], z_end, neighb_over[neighb]);
+// 						continue ;
+// 					}
+// 					std::cout << "----after" << std::endl;
+
+// 					int to_draw = 0;
+// 					int neighb_size = 0;
+// 					if (!ruban)
+// 						to_draw = z_end - z;
+// 					if (ruban)
+// 					{
+// 						neighb_size = ruban[neighb_pos[neighb] + 1];
+						
+// 						if (neighb_over[neighb]) // really ?
+// 							neighb_size =  neighb_over[neighb];
+
+// 						if (neighb_z[neighb] + neighb_size <= z_end) 
+// 							to_draw = neighb_size;
+// 						else
+// 							to_draw = z_end - neighb_z[neighb];
+						
+// 					}
+// 					int i = neighb_z[neighb];
+
+// 					if (!ruban)
+// 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, z_end, neighb_over[neighb]);
+// 					else
+// 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, z_end, neighb_over[neighb]);
+
+
+// 					for (; to_draw--; i++)
+// 					{	//create side faces
+// 						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, i, vertexData.size(), data[pos]);
+// 						nbr_points += 4;
+// 					}
+					
+// 					//end while
+// 				}
+// 			}
+// 			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
+// 			{	//create top face
+// 				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end-1, vertexData.size(), data[pos]);
+// 				nbr_points += 4;
+// 			}
+// 			pos += 2;
+// 			z = z_end;
+// 		}
+// 	}
+// 	}
+// }
 
 		/*****	1 - constructors 		*****/
 
@@ -390,35 +460,49 @@ void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
 {
 	u_int seed = 988456;
 
-	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
+	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
 
 	int max_z = 5;
 	int pos = 0;
 
 	int x_tab = 0;
 	int y_tab = 0;
+
 	for (int y = 0; y < sizeY; y++){
 	for (int x = 0; x < sizeX; x++)
 	{
 		rubansIndexes[x][y] = pos;
-		this->rubans_id[pos/4] = pos;
 		double p_x = (double)((posX * sizeX + x))/((double)(sizeX * 12));
 		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 12));
 
 
-		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 54)
-							+ (int)(noise2->newNoise2d(16.23 * p_x, 75.59 * p_y, 0.65) * 6)
-							+ (int)(noise2->newNoise2d(5 * p_x, 5 * p_y, 0.65) * 36);
+		u_char outPut1 =  3 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 9);
+		u_char outPut2 = (int)(noise2->newNoise2d(5 * p_x, 5 * p_y, 0.65) * 12);
+		u_char outPut3 =   noise2->newNoise2d(16.23 * p_x, 75.59 * p_y, 0.65) > 0.35f ? 1 : 0;
 
-		data[pos] = (outPut * 7) % 255 ;
-		data[pos + 1] = outPut % 255 + 1;
-		data[pos + 2] = 0;
-		data[pos + 3] = sizeZ -  (outPut % 255);
+		// outPut1 += x % 2 * 5;
+		// outPut2 += x % 2 * 2;
+
+		data[pos + 0] = 33;
+		data[pos + 1] = 1;
+		data[pos + 2] = 17;
+		data[pos + 3] = outPut1 % 255 + 1;
+		data[pos + 4] = 32;
+		data[pos + 5] = outPut2 % 255 ;
+		if (outPut3)
+		{
+			data[pos + 6] = 18;
+			data[pos + 7] = 1;
+			pos += 2;
+		}
+		data[pos + 6] = 0;
+		data[pos + 7] = sizeZ  - ( 1 + outPut1 % 255 + 1 + (outPut2 % 255 ) + outPut3 % 255);
 		
-		pos += 4;
+		pos += 8;
+
 	}
 	}
-	this->sizeData = sizeX * sizeY * 4;
+	this->sizeData = sizeX * sizeY * 10;																																																																													;
 	
 }
 
