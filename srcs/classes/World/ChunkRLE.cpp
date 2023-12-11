@@ -30,14 +30,7 @@ void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vect
     iData.push_back(2 + offset);
     iData.push_back(3 + offset);
 
-	// 0: north 1: east 2: south 3: west 4: top 5: bottom
-
-
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
-	int vx = pos % sizeX;
-	int vy = (pos % (sizeX * sizeY)) / sizeY;
-	int vz = pos / (sizeX * sizeY);
-	
 
 	createPointVertex(vData, pos, orientation, type);
 
@@ -145,8 +138,11 @@ void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size,
 
 void	ChunkRLE::CompileData()
 {
+	// std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	vertexData.clear();
 	shapeAssemblyData.clear();
+	vertexData.reserve(20000);
+	shapeAssemblyData.reserve(7000);
 
 	u_int pos = 0;
 
@@ -171,6 +167,7 @@ void	ChunkRLE::CompileData()
 					int real_z = neighb_z[neighb] + neighb_over[neighb];
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
+					int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 					if (ruban)
 						neighb_size = ruban[neighb_pos[neighb] + 1];
 					if (data[pos] == 0) 
@@ -223,9 +220,9 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
-	//trandform
 	dataStruct.data = (u_char*)vertexData.data();
 	dataStruct.size = vertexData.size() * sizeof(int);
+	// std::cout << "time for compiling chunk " << posX << " " << posY << " : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count() << " µs" << std::endl;
 }
 	
 		/*****	1 - constructors 		*****/
@@ -364,8 +361,8 @@ void 					ChunkRLE::Generate()
 
 void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 {
+
 	u_int seed = 988456;
-	std::cout << "GOOD GENERATE" << std::endl;
 
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
 
@@ -397,11 +394,11 @@ void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 		data[pos + 1] = 1;
 		data[pos + 2] = 108;
 		data[pos + 3] = outPut1 % 255 + 1;
-		data[pos + 4] = 36;
+		data[pos + 4] = posY % 255;
 		data[pos + 5] = outPut2 % 255 ;
 		if (outPut3)
 		{
-			data[pos + 6] = 49;
+			data[pos + 6] = posX % 255;
 			data[pos + 7] = 1;
 			pos += 2;
 		}

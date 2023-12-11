@@ -20,9 +20,22 @@ Game::Game() {
 }
 
 void Game::StartLoop() {
+	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	u_int fps = 0;
+
+	bool info = true;
+
 	while(window->ShouldContinue())
 	{
+		fps++;
 		Loop();
+		if (info && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() >= 500) {
+			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << std::endl;
+			std::cout << "FPS: " << fps * 2 << std::endl;
+			std::cout  << std::flush;
+			fps = 0;
+			begin = std::chrono::steady_clock::now();
+		}
 	}
 }
 
