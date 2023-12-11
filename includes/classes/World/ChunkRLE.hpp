@@ -14,6 +14,8 @@
 	
 class ChunkRLE : public Chunk
 {
+private:
+	std::vector<float> vertexData;
 
 protected :
 

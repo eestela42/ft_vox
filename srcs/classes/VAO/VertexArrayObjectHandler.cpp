@@ -4,36 +4,55 @@ VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
 void VertexArrayObjectHandler::Draw() {
 	if (activeVAO) {
-		glDrawElements(GL_TRIANGLES, vaoList[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, vaoMap[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+	}
+}
+
+void VertexArrayObjectHandler::DrawAll() {
+	Unbind();
+	int i = 0;
+	for (auto const& x : vaoMap)
+	{
+		x.second->Bind();
+		glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+		x.second->Unbind();
 	}
 }
 
 u_int VertexArrayObjectHandler::AddVAO(VertexArrayObject *vao) {
-    vaoList.push_back(vao);
-    u_int index = vaoList.size();
-    vaoListIndices.push_back(vao->GetVAO());
-    return index;
+	indexCount++;
+    vaoMap[indexCount] = vao;
+	activeVAO = indexCount;
+    return indexCount;
+}
+
+void VertexArrayObjectHandler::RemoveVAO(u_int VAO) {
+	delete vaoMap[VAO];
+	vaoMap.erase(VAO);
+	if (VAO == activeVAO) {
+		activeVAO = 0;
+	}
 }
 
 void VertexArrayObjectHandler::Bind(u_int VAO) {
-	if (VAO && activeVAO != VAO && VAO <= vaoListIndices.size()) {
+	if (VAO && activeVAO != VAO) {
 		if (activeVAO) {
-			vaoList[activeVAO - 1]->Unbind();
+			vaoMap[activeVAO]->Unbind();
 		}
-		vaoList[VAO - 1]->Bind();
+		vaoMap[VAO]->Bind();
 		activeVAO = VAO;
 	}
 }
 
 void VertexArrayObjectHandler::Unbind() {
 	if (activeVAO) {
-		vaoList[activeVAO - 1]->Unbind();
+		vaoMap[activeVAO]->Unbind();
 	}
 	glBindVertexArray(0);
 }
 
 VertexArrayObject *VertexArrayObjectHandler::GetVAO(u_int VAO) {
-	return (vaoList[VAO - 1]);
+	return (vaoMap[VAO]);
 }
 
 VertexArrayObjectHandler::~VertexArrayObjectHandler() {}

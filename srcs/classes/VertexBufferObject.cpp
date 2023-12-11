@@ -1,11 +1,11 @@
 #include <classes/VertexBufferObject.hpp>
 #include <iostream>
-// Parameterized constructor
-VertexBufferObject::VertexBufferObject(const std::vector<int>& vertices){
-	verticesSize = vertices.size() * sizeof(vertices[0]);
+
+VertexBufferObject::VertexBufferObject(t_vertexData& vertexData){
+	verticesSize = vertexData.size;
     glGenBuffers(1, &index);
     glBindBuffer(GL_ARRAY_BUFFER, index);
-    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertexData.data, GL_STATIC_DRAW);
 }
 
 void VertexBufferObject::Bind() {

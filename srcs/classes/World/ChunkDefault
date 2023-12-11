@@ -1,104 +1,214 @@
 #include <classes/World/ChunkDefault.hpp>
+#include <classes/Game/Game.hpp>
 
 ChunkDefault::ChunkDefault() : Chunk(0, 0) {}
 
 ChunkDefault::ChunkDefault(u_int x, u_int y) : Chunk(x, y) {}
 
-void ChunkDefault::CreateCube(std::vector<float> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, int offsetX, int offsetY) {
-	offset = vData.size() / 3;
-	vData.push_back(0 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(0 + z); 
+#define TOP (1 << 0)
+#define BOTTOM (1 << 1)
+#define FRONT (1 << 2)
+#define BACK (1 << 3)
+#define LEFT (1 << 4)
+#define RIGHT (1 << 5)
 
-    //Other vertices
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(1 + z); 
+void ChunkDefault::CreateCube(u_char faces, int x, int y, int z, int offsetX, int offsetY) {
+	int offset = vertexData.size() / 3;
+	unsigned int vertexOffset = (0 << 0) + (0 << 4) + (0 << 8) + (0 << 12) + (0 << 16) + (0 << 20) + (0 << 24) + (0 << 28);
 
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(1 + z); 
+	if (faces & (BACK | LEFT | BOTTOM)) { //0 BOTTOM BACK LEFT
+		vertexData.push_back(0 + x + offsetX);
+		vertexData.push_back(0 + y + offsetY);
+		vertexData.push_back(0 + z);
+		vertexOffset += (1 << 4) + (1 << 8) + (1 << 12) + (1 << 16) + (1 << 20) + (1 << 24) + (1 << 28);
+	}
 
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(0 + y + offsetY); 
-    vData.push_back(0 + z); 
+    if (faces & (BACK | LEFT | TOP)) { //1 TOP BACK LEFT
+		vertexData.push_back(0 + x + offsetX);
+		vertexData.push_back(0 + y + offsetY);
+		vertexData.push_back(1 + z);
+		vertexOffset += (1 << 8) + (1 << 12) + (1 << 16) + (1 << 20) + (1 << 24) + (1 << 28);
+	}
 
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(0 + z); 
+	if (faces & (BACK | RIGHT | TOP)) { //2 TOP BACK RIGHT
+		vertexData.push_back(1 + x + offsetX);
+		vertexData.push_back(0 + y + offsetY);
+		vertexData.push_back(1 + z);
+		vertexOffset += (1 << 12) + (1 << 16) + (1 << 20) + (1 << 24) + (1 << 28);
+	}
 
-    vData.push_back(1 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(1 + z); 
+	if (faces & (BOTTOM | BACK | RIGHT)) { //3 BOTTOM BACK RIGHT
+		vertexData.push_back(1 + x + offsetX);
+		vertexData.push_back(0 + y + offsetY);
+		vertexData.push_back(0 + z);
+		vertexOffset += (1 << 16) + (1 << 20) + (1 << 24) + (1 << 28);
+	}
 
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(1 + z); 
+	if (faces & (BOTTOM | FRONT | RIGHT)) { //4 BOTTOM FRONT RIGHT
+		vertexData.push_back(1 + x + offsetX);
+		vertexData.push_back(1 + y + offsetY);
+		vertexData.push_back(0 + z);
+		vertexOffset += (1 << 20) + (1 << 24) + (1 << 28);
+	}
 
-    vData.push_back(0 + x + offsetX); 
-    vData.push_back(1 + y + offsetY); 
-    vData.push_back(0 + z); 
+	if (faces & (TOP | FRONT | RIGHT)) { //5 TOP FRONT RIGHT
+		vertexData.push_back(1 + x + offsetX);
+		vertexData.push_back(1 + y + offsetY);
+		vertexData.push_back(1 + z);
+		vertexOffset += (1 << 24) + (1 << 28);
+	}
 
-    // Indices
-    iData.push_back(0 + offset);
-    iData.push_back(1 + offset);
-    iData.push_back(2 + offset);
+	if (faces & (TOP | FRONT | LEFT)) { //6 TOP FRONT LEFT
+		vertexData.push_back(0 + x + offsetX);
+		vertexData.push_back(1 + y + offsetY);
+		vertexData.push_back(1 + z);
+		vertexOffset += (1 << 28);
+	}
 
-    iData.push_back(0 + offset);
-    iData.push_back(2 + offset);
-    iData.push_back(3 + offset);
+	if (faces & (BOTTOM | FRONT | LEFT)) { //7 BOTTOM FRONT LEFT
+		vertexData.push_back(0 + x + offsetX);
+		vertexData.push_back(1 + y + offsetY);
+		vertexData.push_back(0 + z);
+	}
 
-    iData.push_back(2 + offset);
-    iData.push_back(3 + offset);
-    iData.push_back(4 + offset);
+	if (faces & BACK) {
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0) >> 4) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00) >> 8) + offset);
 
-    iData.push_back(2 + offset);
-    iData.push_back(4 + offset);
-    iData.push_back(5 + offset);
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00) >> 8) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000) >> 12) + offset);
+	}
 
-    iData.push_back(4 + offset);
-    iData.push_back(5 + offset);
-    iData.push_back(6 + offset);
+	if (faces & RIGHT) {
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00) >> 8) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000) >> 12) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
 
-    iData.push_back(4 + offset);
-    iData.push_back(6 + offset);
-    iData.push_back(7 + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00) >> 8) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00000) >> 20) + offset);
+	}
 
-    iData.push_back(6 + offset);
-    iData.push_back(7 + offset);
-    iData.push_back(0 + offset);
+	if (faces & FRONT) {
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00000) >> 20) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000000) >> 24) + offset);
 
-    iData.push_back(6 + offset);
-    iData.push_back(0 + offset);
-    iData.push_back(1 + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000000) >> 24) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000000) >> 28) + offset);
+	}
 
-    iData.push_back(1 + offset);
-    iData.push_back(2 + offset);
-    iData.push_back(5 + offset);
+	if (faces & LEFT) {
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000000) >> 24) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000000) >> 28) + offset);
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
 
-    iData.push_back(1 + offset);
-    iData.push_back(5 + offset);
-    iData.push_back(6 + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000000) >> 24) + offset);
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0) >> 4) + offset);
+	}
 
-    iData.push_back(0 + offset);
-    iData.push_back(3 + offset);
-    iData.push_back(4 + offset);
+	if (faces & TOP) {
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0) >> 4) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00) >> 8) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00000) >> 20) + offset);
 
-    iData.push_back(0 + offset);
-    iData.push_back(4 + offset);
-    iData.push_back(7 + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0) >> 4) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF00000) >> 20) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000000) >> 24) + offset);
+	}
+
+	if (faces & BOTTOM) {
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF000) >> 12) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
+
+		shapeAssemblyData.push_back((vertexOffset & 0xF) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000) >> 16) + offset);
+		shapeAssemblyData.push_back(((vertexOffset & 0xF0000000) >> 28) + offset);
+	}
 }
 
 void ChunkDefault::CompileData() {
+	shapeAssemblyData.clear();
+	vertexData.clear();
+	
 	for (int z = 0; z < sizeZ; z++) {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {
 				if (data[z * sizeY * sizeX + y * sizeX + x]) {
-					CreateCube(vertexData, shapeAssemblyData, x, y, z, (z * sizeY * sizeX + y * sizeX + x) * 8, posX * sizeX, posY * sizeY);
+					u_char faces = 0;
+					if (x != 0) { //left
+						if (!isFilled(x - 1, y, z)) {
+							faces |= LEFT;
+						}
+					}
+					else {
+						if (!neighborChunks[3]->IsRealNeighbor(posX, posY) || !neighborChunks[3]->isFilled(sizeX - 1, y, z)){
+							faces |= LEFT;
+						}
+					}
+
+					if (x != sizeX - 1) { //right
+						if (!isFilled(x + 1, y, z)) {
+							faces |= RIGHT;
+						}
+					}
+					else {
+						if (!neighborChunks[1]->IsRealNeighbor(posX, posY) || !neighborChunks[1]->isFilled(0, y, z)){
+							faces |= RIGHT;
+						}
+					}
+
+					if (y != 0) { //back
+						if (!isFilled(x, y - 1, z)) {
+							faces |= BACK;
+						}
+					}
+					else {
+						if (!neighborChunks[2]->IsRealNeighbor(posX, posY) || !neighborChunks[2]->isFilled(x, sizeY - 1, z)){
+							faces |= BACK;
+						}
+					}
+
+					if (y != sizeY - 1) { //front
+						if (!isFilled(x, y + 1, z)) {
+							faces |= FRONT;
+						}
+					}
+					else {
+						if (!neighborChunks[0]->IsRealNeighbor(posX, posY) || !neighborChunks[0]->isFilled(x, 0, z)){
+							faces |= FRONT;
+						}
+					}
+
+					if (z != 0) { //bottom
+						if (!isFilled(x, y, z - 1)) {
+							faces |= BOTTOM;
+						}
+					}
+					else {
+						faces |= BOTTOM;
+					}
+
+					if (z != sizeZ - 1) { //top
+						if (!isFilled(x, y, z + 1)) {
+							faces |= TOP;
+						}
+					}
+					else {
+						faces |= TOP;
+					}
+					CreateCube(faces, x, y, z, posX * sizeX, posY * sizeY);
 				}
 			}
 		}
 	}
+	dataStruct.data = (u_char *)vertexData.data();
+	dataStruct.size = vertexData.size() * 4;
 }
 
 bool ChunkDefault::isFilled(int x, int y, int z) {
@@ -113,7 +223,7 @@ void ChunkDefault::Generate() {
 	for (int z = 0; z < sizeZ; z++) {
 		for (int y = 0; y < sizeY; y++) {
 			for (int x = 0; x < sizeX; x++) {
-				if(z < posY + posX + 1) {
+				if(z < std::abs(posY) + std::abs(posX) + 1) {
 					data[z * sizeY * sizeX + y * sizeX + x] = 1;
 				}
 			}

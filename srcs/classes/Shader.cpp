@@ -4,6 +4,8 @@
 #define FGMT 1 << 1
 #define GMTR 1 << 2
 
+Shader *Shader::activeShader = NULL;
+
 Shader::Shader(const std::string &folderPath) {
 	u_char activeShaders = 0;
 	ID = glCreateProgram();
@@ -18,6 +20,7 @@ Shader::Shader(const std::string &folderPath) {
 				glAttachShader(ID, vertexShader);
 				glDeleteShader(vertexShader);
 				activeShaders |= VRTX;
+				parseAttributes(filePath.c_str());
 			} else if (fileName.find("fragment_shader") != std::string::npos) {
 				GLuint fragmentShader = CompileSingleShader(filePath.c_str(), GL_FRAGMENT_SHADER, "FRAGMENT");
 				glAttachShader(ID, fragmentShader);
@@ -66,8 +69,62 @@ u_int Shader::CompileSingleShader(const char *path, GLenum type, std::string sTy
 	return shader;
 }
 
+void Shader::parseAttributes(const char *path) {
+    std::ifstream file(path);
+
+	if (!file.is_open())
+    {
+        std::cout << "Error opening file : " << path << std::endl;
+        assert(0);
+    }
+	std::cout << "Vertex Shader at " << path << std::endl;
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream lineStream(line);
+        std::string token;
+
+        if (line.find("//") != std::string::npos) {continue;}
+
+		if (lineStream >> token && token == "layout") {
+			t_vertexAttribute attribute;
+			std::string typeName;
+			while (lineStream >> token && token != "=") {}
+			lineStream >> attribute.location;
+
+			lineStream >> token;
+			lineStream >> token;
+			lineStream >> token;
+
+			typeName = token;
+			if (typeName == "int") {
+				attribute.type = GL_INT;
+				attribute.size = 1;
+				std::cout << "Int, size " << attribute.size << std::endl;
+			}
+			else if (typeName == "float") {
+				attribute.type = GL_FLOAT;
+				attribute.size = 1;
+				std::cout << "Float, size " << attribute.size << std::endl;
+			}
+			else if (typeName.find("vec") != std::string::npos) {
+				attribute.type = GL_FLOAT;
+				attribute.size = typeName[3] - '0';
+				std::cout << "Float, size " << attribute.size << std::endl;
+			}
+			else {
+				std::cout << "Type not supported by current codebase : " << typeName << std::endl;
+				assert(0);
+			}
+			attributes.push_back(attribute);
+		}
+    }
+}
+
 void Shader::Use() { 
-    glUseProgram(ID); 
+	if (activeShader != this) {
+		glUseProgram(ID);
+		activeShader = this;
+	}
 }
 void Shader::SetBool(const std::string &name, bool value) const {         
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
@@ -85,6 +142,14 @@ void Shader::Setmat4(const std::string &name, glm::mat4 value) const {
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
+std::vector<t_vertexAttribute> &Shader::GetVertexAttributes() {
+	return attributes;
+}
+
+Shader *Shader::GetActiveShader() {
+	return activeShader;
+}
+
 void Shader::CheckCompileErrors(unsigned int shader, std::string type)
     {
         int success;
@@ -96,6 +161,7 @@ void Shader::CheckCompileErrors(unsigned int shader, std::string type)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+				assert(0);
             }
         }
         else
@@ -105,6 +171,7 @@ void Shader::CheckCompileErrors(unsigned int shader, std::string type)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+				assert(0);
             }
         }
     }

@@ -2,10 +2,13 @@
 #include <classes/World/PerlinNoise.hpp>
 
 std::vector<std::vector<Chunk*>> Chunk::loadedChunks;
+u_int Chunk::idCount = 0;
 
 Chunk::Chunk() : posX(0), posY(0){}
 
 Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
+	idCount++;
+	id = idCount;
 	loadChunk();
 }
 
@@ -33,15 +36,21 @@ void Chunk::PublicGenerate(u_int seed) {
 	isCompiled = false;
 }
 
-void	Chunk::loadChunk()
-{
-	if (loadedChunks.size()) {
-		loadedChunks[posX % loadedChunks.size()][posY % loadedChunks.size()] = this;
+void	Chunk::loadChunk() {
+	int size = loadedChunks.size();
+	if (size) {
+		loadedChunks[(posX % size + size) % size][(posY % size + size) % size] = this;
 	}
 }
 
-void	Chunk::setRenderDistance(int renderDistance)
-{
+void	Chunk::UnloadChunk() {
+	int size = loadedChunks.size();
+	if (size) {
+		loadedChunks[(posX % size + size) % size][(posY % size + size) % size] = NULL;
+	}
+}
+
+void	Chunk::setRenderDistance(int renderDistance) {
 	if (renderDistance == loadedChunks.size()) {
 		return ;
 	}
@@ -64,31 +73,56 @@ void	Chunk::setRenderDistance(int renderDistance)
 	}
 }
 
+const std::vector<std::vector<Chunk*>> &Chunk::GetLoadedChunks() {
+	return loadedChunks;
+}
+
+bool Chunk::IsRealNeighbor(int chunkX, int chunkY) {
+	if ((std::abs(chunkX - posX) == 1 && chunkY == posY) || (std::abs(chunkY - posY) == 1 && chunkX == posX)) {
+		return true;
+	}
+	return false;
+}
+
 Chunk *Chunk::GetNeighbor(int x, int y) {
-	return (loadedChunks[x % loadedChunks.size()][y % loadedChunks.size()]);
+	int size = loadedChunks.size();
+	return loadedChunks[(x % size + size) % size][(y % size + size) % size];
 }
 
 void Chunk::SetReady() {
-	Chunk *neighborChunk = GetNeighbor(posX, posY + 1);
-	if (neighborChunk != neighborChunks[0])
+	bool newNegh = false;
+	neighborChunks[0] = GetNeighbor(posX, posY + 1);
+	u_int neighborID = (neighborChunks[0]) ? neighborChunks[0]->id : 0;
+	if (neighborID != neighborChunksID[0]) {
+		newNegh = true;
 		isCompiled = false;
-	neighborChunks[0] = neighborChunk;
+	}
+	neighborChunksID[0] = neighborID;
 
-	neighborChunk = GetNeighbor(posX + 1, posY);
-	if (neighborChunk != neighborChunks[1])
+	neighborChunks[1] = GetNeighbor(posX + 1, posY);
+	neighborID = (neighborChunks[1]) ? neighborChunks[1]->id : 0;
+	if (neighborID != neighborChunksID[1]){
+newNegh = true;
 		isCompiled = false;
-	neighborChunks[1] = neighborChunk;
+	}
+	neighborChunksID[1] = neighborID;
 
-	neighborChunk = GetNeighbor(posX, posY - 1);
-	if (neighborChunk != neighborChunks[2])
+	neighborChunks[2] = GetNeighbor(posX, posY - 1);
+	neighborID = (neighborChunks[2]) ? neighborChunks[2]->id : 0;
+	if (neighborID != neighborChunksID[2]){
+newNegh = true;
 		isCompiled = false;
-	neighborChunks[2] = neighborChunk;
+	}
+	neighborChunksID[2] = neighborID;
 
-	neighborChunk = GetNeighbor(posX - 1, posY);
-	if (neighborChunk != neighborChunks[3])
+	neighborChunks[3] = GetNeighbor(posX - 1, posY);
+	neighborID = (neighborChunks[3]) ? neighborChunks[3]->id : 0;
+	if (neighborID != neighborChunksID[3]){
+newNegh = true;
 		isCompiled = false;
-	neighborChunks[3] = neighborChunk;
-	
+	}
+	neighborChunksID[3] = neighborID;
+
 	if (!isGenerated) {
 		PublicGenerate();
 	}
@@ -112,10 +146,10 @@ bool Chunk::DidUpdate() {
 	return didUpdate;
 }
 
-std::vector<int>&	Chunk::GetVertexData() {
+t_vertexData &Chunk::GetVertexData() {
 	SetReady();
 	didUpdate = false;
-	return vertexData;
+	return dataStruct;
 }
 
 std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
@@ -124,4 +158,6 @@ std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
 	return shapeAssemblyData;
 }
 
-Chunk::~Chunk() {}
+Chunk::~Chunk() {
+	UnloadChunk();
+}

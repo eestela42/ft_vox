@@ -7,33 +7,51 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <classes/World/ChunkDefault.hpp>
+#include <classes/World/ChunkRLE.hpp>
+#include <classes/Window.hpp>
+#include <classes/Game/InputHandler.hpp>
+#include <classes/ShaderHandler.hpp>
+#include <classes/VAO/VertexArrayObjectHandler.hpp>
+#include <classes/World/ChunkInstantiator.hpp>
+
 class Game : I_Input
 {
-	public:
-		Game();
-		~Game();
+	private:
+		Window *window;
+		InputHandler *inputHandler;
+		ShaderHandler *shaderHandler;
+		VertexArrayObjectHandler *vertexArrayObjectHandler;
+		ChunkInstantiator *instantiator;
 
-		void 		SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
-		glm::mat4	GetCameraView() const;
-
-		int			GetRenderDistance() const;
-		glm::vec3 	GetCameraPosition() const;
-		
+		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		float yaw = 90;
+		int renderDistance = 16;
+		int chunkLoadingSize = renderDistance * 2 + 1;
+		const float speed = 0.05f;
+		const float sensitivity = 0.05f;
+
+		float yaw = -90;
 		float pitch = 0;
-		glm::vec3 cameraPosition = glm::vec3(0, 0, 0);
+		glm::vec3 cameraPosition = glm::vec3(0, 30, 0);
 		glm::vec3 cameraDirection = glm::vec3(	cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
 												sin(glm::radians(pitch)),
 												sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
 		glm::mat4 view = glm::lookAt(	cameraPosition,
 										cameraPosition + cameraDirection,
 										glm::vec3(0, 1, 0));
-		
-		int renderDistance = 10;
-		const float speed = 0.35f;
-		const float sensitivity = 0.05f;
+	public:
+		Game();
+
+		void SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
+		void StartLoop();
+
+		glm::mat4 GetCameraView() const;
+		int	GetRenderDistance() const;
+		int	GetChunkLoadingSize() const;
+
+		~Game();
 };
 
 #endif
