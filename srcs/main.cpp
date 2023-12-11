@@ -1,17 +1,19 @@
 #include <main.hpp>
 
 int main(int argc, char **argv) {
-
+	std::cout << "START" << std::endl;
 	Window *window = new Window("ft_vox", DrawMode::FILL);
 
 	InputHandler *inputHandler = new InputHandler(window->GetWindow());
 	Game *game = new Game();
 	inputHandler->AddCallback((I_Input*)game);
 	inputHandler->AddCallback((I_Input*)window);
+	std::cout << "SHADDER" << std::endl;
 
 	ShaderHandler *shaderHandler = new ShaderHandler("shaders");
 	Shader *shader = shaderHandler->GetShader(ChunkRLE::shaderName);
 	shader->Use();
+	std::cout << "endSHADDER" << std::endl;
 
 	VertexArrayObjectHandler *vertexArrayObjectHandler = new VertexArrayObjectHandler();
 	std::vector<u_int> chunkMap;
@@ -70,6 +72,11 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	std::cout << "SHADDER" << std::endl;
+	Shader *shaderSkyBox = shaderHandler->GetShader("skyBox");
+	std::cout << "-- end SHADDER" << std::endl;
+	
+
 	auto end_time = std::chrono::high_resolution_clock::now();
 
     // Calculate the elapsed time
@@ -86,12 +93,18 @@ int main(int argc, char **argv) {
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 1250.0f);
 		glm::mat4 matrix = glm::mat4(1.0f);
 		matrix = proj * game->GetCameraView();
+		shader->Use();
 		shader->Setmat4("matrix", matrix);
 		for (auto const& x : chunkMap)
 		{
 			vertexArrayObjectHandler->Bind(x);
 			vertexArrayObjectHandler->Draw();
 		}
+		shaderSkyBox->Use();
+		shaderSkyBox->Setmat4("matrix", matrix);
+		vertexArrayObjectHandler->Draw();
+		
+
 		window->SwapBuffersAndPollEvents();
 	}
 	return 0;

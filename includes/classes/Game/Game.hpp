@@ -17,6 +17,8 @@ class Game : I_Input
 		glm::mat4	GetCameraView() const;
 
 		int			GetRenderDistance() const;
+		glm::vec3 	GetCameraPosition() const;
+		
 	private:
 		static glm::vec3 const cameraUp;
 		float yaw = 90;
@@ -29,7 +31,7 @@ class Game : I_Input
 										cameraPosition + cameraDirection,
 										glm::vec3(0, 1, 0));
 		
-		int renderDistance = 15;
+		int renderDistance = 10;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
 };

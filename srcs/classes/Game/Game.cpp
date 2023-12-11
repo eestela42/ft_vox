@@ -42,4 +42,9 @@ glm::mat4	Game::GetCameraView() const {
 	return view;
 }
 
+glm::vec3 	Game::GetCameraPosition() const
+{
+	return cameraPosition;
+}
+
 Game::~Game() {}

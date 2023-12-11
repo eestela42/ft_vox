@@ -34,7 +34,7 @@ Window::Window(const char *name, DrawMode drawMode) {
     
 	glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT); // Tell OpenGL the size of the drawing window
-    glClearColor(0.5f, 0.3f, 0.6f, 1.0f); // Sets clear color
+    glClearColor(0.25f, 0.35f, 0.6f, 1.0f); // Sets clear color
     if (drawMode == DrawMode::LINE) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //draw as lines
     }

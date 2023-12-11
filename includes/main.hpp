@@ -19,7 +19,8 @@
 		/*****	 Game		*****/
 
 # include <classes/Game/Game.hpp>
-#include <classes/Game/InputHandler.hpp>
+# include <classes/Game/InputHandler.hpp>
+# include <classes/Game/skyBox.hpp>
 
 
 		/*****	 Texture	*****/
