@@ -70,4 +70,59 @@ public :
 	virtual ~Chunk();
 };
 
+
+# define ANDESITH 16
+# define STONE 17
+# define DIRT 18
+# define GRASS 19
+# define OAK_PLANCH 20
+# define SMOOTH_CUT_SEMI_STONE 21
+# define SMOOTH_CUT_STONE 22
+# define BRICK 23
+# define TNT_SIDE 24
+# define TNT_TOP 25
+# define TNT_BOT 26
+# define SPIDER_WEB 27
+# define FLOWER_ROSE 28
+# define FLOWER_YELLOW 29
+# define WATER 30
+# define OAK_SAPLING 31
+# define COBBLE_STONE 32
+# define BEDROCK 33
+# define SAND 34
+# define GRAVEL 35
+# define OAK_WOOD_SIDE 36
+# define OAK_WOOD_TOP 37
+# define IRON_BLOCK 38
+# define GOLD_BLOCK 39
+# define DIAMOUND_BLOCK 40
+# define EMRALD_BLOCK 41
+# define PINK_1 42
+# define PINK_2 43
+# define MUSHROOM_RED 44
+# define MUSHROOM_BROWM 45
+# define SEKOIA_SAPPLING 46
+# define WEIRD_RED 47
+# define GOLD_MINERAL 48
+# define IRON_MINERAL 49
+# define CHARCOAL_MINERAL 50
+# define BOOKSHELF 51
+# define MOSSY_COBBLESTONE 52
+# define OBSIDIAN 53
+# define IDK 54
+# define WILD_GRASS 55
+# define WEIRD 56
+# define BEACON 57
+# define RED_3 58
+# define CRAFTING_TABLE_TOP 59
+# define FURNACE_FRONT_OFF 60
+# define FURNACE_SIDE 61
+# define DISPENSER_FRONT 62
+# define WEIRD_RED_2 63
+# define SPONGE 64
+
+
+
+
+
 #endif
