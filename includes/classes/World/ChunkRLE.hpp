@@ -15,7 +15,7 @@
 class ChunkRLE : public Chunk
 {
 private:
-	std::vector<float> vertexData;
+	std::vector<int> vertexData;
 
 protected :
 
@@ -57,7 +57,7 @@ public :
 	void 					CompileData() override;
 
 	void 					Generate() override;
-	void 					GenerateTest(PerlinNoise *noise, PerlinNoise *noise2);
+	void 					Generate(PerlinNoise *noise, PerlinNoise *noise2);
 	void 					Generate(float *gen, int start);
 
 	void 					Generate(std::vector<glm::ivec3> positionList,

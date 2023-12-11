@@ -18,9 +18,9 @@ void Chunk::PublicGenerate() {
 	isCompiled = false;
 }
 
-void Chunk::PublicGenerateTest(PerlinNoise *noise, PerlinNoise *noise2){
+void Chunk::PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2){
 	isGenerated = true;
-	GenerateTest(noise, noise2);
+	Generate(noise, noise2);
 	isCompiled = false;
 }
 

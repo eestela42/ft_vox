@@ -16,6 +16,7 @@ Game::Game() {
 	Chunk::setRenderDistance(renderDistance);
 
 	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
+	TextureLoader::LoadTexture("textures/minecraft.png");
 }
 
 void Game::StartLoop() {
@@ -87,9 +88,9 @@ glm::mat4	Game::GetCameraView() const {
 	return view;
 }
 
-glm::vec3 	Game::GetCameraPosition() const
-{
-	return cameraPosition;
-}
+// glm::vec3 	Game::GetCameraPosition() const
+// {
+// 	return cameraPosition;
+// }
 
 Game::~Game() {}

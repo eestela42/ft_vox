@@ -223,6 +223,9 @@ void	ChunkRLE::CompileData()
 		}
 	}
 	}
+	//trandform
+	dataStruct.data = (u_char*)vertexData.data();
+	dataStruct.size = vertexData.size() * sizeof(int);
 }
 	
 		/*****	1 - constructors 		*****/
@@ -359,9 +362,10 @@ void 					ChunkRLE::Generate()
 	
 }
 
-void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
+void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 {
 	u_int seed = 988456;
+	std::cout << "GOOD GENERATE" << std::endl;
 
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
 
@@ -375,8 +379,13 @@ void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
 	for (int x = 0; x < sizeX; x++)
 	{
 		rubansIndexes[x][y] = pos;
-		double p_x = (double)((posX * sizeX + x))/((double)(sizeX * 12));
-		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 12));
+		double p_x = posX * sizeX + x;
+		double p_y = posY * sizeY + y;
+		p_x = std::abs(p_x);
+		p_y = std::abs(p_y);
+
+		p_x /= (double)(sizeX * 12);
+		p_y /= (double)(sizeY * 12);
 
 
 		u_char outPut1 =  3 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 9);
@@ -384,15 +393,15 @@ void 					ChunkRLE::GenerateTest(PerlinNoise *noise, PerlinNoise *noise2)
 		u_char outPut3 =   noise2->newNoise2d(16.23 * p_x, 13.59 * p_y, 0.65) > 0.35f ? 1 : 0;
 
 
-		data[pos + 0] = 33;
+		data[pos + 0] = 87;
 		data[pos + 1] = 1;
-		data[pos + 2] = 17;
+		data[pos + 2] = 108;
 		data[pos + 3] = outPut1 % 255 + 1;
-		data[pos + 4] = 32;
+		data[pos + 4] = 36;
 		data[pos + 5] = outPut2 % 255 ;
 		if (outPut3)
 		{
-			data[pos + 6] = 18;
+			data[pos + 6] = 49;
 			data[pos + 7] = 1;
 			pos += 2;
 		}

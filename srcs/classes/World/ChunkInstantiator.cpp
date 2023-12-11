@@ -2,7 +2,7 @@
 
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
 	this->shaderHandler = shaderHandler;
-	Shader *shader = shaderHandler->GetShader(ChunkDefault::shaderName);
+	Shader *shader = shaderHandler->GetShader(ChunkRLE::shaderName);
 	bool showChunkDebug = false;
 	this->vertexArrayObjectHandler = vertexArrayObjectHandler;
 	this->renderDistance = renderDistance;
@@ -13,8 +13,11 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	for (int x = -renderDistance; x <= renderDistance; x++) { // GENERER TOUT PUIS COMPILER
 		for (int y = -renderDistance; y <= renderDistance; y++) {
 			showChunkDebug && std::cout << "Generating chunk " << x << " " << y << std::endl;
-			Chunk* chunk = new ChunkDefault(x, y);
-			chunk->PublicGenerate();
+			Chunk* chunk = new ChunkRLE(x, y);
+			u_int seed = 32543;
+			PerlinNoise *noise = new PerlinNoise(seed);
+			PerlinNoise *noise2 = new PerlinNoise(seed + 13);
+			chunk->PublicGenerate(noise, noise2);
 			chunks.push_back(chunk);
 		}
 	}
@@ -34,7 +37,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 }
 
 void ChunkInstantiator::Update(glm::vec3 playerPos) {
-	Shader *shader = shaderHandler->GetShader(ChunkDefault::shaderName);
+	Shader *shader = shaderHandler->GetShader(ChunkRLE::shaderName);
 	const std::vector<std::vector<Chunk *>> &loadedChunks = Chunk::GetLoadedChunks();
 	int size = loadedChunks.size();
 	playerPos /= 16;
@@ -55,8 +58,11 @@ void ChunkInstantiator::Update(glm::vec3 playerPos) {
 			vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(X % size + size) % size][(y % size + size) % size]]);
 			chunkMap.erase(loadedChunks[(X % size + size) % size][(y % size + size) % size]);
 			delete loadedChunks[(X % size + size) % size][(y % size + size) % size];
-			Chunk* chunk = new ChunkDefault(X, y);
-			chunk->PublicGenerate();
+			Chunk* chunk = new ChunkRLE(X, y);
+			u_int seed = 32543;
+			PerlinNoise *noise = new PerlinNoise(seed);
+			PerlinNoise *noise2 = new PerlinNoise(seed + 13);
+			chunk->PublicGenerate(noise, noise2);
 			chunks.push_back(chunk);
 		}
 		int i = 0;
@@ -77,12 +83,16 @@ void ChunkInstantiator::Update(glm::vec3 playerPos) {
 			Y = newPlayerChunkPosY - renderDistance;
 		}
 		std::vector<Chunk*> chunks;
+		u_int seed = 32543;
+		PerlinNoise *noise = new PerlinNoise(seed);
+		PerlinNoise *noise2 = new PerlinNoise(seed + 13);
+
 		for (int x = newPlayerChunkPosX - renderDistance; x <= newPlayerChunkPosX + renderDistance; x++) {
 			vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(x % size + size) % size][(Y % size + size) % size]]);
 			chunkMap.erase(loadedChunks[(x % size + size) % size][(Y % size + size) % size]);
 			delete loadedChunks[(x % size + size) % size][(Y % size + size) % size];
-			Chunk* chunk = new ChunkDefault(x, Y);
-			chunk->PublicGenerate();
+			Chunk* chunk = new ChunkRLE(x, Y);
+			chunk->PublicGenerate(noise, noise2);
 			chunks.push_back(chunk);
 		}
 		int i = 0;
