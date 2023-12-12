@@ -4,3 +4,7 @@ ft_vox
 objects-dependances/
 txt
 notes
+Profiler.log
+Profiler.db
+data.mdb
+lock.mdb

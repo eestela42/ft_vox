@@ -12,21 +12,27 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
+	Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
 	Generate();
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
 void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
+	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
 	isGenerated = true;
 	Generate(positionList, sizeList);
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
 }
 
 void Chunk::PublicGenerate(u_int seed) {
+	Profiler::StartTracking("Chunk::PublicGenerate(seed)");
 	isGenerated = true;
 	Generate(seed);
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate(seed)");
 }
 
 void	Chunk::loadChunk() {
@@ -126,7 +132,9 @@ newNegh = true;
 				neighborChunks[i]->SetReady();
 			}
 		}
+		Profiler::StartTracking("Chunk::CompileData()");
 		CompileData();
+		Profiler::StopTracking("Chunk::CompileData()");
 		didUpdate = true;
 	}
 }

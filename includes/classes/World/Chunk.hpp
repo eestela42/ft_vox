@@ -7,6 +7,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include <classes/vertexData.hpp>
+#include <classes/Profiler.hpp>
 
 class Chunk {
 private:
