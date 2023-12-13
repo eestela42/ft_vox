@@ -269,11 +269,9 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 
 ChunkRLE::~ChunkRLE()
 {
-	std::cout << "deleting chunkRLE " << this->posX << " " << this->posY << std::endl;
 	// if (this->data)
 	// 	delete this->data;
 	delete this->rubans_id;
-	std::cout << "after deleting chunkRLE " << this->posX << " " << this->posY << std::endl;
 	
 }
 
@@ -364,11 +362,9 @@ void 					ChunkRLE::Generate()
 void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 {
 
-	u_int seed = 988456;
 
-	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
+	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 20);
 
-	int max_z = 5;
 	int pos = 0;
 
 	int x_tab = 0;
@@ -378,8 +374,10 @@ void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 	for (int x = 0; x < sizeX; x++)
 	{
 		rubansIndexes[x][y] = pos;
+
 		double p_x = posX * sizeX + x;
 		double p_y = posY * sizeY + y;
+
 		p_x = std::abs(p_x);
 		p_y = std::abs(p_y);
 
@@ -393,27 +391,76 @@ void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 
 
 		data[pos + 0] = BEDROCK;
-		data[pos + 1] = 1;
-		data[pos + 2] = DIRT;
-		data[pos + 3] = outPut1 % 255 + 1;
+		data[pos + 1] = 3;
+		pos += 2;
+
 		data[pos + 4] = STONE;
 		data[pos + 5] = outPut2 % 255 ;
-		if (outPut3)
-		{
-			data[pos + 6] = GRASS % 255;
-			data[pos + 7] = 1;
-			pos += 2;
-		}
+		pos += 2;
+
+		data[pos + 2] = DIRT;
+		data[pos + 3] = outPut1 % 255 + 1;
+		pos += 2;
+		
+		data[pos + 6] = GRASS;
+		data[pos + 7] = 1;
+		pos += 2;
+
 		data[pos + 6] = 0;
 		data[pos + 7] = sizeZ  - ( 1 + outPut1 % 255 + 1 + (outPut2 % 255 ) + outPut3 % 255);
 		
-		pos += 8;
+		pos += 2;
 
 	}
 	}
 	this->sizeData = sizeX * sizeY * 10;																																																																													;
 	
 }
+
+void 					ChunkRLE::Generate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList)
+{
+	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
+
+	int pos = 0;
+
+	int x_tab = 0;
+	int y_tab = 0;
+
+	for (int y = 0; y < sizeY; y++){
+	for (int x = 0; x < sizeX; x++)
+	{
+		rubansIndexes[x][y] = pos;
+
+		double p_x = posX * sizeX + x;
+		double p_y = posY * sizeY + y;
+		
+		p_x = std::abs(p_x);
+		p_y = std::abs(p_y);
+
+		p_x /= (double)(sizeX * 12);
+		p_y /= (double)(sizeY * 12);
+
+
+
+		data[pos + 0] = BEDROCK;
+		data[pos + 1] = 3;
+		pos += 2;
+		
+		data[pos + 0] = GRASS;
+		data[pos + 1] = 1;
+		pos += 2;
+
+		data[pos + 0] = 0;
+		data[pos + 1] = (u_char)sizeZ - 4;
+		
+		pos += 2;
+
+	}
+	}
+	this->sizeData = sizeX * sizeY * 10;																																																																													;
+	
+}
+
 
 
 void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,

@@ -20,6 +20,9 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	PerlinNoise *noise = new PerlinNoise(seed);
 	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
 
+	std::vector<PerlinNoise*> noiseList;
+	std::vector<std::vector<double>> weightList;
+
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
 	for (int x = -renderDistance; x <= renderDistance; x++) { //Creating chunks
 	for (int y = -renderDistance; y <= renderDistance; y++) {
@@ -27,7 +30,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 			showChunkDebug && std::cout << "Generating chunk " << x << " " << y << std::endl;
 			
 			Chunk* chunk = new ChunkRLE(x, y);
-			chunk->PublicGenerate(noise, noise2);
+			chunk->PublicGenerate(noiseList, weightList);
 
 
 			chunks.push_back(chunk);
@@ -57,23 +60,18 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 	playerChunkPosX = playerPos.x;
 	playerChunkPosY = playerPos.z;
 
-	std::cout << generationQueueMap.size() << " " << compilationQueueMap.size() << " " << updateQueueMap.size() << std::endl;
 	if (playerChunkPosX != oldPlayerChunkPosX || playerChunkPosY != oldPlayerChunkPosY) {
 		for (int x = oldPlayerChunkPosX - renderDistance; x <= oldPlayerChunkPosX + renderDistance; x++) { //Deleting chunks
 		for (int y = oldPlayerChunkPosY - renderDistance; y <= oldPlayerChunkPosY + renderDistance; y++) {
 			if (loadedChunks[(x % size + size) % size][(y % size + size) % size] && !isInCircle(x, y, renderDistance, playerChunkPosX, playerChunkPosY)) {
-				std::cout << "boucle " << std::endl;
 				generationQueueMap.erase(std::pair(x, y));
 				compilationQueueMap.erase(std::pair(x, y));
 				updateQueueMap.erase(std::pair(x, y));
 				vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(x % size + size) % size][(y % size + size) % size]]);
 				chunkMap.erase(loadedChunks[(x % size + size) % size][(y % size + size) % size]);
-				std::cout << "in inst before delete chunk " << x << " " << y << std::endl;
 				delete loadedChunks[(x % size + size) % size][(y % size + size) % size];
-				std::cout << "in inst after delete" << std::endl;
 			}
 		}
-		std::cout << "in inst out boucle" << std::endl;
 		}
 		for (int x = playerChunkPosX - renderDistance; x <= playerChunkPosX + renderDistance; x++) { //Creating chunks
 		for (int y = playerChunkPosY - renderDistance; y <= playerChunkPosY + renderDistance; y++) {
@@ -91,6 +89,9 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 	PerlinNoise *noise = new PerlinNoise(seed);
 	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
 
+	std::vector<PerlinNoise*> noiseList;
+	std::vector<std::vector<double>> weightList;
+
 	for (auto const& pos : generationQueueMap)
 	{
 		if (std::chrono::high_resolution_clock::now() - start > timeBudget) {
@@ -99,7 +100,7 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			}
 			return ;
 		}
-		pos.second->PublicGenerate(noise, noise2);
+		pos.second->PublicGenerate(noiseList, weightList);
 		toErase.push_back(pos.first);
 	}
 	for (auto const& erase : toErase) {

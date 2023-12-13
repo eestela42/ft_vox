@@ -26,6 +26,14 @@ void Chunk::PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2){
 	isCompiled = false;
 }
 
+void Chunk::PublicGenerate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList)
+{
+	isGenerated = true;
+	Generate(noiseList, weightList);
+	isCompiled = false;
+
+}
+
 void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
 	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
 	isGenerated = true;
@@ -187,11 +195,9 @@ std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
 }
 
 Chunk::~Chunk() {
-	std::cout << "delete chunk virt" << std::endl;
 	UnloadChunk();
 	if ((void*)data != (void*)"") {
 		free(data);
 	}
-	std::cout << "OUT delete chunk virt" << std::endl;
 
 }

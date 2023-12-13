@@ -59,7 +59,8 @@ public :
 	void 					Generate() override;
 	void 					Generate(PerlinNoise *noise, PerlinNoise *noise2);
 	void 					Generate(float *gen, int start);
-
+	void 					Generate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList);
+	
 	void 					Generate(std::vector<glm::ivec3> positionList,
 											std::vector<glm::ivec3> sizeList) override;
 	void 					Generate(u_int seed) override;

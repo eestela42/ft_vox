@@ -63,12 +63,10 @@ void VertexArrayObject::Unbind() {
 }
 
 VertexArrayObject::~VertexArrayObject() {
-	std::cout << "delete VAO" << std::endl;
     glDeleteVertexArrays(1, &VAO);
     VBO->DeleteBuffers();
     EBO->DeleteBuffers();
 	delete EBO;
 	delete VBO;
-	std::cout << "after delete VAO" << std::endl;
 
 }

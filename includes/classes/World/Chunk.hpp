@@ -32,6 +32,7 @@ private:
 	virtual void CompileData() = 0;
 	virtual void Generate() = 0;
 	virtual void Generate(PerlinNoise *noise, PerlinNoise *noise2) = 0;
+	virtual void Generate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList) = 0;
 	virtual void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) = 0;
 	virtual void Generate(u_int seed) = 0;
 protected :
@@ -62,6 +63,7 @@ public :
 	bool IsRealNeighbor(int chunkX, int chunkY);
 	virtual void PublicGenerate() final;
 	virtual void PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2);
+	virtual	void PublicGenerate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList);
 	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
 	virtual void PublicGenerate(u_int seed) final;
 
