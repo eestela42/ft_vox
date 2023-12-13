@@ -41,7 +41,7 @@ void Game::StartLoop() {
 void Game::Loop() {
 	inputHandler->HandleInput();
 	window->Clear();
-	instantiator->Update(cameraPosition);
+	instantiator->Update(cameraPosition, std::chrono::milliseconds(10));
 
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 1000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);

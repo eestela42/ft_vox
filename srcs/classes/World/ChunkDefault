@@ -3,6 +3,9 @@
 
 ChunkDefault::ChunkDefault() : Chunk(0, 0) {}
 
+ChunkDefault::~ChunkDefault()
+{}
+
 ChunkDefault::ChunkDefault(u_int x, u_int y) : Chunk(x, y) {}
 
 #define TOP (1 << 0)
@@ -132,7 +135,11 @@ void ChunkDefault::CreateCube(u_char faces, int x, int y, int z, int offsetX, in
 	}
 }
 
-void ChunkDefault::CompileData() {
+void ChunkDefault::CompileData() {	
+	bool isLeftNeighborFake = (neighborChunks[3]) ? !neighborChunks[3]->IsRealNeighbor(posX, posY) : true;
+	bool isRightNeighborFake = (neighborChunks[1]) ? !neighborChunks[1]->IsRealNeighbor(posX, posY) : true;
+	bool isBackNeighborFake = (neighborChunks[2]) ? !neighborChunks[2]->IsRealNeighbor(posX, posY) : true;
+	bool isFrontNeighborFake = (neighborChunks[0]) ? !neighborChunks[0]->IsRealNeighbor(posX, posY) : true;
 	shapeAssemblyData.clear();
 	vertexData.clear();
 	
@@ -146,10 +153,8 @@ void ChunkDefault::CompileData() {
 							faces |= LEFT;
 						}
 					}
-					else {
-						if (!neighborChunks[3]->IsRealNeighbor(posX, posY) || !neighborChunks[3]->isFilled(sizeX - 1, y, z)){
-							faces |= LEFT;
-						}
+					else if (isLeftNeighborFake || !neighborChunks[3]->isFilled(sizeX - 1, y, z)){
+						faces |= LEFT;
 					}
 
 					if (x != sizeX - 1) { //right
@@ -157,10 +162,8 @@ void ChunkDefault::CompileData() {
 							faces |= RIGHT;
 						}
 					}
-					else {
-						if (!neighborChunks[1]->IsRealNeighbor(posX, posY) || !neighborChunks[1]->isFilled(0, y, z)){
-							faces |= RIGHT;
-						}
+					else if (isRightNeighborFake || !neighborChunks[1]->isFilled(0, y, z)){
+						faces |= RIGHT;
 					}
 
 					if (y != 0) { //back
@@ -168,10 +171,8 @@ void ChunkDefault::CompileData() {
 							faces |= BACK;
 						}
 					}
-					else {
-						if (!neighborChunks[2]->IsRealNeighbor(posX, posY) || !neighborChunks[2]->isFilled(x, sizeY - 1, z)){
-							faces |= BACK;
-						}
+					else if (isBackNeighborFake || !neighborChunks[2]->isFilled(x, sizeY - 1, z)){
+						faces |= BACK;
 					}
 
 					if (y != sizeY - 1) { //front
@@ -179,10 +180,8 @@ void ChunkDefault::CompileData() {
 							faces |= FRONT;
 						}
 					}
-					else {
-						if (!neighborChunks[0]->IsRealNeighbor(posX, posY) || !neighborChunks[0]->isFilled(x, 0, z)){
-							faces |= FRONT;
-						}
+					else if (isFrontNeighborFake || !neighborChunks[0]->isFilled(x, 0, z)){
+						faces |= FRONT;
 					}
 
 					if (z != 0) { //bottom
@@ -202,7 +201,9 @@ void ChunkDefault::CompileData() {
 					else {
 						faces |= TOP;
 					}
-					CreateCube(faces, x, y, z, posX * sizeX, posY * sizeY);
+					if (faces) {
+						CreateCube(faces, x, y, z, posX * sizeX, posY * sizeY);
+					}
 				}
 			}
 		}

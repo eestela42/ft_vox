@@ -11,6 +11,7 @@
 
 
 #include <classes/vertexData.hpp>
+#include <classes/Profiler.hpp>
 
 
 class Chunk {
@@ -24,7 +25,8 @@ private:
 	bool isGenerated = false;
 
 	Chunk *GetNeighbor(int x, int y);
-	void SetReady();
+	void UpdateNeighbors();
+	void SetReady(bool isRecursive);
 	void loadChunk();
 	void UnloadChunk();
 	virtual void CompileData() = 0;
@@ -66,6 +68,8 @@ public :
 	virtual t_vertexData &GetVertexData() final;
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
 	virtual bool DidUpdate() final;
+	virtual int GetX() final;
+	virtual int GetY() final;
 
 	virtual ~Chunk();
 };

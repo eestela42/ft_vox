@@ -8,6 +8,7 @@ class ChunkDefault : public Chunk
 {
 	public:
 		ChunkDefault();
+		~ChunkDefault();
 		ChunkDefault(u_int x, u_int y);
 		bool isFilled(int x, int y, int z) override;
 		bool IsRealNeighbor(int chunkX, int chunkY);

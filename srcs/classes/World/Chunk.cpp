@@ -13,9 +13,11 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
+	Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
 	Generate();
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
 void Chunk::PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2){
@@ -25,15 +27,19 @@ void Chunk::PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2){
 }
 
 void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
+	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
 	isGenerated = true;
 	Generate(positionList, sizeList);
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
 }
 
 void Chunk::PublicGenerate(u_int seed) {
+	Profiler::StartTracking("Chunk::PublicGenerate(seed)");
 	isGenerated = true;
 	Generate(seed);
 	isCompiled = false;
+	Profiler::StopTracking("Chunk::PublicGenerate(seed)");
 }
 
 void	Chunk::loadChunk() {
@@ -41,12 +47,23 @@ void	Chunk::loadChunk() {
 	if (size) {
 		loadedChunks[(posX % size + size) % size][(posY % size + size) % size] = this;
 	}
+	UpdateNeighbors();
+	for (int i = 0; i < 4; i++) {
+		if (neighborChunks[i]) {
+			neighborChunks[i]->UpdateNeighbors();
+		}
+	}
 }
 
 void	Chunk::UnloadChunk() {
 	int size = loadedChunks.size();
 	if (size) {
 		loadedChunks[(posX % size + size) % size][(posY % size + size) % size] = NULL;
+	}
+	for (int i = 0; i < 4; i++) {
+		if (neighborChunks[i]) {
+			neighborChunks[i]->UpdateNeighbors();
+		}
 	}
 }
 
@@ -89,51 +106,54 @@ Chunk *Chunk::GetNeighbor(int x, int y) {
 	return loadedChunks[(x % size + size) % size][(y % size + size) % size];
 }
 
-void Chunk::SetReady() {
-	bool newNegh = false;
+void Chunk::UpdateNeighbors() {
 	neighborChunks[0] = GetNeighbor(posX, posY + 1);
 	u_int neighborID = (neighborChunks[0]) ? neighborChunks[0]->id : 0;
 	if (neighborID != neighborChunksID[0]) {
-		newNegh = true;
 		isCompiled = false;
+		didUpdate = true;
 	}
 	neighborChunksID[0] = neighborID;
 
 	neighborChunks[1] = GetNeighbor(posX + 1, posY);
 	neighborID = (neighborChunks[1]) ? neighborChunks[1]->id : 0;
 	if (neighborID != neighborChunksID[1]){
-newNegh = true;
 		isCompiled = false;
+		didUpdate = true;
 	}
 	neighborChunksID[1] = neighborID;
 
 	neighborChunks[2] = GetNeighbor(posX, posY - 1);
 	neighborID = (neighborChunks[2]) ? neighborChunks[2]->id : 0;
 	if (neighborID != neighborChunksID[2]){
-newNegh = true;
 		isCompiled = false;
+		didUpdate = true;
 	}
 	neighborChunksID[2] = neighborID;
 
 	neighborChunks[3] = GetNeighbor(posX - 1, posY);
 	neighborID = (neighborChunks[3]) ? neighborChunks[3]->id : 0;
 	if (neighborID != neighborChunksID[3]){
-newNegh = true;
 		isCompiled = false;
+		didUpdate = true;
 	}
 	neighborChunksID[3] = neighborID;
+}
 
+void Chunk::SetReady(bool isRecursive) {
 	if (!isGenerated) {
 		PublicGenerate();
 	}
-	if (!isCompiled) {
+	if (!isRecursive && !isCompiled) {
 		isCompiled = true;
 		for (int i = 0; i < 4; i++) {
 			if (neighborChunks[i]) {
-				neighborChunks[i]->SetReady();
+				neighborChunks[i]->SetReady(true);
 			}
 		}
+		Profiler::StartTracking("Chunk::CompileData()");
 		CompileData();
+		Profiler::StopTracking("Chunk::CompileData()");
 		didUpdate = true;
 	}
 }
@@ -146,18 +166,32 @@ bool Chunk::DidUpdate() {
 	return didUpdate;
 }
 
+int Chunk::GetX() {
+	return posX;
+}
+
+int Chunk::GetY() {
+	return posY;
+}
+
 t_vertexData &Chunk::GetVertexData() {
-	SetReady();
+	SetReady(false);
 	didUpdate = false;
 	return dataStruct;
 }
 
 std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
-	SetReady();
+	SetReady(false);
 	didUpdate = false;
 	return shapeAssemblyData;
 }
 
 Chunk::~Chunk() {
+	std::cout << "delete chunk virt" << std::endl;
 	UnloadChunk();
+	if ((void*)data != (void*)"") {
+		free(data);
+	}
+	std::cout << "OUT delete chunk virt" << std::endl;
+
 }

@@ -68,7 +68,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 			if (y == sizeY - 1){	//find north neighbour
 				neighbours = (ChunkRLE*)(neighborChunks[0]);
 
-				if (neighbours->posY != this->posY + 1  && neighbours->posX == this->posX)
+				if (!neighbours || (neighbours->posY != this->posY + 1  && neighbours->posX == this->posX))
 					return (NULL);
 				pos = neighbours->GetRubanPos(x, 0, z);
 				return (neighbours->data);
@@ -81,7 +81,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 			if (x == sizeX - 1) //find east neighbour
 			{	
 				neighbours = (ChunkRLE*)(neighborChunks[1]);
-				if (neighbours->posX != this->posX + 1  && neighbours->posY == this->posY)
+				if (!neighbours || (neighbours->posX != this->posX + 1  && neighbours->posY == this->posY))
 					return (NULL);
 				pos = neighbours->GetRubanPos(0, y, z);
 				return (neighbours->data);
@@ -94,7 +94,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 			if (y == 0)
 			{	//find south neighbour
 				neighbours = (ChunkRLE*)(neighborChunks[2]);
-				if (neighbours->posY != this->posY - 1  && neighbours->posX == this->posX)
+				if (!neighbours || (neighbours->posY != this->posY - 1  && neighbours->posX == this->posX))
 					return (NULL);
 				pos = neighbours->GetRubanPos(x, sizeY - 1, z);
 				return (neighbours->data);
@@ -107,7 +107,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 			if (x == 0)//find west neighbour
 			{
 				neighbours = (ChunkRLE*)(neighborChunks[3]);
-				if (neighbours->posX != this->posX - 1 && neighbours->posY == this->posY)
+				if (!neighbours || (neighbours->posX != this->posX - 1 && neighbours->posY == this->posY))
 				{
 					return (NULL);
 				}
@@ -269,9 +269,11 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 
 ChunkRLE::~ChunkRLE()
 {
-	if (this->data)
-		delete this->data;
+	std::cout << "deleting chunkRLE " << this->posX << " " << this->posY << std::endl;
+	// if (this->data)
+	// 	delete this->data;
 	delete this->rubans_id;
+	std::cout << "after deleting chunkRLE " << this->posX << " " << this->posY << std::endl;
 	
 }
 
@@ -385,8 +387,8 @@ void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 		p_y /= (double)(sizeY * 12);
 
 
-		u_char outPut1 =  3 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 7);
-		u_char outPut2 = (int)(noise2->newNoise2d(13.1 * p_x, 9.35 * p_y, 0.65) * 9);
+		u_char outPut1 =  3 + (int)(noise->newNoise2d(1.2296 * p_x, 1.4225 * p_y, 0.8) * 70);
+		u_char outPut2 = (int)(noise2->newNoise2d(4.1 * p_x, 5.35 * p_y, 0.65) * 45);
 		u_char outPut3 =   noise2->newNoise2d(16.23 * p_x, 13.59 * p_y, 0.65) > 0.35f ? 1 : 0;
 
 
