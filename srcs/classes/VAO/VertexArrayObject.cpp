@@ -66,4 +66,6 @@ VertexArrayObject::~VertexArrayObject() {
     glDeleteVertexArrays(1, &VAO);
     VBO->DeleteBuffers();
     EBO->DeleteBuffers();
+	delete EBO;
+	delete VBO;
 }
