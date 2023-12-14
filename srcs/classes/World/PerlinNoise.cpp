@@ -34,7 +34,7 @@ PerlinNoise::PerlinNoise(const PerlinNoise &copy)
 	*this = copy;
 }
 PerlinNoise::PerlinNoise(unsigned int seed) {
-	p.resize(256);
+	p.resize(size*size);
 
 	// Fill p with values from 0 to 255
 	std::iota(p.begin(), p.end(), 0);
@@ -110,13 +110,30 @@ PerlinNoise::PerlinNoise(unsigned int seed) {
 // 			}
 // 	}
 // }
+double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, const double persistence) 
+{
+	double result = 0;
+	double amplitude = 1;
+	double fScale = 0;
+
+	for (std::int32_t i = 0; i < octaves; ++i)
+	{
+		result += (newNoise2d(x, y, 0) * amplitude);
+		x *= 2;
+		y *= 2;
+		fScale += amplitude;
+		amplitude *= persistence;
+	}
+
+	return result / fScale;
+}
 
 double	PerlinNoise::newNoise2d(double x, double y, double z)
 {
 	// Find the unit cube that contains the point
-	int X = (int) floor(x) & 255;
-	int Y = (int) floor(y) & 255;
-	int Z = (int) floor(z) & 255;
+	int X = (int) floor(x) & ((size*size)-1);
+	int Y = (int) floor(y) & ((size*size)-1);
+	int Z = (int) floor(z) & ((size*size)-1);
 
 	// Find relative x, y,z of point in cube
 	x -= floor(x);

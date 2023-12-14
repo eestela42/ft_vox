@@ -30,6 +30,7 @@ class ChunkInstantiator
 		ShaderHandler *shaderHandler;
 	public:
 		ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler);
-
+		
+		// void updateGen(const char *filePath);
 		void Update(glm::vec3 playerPos, std::chrono::milliseconds timeBudget);
 };

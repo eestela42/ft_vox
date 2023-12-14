@@ -49,6 +49,8 @@ void InputHandler::MapKeys() {
     keyMap[GLFW_KEY_LEFT_SHIFT] = KEY_MOVE_UPWARD;
     keyMap[GLFW_KEY_LEFT_CONTROL] = KEY_MOVE_DOWNWARD;
 
+	
+
     keyMap[GLFW_KEY_ENTER] = KEY_ENTER;
     keyMap[GLFW_KEY_ESCAPE] = KEY_ESCAPE;
 	keyMap[GLFW_KEY_SPACE] = KEY_SPACE;
@@ -59,6 +61,7 @@ void InputHandler::MapKeys() {
     keyMap[GLFW_KEY_KP_6] = KEY_ROTATE_Y_POSITIVE;
     keyMap[GLFW_KEY_KP_7] = KEY_ROTATE_Z_NEGATIVE;
     keyMap[GLFW_KEY_KP_9] = KEY_ROTATE_Z_POSITIVE;
+
 }
 
 InputHandler::~InputHandler() {}

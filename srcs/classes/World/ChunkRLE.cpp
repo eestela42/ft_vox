@@ -4,6 +4,10 @@
 #include <iostream>
 #include <cstring>
 
+
+std::vector<PerlinNoise*> 		ChunkRLE::noiseList;
+std::vector<std::vector<float>> ChunkRLE::weightList;
+
 		/*****	2 - methods 		*****/
 void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
 {
@@ -312,57 +316,18 @@ u_int					ChunkRLE::GetRubanPos(int x, int y, int z)
 	return (pos - 2);
 }
 
+void ChunkRLE::pushBackNoiseList(PerlinNoise* tmp)
+{
+	ChunkRLE::noiseList.push_back(tmp);
+}
+
+void ChunkRLE::pushBackWeightList(std::vector<float> tmp)
+{
+	ChunkRLE::weightList.push_back(tmp);
+}
 
 void 					ChunkRLE::Generate()
 {
-	u_int seed = 988456;
-
-	PerlinNoise addrNoise(seed);
-	PerlinNoise *noise = &addrNoise;
-
-	PerlinNoise addrNoise2(seed + 13);
-	PerlinNoise *noise2 = &addrNoise2;
-
-	PerlinNoise addrNoise3(seed + 17);
-	PerlinNoise *noise3 = &addrNoise3;
-
-
-	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 4);
-
-	int max_z = 5;
-	int pos = 0;
-
-	int x_tab = 0;
-	int y_tab = 0;
-	for (int y = 0; y < sizeY; y++){
-	for (int x = 0; x < sizeX; x++)
-	{
-		rubansIndexes[x][y] = pos;
-		this->rubans_id[pos/4] = pos;
-		double p_x = (double)((posX * sizeX + x))/((double)(sizeX * 7));
-		double p_y = (double)((posY * sizeY + y))/((double)(sizeY * 7));
-
-
-		u_char outPut =  5 + (int)(noise->newNoise2d(10 * p_x, 10 * p_y, 0.8) * 15)
-							+ (int)(noise3->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 14)
-							+ (int)(noise2->newNoise2d(9 * p_x, 9 * p_y, 0.65) * 16);
-
-		data[pos] = 12;
-		data[pos + 1] = outPut % 255;
-		data[pos + 2] = 0;
-		data[pos + 3] = (sizeZ - 1) -  outPut % 255;
-		
-		pos += 4;
-	}
-	}
-	this->sizeData = sizeX * sizeY * 4;
-	
-}
-
-void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
-{
-
-
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 20);
 
 	int pos = 0;
@@ -375,81 +340,47 @@ void 					ChunkRLE::Generate(PerlinNoise *noise, PerlinNoise *noise2)
 	{
 		rubansIndexes[x][y] = pos;
 
-		double p_x = posX * sizeX + x;
-		double p_y = posY * sizeY + y;
-
-		p_x = std::abs(p_x);
-		p_y = std::abs(p_y);
-
-		p_x /= (double)(sizeX * 12);
-		p_y /= (double)(sizeY * 12);
-
-
-		u_char outPut1 =  3 + (int)(noise->newNoise2d(1.2296 * p_x, 1.4225 * p_y, 0.8) * 70);
-		u_char outPut2 = (int)(noise2->newNoise2d(4.1 * p_x, 5.35 * p_y, 0.65) * 45);
-		u_char outPut3 =   noise2->newNoise2d(16.23 * p_x, 13.59 * p_y, 0.65) > 0.35f ? 1 : 0;
-
-
 		data[pos + 0] = BEDROCK;
 		data[pos + 1] = 3;
 		pos += 2;
 
-		data[pos + 4] = STONE;
-		data[pos + 5] = outPut2 % 255 ;
-		pos += 2;
 
-		data[pos + 2] = DIRT;
-		data[pos + 3] = outPut1 % 255 + 1;
-		pos += 2;
 		
-		data[pos + 6] = GRASS;
-		data[pos + 7] = 1;
+		double p_x = ((double)posX * sizeX + (x + 0.5));
+		double p_y = ((double)posY * sizeY + (y + 0.4));
+
+		p_x += 0.1;
+		p_y += 0.1;
+
+		p_x /= (double)(sizeX * 16);
+		p_y /= (double)(sizeY * 16);
+
+		u_char outPut = 0;
+
+		double v1 = noiseList[0]->newNoise2d(2 * p_x, 2 * p_y, 0.0);
+
+		outPut = 5 + (int)(v1 *  70);
+		data[pos + 0] = STONE;
+		data[pos + 1] = outPut % 255 ;
 		pos += 2;
 
-		data[pos + 6] = 0;
-		data[pos + 7] = sizeZ  - ( 1 + outPut1 % 255 + 1 + (outPut2 % 255 ) + outPut3 % 255);
-		
+		// outPut =(int)(noiseList[0]->newNoise2d(6.554 * p_x  * v1, 5.454 * p_y  * v1, 0.0) *  15);
+		// data[pos + 0] = STONE;
+		// data[pos + 1] = outPut % 255 ;
+		// pos += 2;
+
+		outPut = (int)(noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 4, 5) *  13);
+		data[pos + 0] = DIRT;
+		data[pos + 1] = outPut % 255 ;
 		pos += 2;
 
-	}
-	}
-	this->sizeData = sizeX * sizeY * 10;																																																																													;
-	
-}
-
-void 					ChunkRLE::Generate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList)
-{
-	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 10);
-
-	int pos = 0;
-
-	int x_tab = 0;
-	int y_tab = 0;
-
-	for (int y = 0; y < sizeY; y++){
-	for (int x = 0; x < sizeX; x++)
-	{
-		rubansIndexes[x][y] = pos;
-
-		double p_x = posX * sizeX + x;
-		double p_y = posY * sizeY + y;
-		
-		p_x = std::abs(p_x);
-		p_y = std::abs(p_y);
-
-		p_x /= (double)(sizeX * 12);
-		p_y /= (double)(sizeY * 12);
-
-
-
-		data[pos + 0] = BEDROCK;
-		data[pos + 1] = 3;
-		pos += 2;
-		
-		data[pos + 0] = GRASS;
+		if (noiseList[2]->Octave2D(0.339 * p_x, 0.2944 * p_y, 3, 1) < 0.5)
+			data[pos + 0] = GRASS;
+		else
+			data[pos + 0] = SAND;
 		data[pos + 1] = 1;
 		pos += 2;
-
+		
 		data[pos + 0] = 0;
 		data[pos + 1] = (u_char)sizeZ - 4;
 		
@@ -457,10 +388,9 @@ void 					ChunkRLE::Generate(std::vector<PerlinNoise*> noiseList, std::vector<st
 
 	}
 	}
-	this->sizeData = sizeX * sizeY * 10;																																																																													;
+	this->sizeData = sizeX * sizeY * 10;
 	
 }
-
 
 
 void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
@@ -525,5 +455,3 @@ void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 	}
 }
 
-void 					ChunkRLE::Generate(u_int seed)
-{}

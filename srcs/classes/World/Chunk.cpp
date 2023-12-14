@@ -20,20 +20,6 @@ void Chunk::PublicGenerate() {
 	Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
-void Chunk::PublicGenerate(PerlinNoise *noise, PerlinNoise *noise2){
-	isGenerated = true;
-	Generate(noise, noise2);
-	isCompiled = false;
-}
-
-void Chunk::PublicGenerate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList)
-{
-	isGenerated = true;
-	Generate(noiseList, weightList);
-	isCompiled = false;
-
-}
-
 void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
 	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
 	isGenerated = true;
@@ -42,13 +28,7 @@ void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm
 	Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
 }
 
-void Chunk::PublicGenerate(u_int seed) {
-	Profiler::StartTracking("Chunk::PublicGenerate(seed)");
-	isGenerated = true;
-	Generate(seed);
-	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate(seed)");
-}
+
 
 void	Chunk::loadChunk() {
 	int size = loadedChunks.size();

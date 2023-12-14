@@ -59,7 +59,7 @@ void Game::Loop() {
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
-	float speedMultiplier = (keyState[KEY_MOVE_UPWARD] & KEY_HOLD) ? 20 : 1;
+	float speedMultiplier = (keyState[KEY_MOVE_UPWARD] & KEY_HOLD) ? 10 : 1;
 	if(keyState[KEY_MOVE_FORWARD] & KEY_HOLD)
         cameraPosition += speed * speedMultiplier * cameraDirection;
     if(keyState[KEY_MOVE_BACKWARD] & KEY_HOLD)
@@ -72,6 +72,9 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
         cameraPosition += glm::vec3(0, speed * speedMultiplier, 0);
     if(keyState[KEY_MOVE_DOWNWARD] & KEY_HOLD)
         cameraPosition += glm::vec3(0, -speed * speedMultiplier, 0);
+	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
+	// 	instantiator->updateGen("generation");
+	// }
 
 	yaw += mouseMoveX * sensitivity;
 	pitch -= mouseMoveY * sensitivity;

@@ -26,6 +26,8 @@
 #define KEY_LAST				15
 
 
+
+
 class I_Input {
 public:
     virtual void SendKeys(unsigned char *keyState, double mouseMoveX, double mouseMoveY) = 0;

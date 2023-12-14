@@ -8,6 +8,9 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 }
 
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
+
+	// updateGen("generation");
+
 	this->shaderHandler = shaderHandler;
 	Shader *shader = shaderHandler->GetShader(ChunkRLE::shaderName);
 	bool showChunkDebug = false;
@@ -20,8 +23,14 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	PerlinNoise *noise = new PerlinNoise(seed);
 	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
 
-	std::vector<PerlinNoise*> noiseList;
-	std::vector<std::vector<double>> weightList;
+	PerlinNoise *noise3 = new PerlinNoise(seed + 59);
+	ChunkRLE init;
+	init.pushBackNoiseList(noise);
+	init.pushBackNoiseList(noise2);
+	init.pushBackNoiseList(noise3);
+
+	// std::vector<PerlinNoise*> noiseList;
+	// std::vector<std::vector<double>> weightList;
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
 	for (int x = -renderDistance; x <= renderDistance; x++) { //Creating chunks
@@ -30,7 +39,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 			showChunkDebug && std::cout << "Generating chunk " << x << " " << y << std::endl;
 			
 			Chunk* chunk = new ChunkRLE(x, y);
-			chunk->PublicGenerate(noiseList, weightList);
+			chunk->PublicGenerate();
 
 
 			chunks.push_back(chunk);
@@ -100,7 +109,7 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			}
 			return ;
 		}
-		pos.second->PublicGenerate(noiseList, weightList);
+		pos.second->PublicGenerate();
 		toErase.push_back(pos.first);
 	}
 	for (auto const& erase : toErase) {
@@ -151,3 +160,65 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 		updateQueueMap.erase(erase);
 	}
 }
+
+// void ChunkInstantiator::updateGen(const char *filePath)
+// {
+// 	std::ifstream file(filePath);
+
+// 	if (!file.is_open())
+//     {
+//         std::cout << "Error opening file : " << filePath << std::endl;
+//         assert(0);
+//     }
+
+//     std::string line;
+    
+// 	while (std::getline(file, line))
+// 	{
+// 		std::istringstream iss(line);
+//         std::vector<std::string> tokens;
+
+//         do
+//         {
+//             std::string token;
+//             iss >> token;
+//             if (!token.empty())
+//                 tokens.push_back(token);
+//         } while (iss);
+
+//         if (tokens.size() >= 4)
+//         {
+//             try
+//             {
+// 				int seed = std::stoi(tokens[1]);
+// 				std::cout << "Seed: " << seed ;
+//                 this->noiseList.push_back(new PerlinNoise(seed));
+// 				std::vector<double> weight;
+//                 weight.push_back(std::stof(tokens[2]));
+//                 weight.push_back(std::stof(tokens[3]));
+//                 weight.push_back(std::stof(tokens[4]));
+// 				this->weightList.push_back(weight);
+// 				for (int i = 0; i < weight.size(); i++) {
+// 					std::cout << "  " << weight[i];
+// 				}
+// 				std::cout << std::endl;
+
+//                 // Now you can use seed, val1, val2, and val3 as needed
+//                 // For example, print them
+//                 // std::cout << "Seed: " << seed << ", Value 1: " << val1 << ", Value 2: " << val2 << ", Value 3: " << val3 << std::endl;
+//             }
+//             catch (const std::exception &e)
+//             {
+//                 // Handle conversion errors
+//                 std::cerr << "Error parsing line: " << line << std::endl;
+//             }
+//         }
+//         else
+//         {
+//             // Handle lines with insufficient tokens
+//             std::cerr << "Invalid line format: " << line << std::endl;
+//         }
+
+
+// 	}
+// }

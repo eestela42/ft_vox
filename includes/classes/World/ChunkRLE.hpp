@@ -29,6 +29,12 @@ protected :
   
 public :
 
+	void pushBackNoiseList(PerlinNoise* tmp);
+	void pushBackWeightList(std::vector<float> tmp);
+
+	static std::vector<PerlinNoise*> 		noiseList;
+	static std::vector<std::vector<float>>	weightList;
+
 
 	static constexpr char * shaderName = (char*)"RLE";
 
@@ -57,13 +63,9 @@ public :
 	void 					CompileData() override;
 
 	void 					Generate() override;
-	void 					Generate(PerlinNoise *noise, PerlinNoise *noise2);
-	void 					Generate(float *gen, int start);
-	void 					Generate(std::vector<PerlinNoise*> noiseList, std::vector<std::vector<double>> weightList);
 	
 	void 					Generate(std::vector<glm::ivec3> positionList,
 											std::vector<glm::ivec3> sizeList) override;
-	void 					Generate(u_int seed) override;
 
 };
 
