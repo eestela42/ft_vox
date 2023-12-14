@@ -357,9 +357,9 @@ void 					ChunkRLE::Generate()
 
 		u_char outPut = 0;
 
-		double v1 = noiseList[0]->newNoise2d(2 * p_x, 2 * p_y, 0.0);
+		double v1 = noiseList[0]->Octave2D(0.156 * p_x, 0.145 * p_y, 4, 3.33);
 
-		outPut = 5 + (int)(v1 *  70);
+		outPut = (int)(v1 * 100);
 		data[pos + 0] = STONE;
 		data[pos + 1] = outPut % 255 ;
 		pos += 2;
@@ -368,13 +368,15 @@ void 					ChunkRLE::Generate()
 		// data[pos + 0] = STONE;
 		// data[pos + 1] = outPut % 255 ;
 		// pos += 2;
+		
 
-		outPut = (int)(noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 4, 5) *  13);
+
+		outPut = (int)(noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 6, 1.366) *  (5 + 100 * v1 * 0.5));
 		data[pos + 0] = DIRT;
 		data[pos + 1] = outPut % 255 ;
 		pos += 2;
 
-		if (noiseList[2]->Octave2D(0.339 * p_x, 0.2944 * p_y, 3, 1) < 0.5)
+		if ((data[pos-1] + data[pos-3] > 50))
 			data[pos + 0] = GRASS;
 		else
 			data[pos + 0] = SAND;
