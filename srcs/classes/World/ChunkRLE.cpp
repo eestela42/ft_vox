@@ -18,13 +18,14 @@ void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char ori
 		vertexes.push_back(pos);
 		vertexes.push_back(orientation);
 		vertexes.push_back(type);
+		vertexes.push_back(1);
 
 	}
 }
 
 void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
 	
-	offset = vData.size() / 5;
+	offset = vData.size() / 6;
 
 	iData.push_back(0 + offset);
     iData.push_back(1 + offset);
@@ -226,7 +227,6 @@ void	ChunkRLE::CompileData()
 	}
 	dataStruct.data = (u_char*)vertexData.data();
 	dataStruct.size = vertexData.size() * sizeof(int);
-	// std::cout << "time for compiling chunk " << posX << " " << posY << " : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count() << " µs" << std::endl;
 }
 	
 		/*****	1 - constructors 		*****/
@@ -273,10 +273,7 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 
 ChunkRLE::~ChunkRLE()
 {
-	// if (this->data)
-	// 	delete this->data;
 	delete this->rubans_id;
-	
 }
 
 ChunkRLE::ChunkRLE() : Chunk(0,0)
@@ -326,6 +323,59 @@ void ChunkRLE::pushBackWeightList(std::vector<float> tmp)
 	ChunkRLE::weightList.push_back(tmp);
 }
 
+void ChunkRLE::randomGen(int &pos, int x, int y)
+{
+	
+		double p_x = ((double)posX * sizeX + x);
+		double p_y = ((double)posY * sizeY + y);
+
+		// p_x += 0.1;
+		// p_y += 0.1;
+
+		p_x /= (double)(sizeX * 16);
+		p_y /= (double)(sizeY * 16);
+
+		u_char outPut = 0;
+		double desert = noiseList[2]->Octave2D(0.00556 * p_x, 0.00645 * p_y, 4, 1.53);
+
+		int ground_factor = 100 ; 	//rock
+		int hill_factor = 20;	// over layer
+
+		u_char type_under = DIRT;
+		u_char type_over = GRASS;
+
+		if (desert < 0.5)
+		{
+			type_under = SAND;
+			type_over = SAND;
+		}
+
+		double v1 = noiseList[0]->Octave2D(0.456 * p_x, 0.395 * p_y, 4, 5);
+
+		outPut = (int)(v1 * ground_factor);
+		data[pos + 0] = STONE;
+		data[pos + 1] = outPut % 255 ;
+		pos += 2;
+
+
+		
+
+
+		double v2 = (noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 5, 0.1 + (0.5 / desert / v1)));
+		outPut = (int)(v2 * hill_factor * (0.5 + v1));
+
+		data[pos + 0] = type_under;
+		data[pos + 1] = outPut % 255 ;
+		pos += 2;
+
+		// if ((data[pos-1] + data[pos-3] > 60))
+		// 	data[pos + 0] = GRASS;
+		// else
+		data[pos + 0] = type_over;
+		data[pos + 1] = 1;
+		pos += 2;
+}
+
 void 					ChunkRLE::Generate()
 {
 	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 20);
@@ -335,54 +385,23 @@ void 					ChunkRLE::Generate()
 	int x_tab = 0;
 	int y_tab = 0;
 
+
+
 	for (int y = 0; y < sizeY; y++){
 	for (int x = 0; x < sizeX; x++)
 	{
 		rubansIndexes[x][y] = pos;
 
+		///bot
 		data[pos + 0] = BEDROCK;
 		data[pos + 1] = 3;
 		pos += 2;
 
 
-		
-		double p_x = ((double)posX * sizeX + (x + 0.5));
-		double p_y = ((double)posY * sizeY + (y + 0.4));
-
-		p_x += 0.1;
-		p_y += 0.1;
-
-		p_x /= (double)(sizeX * 16);
-		p_y /= (double)(sizeY * 16);
-
-		u_char outPut = 0;
-
-		double v1 = noiseList[0]->Octave2D(0.156 * p_x, 0.145 * p_y, 4, 3.33);
-
-		outPut = (int)(v1 * 100);
-		data[pos + 0] = STONE;
-		data[pos + 1] = outPut % 255 ;
-		pos += 2;
-
-		// outPut =(int)(noiseList[0]->newNoise2d(6.554 * p_x  * v1, 5.454 * p_y  * v1, 0.0) *  15);
-		// data[pos + 0] = STONE;
-		// data[pos + 1] = outPut % 255 ;
-		// pos += 2;
+		randomGen(pos, x, y);
 		
 
-
-		outPut = (int)(noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 6, 1.366) *  (5 + 100 * v1 * 0.5));
-		data[pos + 0] = DIRT;
-		data[pos + 1] = outPut % 255 ;
-		pos += 2;
-
-		if ((data[pos-1] + data[pos-3] > 50))
-			data[pos + 0] = GRASS;
-		else
-			data[pos + 0] = SAND;
-		data[pos + 1] = 1;
-		pos += 2;
-		
+		//top
 		data[pos + 0] = 0;
 		data[pos + 1] = (u_char)sizeZ - 4;
 		

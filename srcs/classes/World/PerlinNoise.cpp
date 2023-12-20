@@ -112,20 +112,36 @@ PerlinNoise::PerlinNoise(unsigned int seed) {
 // }
 double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, const double persistence) 
 {
-	double result = 0;
-	double amplitude = 1;
-	double fScale = 0;
+	double total = 0;
+    double frequency = 1;
+    double amplitude = 1;
+    double maxValue = 0;  
+    for(int i = 0; i < octaves; i++) {
+        total += newNoise2d(x * frequency, y * frequency, 0.5) * amplitude;
+        
+        maxValue += amplitude;
+        
+        amplitude *= persistence;
+        frequency *= 2;
+    }
+    
+    return total/maxValue;
+// 	double result = 0;
+// 	double amplitude = 1;
+// 	double fScale = 0;
 
-	for (std::int32_t i = 0; i < octaves; ++i)
-	{
-		result += (newNoise2d(x, y, 0) * amplitude);
-		x *= 2;
-		y *= 2;
-		fScale += amplitude;
-		amplitude *= persistence;
-	}
+// 	for (std::int32_t i = 0; i < octaves; ++i)
+// 	{
+// 		double tmp = newNoise2d(x, y, 0);
+// 		// std::cout << "tmp " << tmp << std::endl;
+// 		result += tmp  * amplitude;
+// 		x *= 2;
+// 		y *= 2;
+// 		fScale += amplitude;
+// 		amplitude /= persistence;
+// 	}
 
-	return result / fScale;
+// 	return result / fScale;
 }
 
 double	PerlinNoise::newNoise2d(double x, double y, double z)
@@ -155,6 +171,7 @@ double	PerlinNoise::newNoise2d(double x, double y, double z)
 
 	// Add blended results from 8 corners of cube
 	double res = lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), grad(p[BA], x-1, y, z)), lerp(u, grad(p[AB], x, y-1, z), grad(p[BB], x-1, y-1, z))),	lerp(v, lerp(u, grad(p[AA+1], x, y, z-1), grad(p[BA+1], x-1, y, z-1)), lerp(u, grad(p[AB+1], x, y-1, z-1),	grad(p[BB+1], x-1, y-1, z-1))));
+	// std::cout << "res " << res << std::endl;
 	return (res + 1.0)/2.0;
 }
 

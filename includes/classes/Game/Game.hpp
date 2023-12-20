@@ -27,7 +27,7 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 20;
+		int renderDistance = 18;
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;

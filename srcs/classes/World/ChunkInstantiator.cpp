@@ -19,7 +19,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	int chunkLoadingSize = Chunk::GetLoadedChunks().size();
 	std::vector<Chunk*> chunks;
 
-	u_int seed = 985638;
+	u_int seed = 4;
 	PerlinNoise *noise = new PerlinNoise(seed);
 	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
 
@@ -29,8 +29,6 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	init.pushBackNoiseList(noise2);
 	init.pushBackNoiseList(noise3);
 
-	// std::vector<PerlinNoise*> noiseList;
-	// std::vector<std::vector<double>> weightList;
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
 	for (int x = -renderDistance; x <= renderDistance; x++) { //Creating chunks

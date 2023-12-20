@@ -30,7 +30,7 @@ void Game::StartLoop() {
 		fps++;
 		Loop();
 		if (info && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() >= 500) {
-			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << std::endl;
+			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << " " << (int)cameraPosition.y << std::endl;
 			std::cout << "FPS: " << fps * 2 << std::endl;
 			fps = 0;
 			begin = std::chrono::steady_clock::now();
@@ -59,7 +59,7 @@ void Game::Loop() {
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
-	float speedMultiplier = (keyState[KEY_MOVE_UPWARD] & KEY_HOLD) ? 10 : 1;
+	float speedMultiplier = (keyState[KEY_MOVE_UPWARD] & KEY_HOLD) ? 20 : 1;
 	if(keyState[KEY_MOVE_FORWARD] & KEY_HOLD)
         cameraPosition += speed * speedMultiplier * cameraDirection;
     if(keyState[KEY_MOVE_BACKWARD] & KEY_HOLD)

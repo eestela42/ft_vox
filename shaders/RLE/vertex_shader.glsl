@@ -3,10 +3,12 @@ layout (location = 0) in int chunk_x;
 layout (location = 1) in int chunk_y; 
 layout (location = 2) in int pos; 
 layout (location = 3) in int face; 
-layout (location = 4) in int type; 
+layout (location = 4) in int type;
+layout (location = 5) in int light;
 
 out vec2 TexCoord;
 out float vertexID;
+out float grass;
 
 uniform float size_texture = 128;
 uniform float width_Texture = 2048;
@@ -25,11 +27,16 @@ void main()
 
 
 	vec2 zero_texture = vec2(0.0, 0.0);
-
-
-	float tmp = ((type - 1) * size_texture) / width_Texture;
-	zero_texture = vec2((type % 16 * 128) / width_Texture,
-						1 - (type / 16 * 128) / width_Texture);
+	int vtype = type;
+	grass = 0;
+	if (type == 19 && face == 5)
+	{
+		vtype = 16;
+		grass = 1;
+	}
+	float tmp = ((vtype - 1) * size_texture) / width_Texture;
+	zero_texture = vec2((vtype % 16 * 128) / width_Texture,
+						1 - (vtype / 16 * 128) / width_Texture);
 
 	vec2 texCoords[4];
 	
@@ -107,13 +114,7 @@ void main()
 		texCoords[1] = vec2(zero_texture.x + size_texture / width_Texture, zero_texture.y + 0.0);
 		texCoords[2] = vec2(zero_texture.x + size_texture / width_Texture, zero_texture.y + size_texture / width_Texture);
 		texCoords[3] = vec2(zero_texture.x + 0.0, zero_texture.y + size_texture / width_Texture);
-		if (type == 19)
-		{
-			texCoords[0] = vec2(zero_texture.x + (size_texture - 1) / width_Texture, zero_texture.y + (size_texture - 1) / width_Texture);
-			texCoords[1] = vec2(zero_texture.x + (size_texture - 1) / width_Texture, zero_texture.y + (size_texture - 1) / width_Texture);
-			texCoords[2] = vec2(zero_texture.x + (size_texture - 1) / width_Texture, zero_texture.y + (size_texture - 1) / width_Texture);
-			texCoords[3] = vec2(zero_texture.x + (size_texture - 1) / width_Texture, zero_texture.y + (size_texture - 1)/ width_Texture);
-		}
+		
 		break;
 	}
 

@@ -28,15 +28,15 @@ protected :
 	u_int 					sizeData = 0;
   
 public :
-
-	void pushBackNoiseList(PerlinNoise* tmp);
-	void pushBackWeightList(std::vector<float> tmp);
+	static constexpr char * shaderName = (char*)"RLE";
 
 	static std::vector<PerlinNoise*> 		noiseList;
 	static std::vector<std::vector<float>>	weightList;
 
+	void pushBackNoiseList(PerlinNoise* tmp);
+	void pushBackWeightList(std::vector<float> tmp);
 
-	static constexpr char * shaderName = (char*)"RLE";
+
 
 
 	~ChunkRLE();
@@ -62,10 +62,11 @@ public :
 
 	void 					CompileData() override;
 
+	void 					randomGen(int &pos, int x, int y);
 	void 					Generate() override;
 	
 	void 					Generate(std::vector<glm::ivec3> positionList,
-											std::vector<glm::ivec3> sizeList) override;
+										std::vector<glm::ivec3> sizeList) override;
 
 };
 
