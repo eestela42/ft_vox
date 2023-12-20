@@ -341,17 +341,18 @@ void ChunkRLE::randomGen(int &pos, int x, int y)
 		double desert = noiseList[2]->Octave2D(0.00556 * p_x, 0.00645 * p_y, 4, 1.53);
 
 		int ground_factor = 100 ; 	//rock
-		int hill_factor = 50 * desert;	// over layer
+		int hill_factor = 100 * desert;	// over layer
 
 		u_char type_under = DIRT;
 		u_char type_over = GRASS;
-		if (desert < 0.5)
+		
+		if (desert < 0.3)
 		{
 			type_under = SAND;
 			type_over = SAND;
 		}
 
-		double v1 = noiseList[0]->Octave2D(0.0456 * p_x, 0.0395 * p_y, 4, 5);
+		double v1 = noiseList[0]->Octave2D(0.00456 * p_x, 0.00395 * p_y, 6, 0.5);
 
 		outPut = (int)(v1 * ground_factor);
 		data[pos + 0] = STONE;
