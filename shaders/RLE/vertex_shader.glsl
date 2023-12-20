@@ -7,8 +7,8 @@ layout (location = 4) in int type;
 layout (location = 5) in int light;
 
 out vec2 TexCoord;
-out float vertexID;
-out float grass;
+out float out_light;
+out float out_grass;
 
 uniform float size_texture = 128;
 uniform float width_Texture = 2048;
@@ -28,11 +28,11 @@ void main()
 
 	vec2 zero_texture = vec2(0.0, 0.0);
 	int vtype = type;
-	grass = 0;
+	out_grass = 0;
 	if (type == 19 && face == 5)
 	{
 		vtype = 16;
-		grass = 1;
+		out_grass = 1;
 	}
 	float tmp = ((vtype - 1) * size_texture) / width_Texture;
 	zero_texture = vec2((vtype % 16 * 128) / width_Texture,
@@ -135,7 +135,7 @@ void main()
 
 	gl_Position = matrix * vec4(newPos, 1.0);
 	
-	vertexID = gl_VertexID;
 	TexCoord = texCoords[point];
+	out_light = 0.1 * light;
 	// ourColor = vec3(0.0, 1.0, 1.0);
 }
