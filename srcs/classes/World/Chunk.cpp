@@ -1,5 +1,7 @@
 #include <classes/World/Chunk.hpp>
 #include <classes/World/PerlinNoise.hpp>
+#include <classes/World/ChunkGenerator.hpp>
+
 
 std::vector<std::vector<Chunk*>> Chunk::loadedChunks;
 u_int Chunk::idCount = 0;
@@ -15,7 +17,8 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 void Chunk::PublicGenerate() {
 	Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
-	Generate();
+	ChunkGenerator generator;
+	updateFromRaw(generator.generator(*this));
 	isCompiled = false;
 	Profiler::StopTracking("Chunk::PublicGenerate()");
 }

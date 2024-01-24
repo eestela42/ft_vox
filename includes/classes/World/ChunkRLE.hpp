@@ -68,6 +68,8 @@ public :
 	void 					Generate(std::vector<glm::ivec3> positionList,
 										std::vector<glm::ivec3> sizeList) override;
 
+	void 					updateFromRaw(u_char *rawData) override;
+
 };
 
 

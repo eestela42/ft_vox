@@ -117,7 +117,7 @@ double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, con
     double amplitude = 1;
     double maxValue = 0;  
     for(int i = 0; i < octaves; i++) {
-        total += newNoise2d(x * frequency, y * frequency, 0.5) * amplitude;
+        total += newNoise3d(x * frequency, y * frequency, 0.5) * amplitude;
         
         maxValue += amplitude;
         
@@ -132,7 +132,7 @@ double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, con
 
 // 	for (std::int32_t i = 0; i < octaves; ++i)
 // 	{
-// 		double tmp = newNoise2d(x, y, 0);
+// 		double tmp = newNoise3d(x, y, 0);
 // 		// std::cout << "tmp " << tmp << std::endl;
 // 		result += tmp  * amplitude;
 // 		x *= 2;
@@ -144,7 +144,25 @@ double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, con
 // 	return result / fScale;
 }
 
-double	PerlinNoise::newNoise2d(double x, double y, double z)
+double PerlinNoise::Octave3D(double x, double y, double z, const std::int32_t octaves, const double persistence) 
+{
+	double total = 0;
+    double frequency = 1;
+    double amplitude = 1;
+    double maxValue = 0;  
+    for(int i = 0; i < octaves; i++) {
+        total += newNoise3d(x * frequency, y * frequency, z * frequency) * amplitude;
+        
+        maxValue += amplitude;
+        
+        amplitude *= persistence;
+        frequency *= 2;
+    }
+    
+    return total/maxValue;
+}
+
+double	PerlinNoise::newNoise3d(double x, double y, double z)
 {
 	// Find the unit cube that contains the point
 	int X = (int) floor(x) & ((size*size)-1);

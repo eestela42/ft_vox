@@ -2,6 +2,7 @@
 
 #include <classes/World/ChunkDefault.hpp>
 #include <classes/World/ChunkRLE.hpp>
+#include <classes/World/ChunkGenerator.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/ShaderHandler.hpp>
 #include <unordered_map>

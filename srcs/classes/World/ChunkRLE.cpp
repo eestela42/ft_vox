@@ -150,18 +150,18 @@ void	ChunkRLE::CompileData()
 	shapeAssemblyData.clear();
 	vertexData.reserve(20000);
 	shapeAssemblyData.reserve(7000);
-
 	u_int pos = 0;
-
 	for (u_int y = 0; y < sizeY; y++) {
 	for (u_int x = 0; x < sizeX; x++)
 	{
+
 		u_int z = 0;
 		int neighb_pos[4] = {0, 0, 0, 0}; 	//pos in neighbour's rubans
 		int neighb_z[4] = {0, 0, 0, 0};		//z postion of the neighbour
 		int neighb_over[4] = {0, 0, 0, 0};	//nbr of block already checked in this ruban 
 		while (z < sizeZ - 1)
 		{
+
 			u_int z_end  = z + data[pos + 1];
 			if ((!z && data[pos]) || (data[pos] && !data[pos - 2]))
 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
@@ -170,7 +170,6 @@ void	ChunkRLE::CompileData()
 				u_char *ruban = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb);
 				while (neighb_z[neighb] + neighb_over[neighb] < z_end)
 				{
-
 					int real_z = neighb_z[neighb] + neighb_over[neighb];
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
@@ -325,6 +324,56 @@ void ChunkRLE::pushBackWeightList(std::vector<float> tmp)
 	ChunkRLE::weightList.push_back(tmp);
 }
 
+void ChunkRLE::updateFromRaw(u_char *rawData)
+{
+	// std::cout << "updateFromRaw" << std::endl;
+	std::vector<u_char> *rubans = new std::vector<u_char>; // leaks ?
+	rubans->resize(sizeX * sizeY * 2);
+	// for (int i = 0; i < sizeX * sizeY * sizeZ; i++)
+	// {
+	// 	std::cout << (int)rawData[i];
+	// 	if (!(i % (sizeZ)))
+	// 		std::cout << std::endl;
+	// }
+	
+	u_int pos = 0;
+
+	for (u_int y = 0; y < sizeY; y++) {
+	for (u_int x = 0; x < sizeX; x++)
+	{
+	
+		rubansIndexes[x][y] = rubans->size();
+
+		u_char type = 0;
+		u_char size = 0;
+
+		// std::cout << "pos: " << x << " " << y << std::endl;
+		for (u_int z = 0; z < sizeZ; z++)
+		{
+			if (rawData[pos] != type)
+			{
+				if (size)
+				{
+					rubans->push_back(type);
+					rubans->push_back(size);
+				}
+				type = rawData[pos];
+				size = 1;
+			}
+			else
+				size++;
+			pos++;
+		}
+		rubans->push_back(0);
+		rubans->push_back(sizeZ - 1);
+	}
+	}
+	this->sizeData = rubans->size();
+	this->data = rubans->data();
+	free(rawData);
+
+}
+
 void ChunkRLE::randomGen(int &pos, int x, int y)
 {
 	
@@ -377,6 +426,8 @@ void ChunkRLE::randomGen(int &pos, int x, int y)
 		data[pos + 1] = 1;
 		pos += 2;
 }
+
+
 
 void 					ChunkRLE::Generate()
 {

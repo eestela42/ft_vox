@@ -32,6 +32,8 @@ private:
 	virtual void CompileData() = 0;
 	virtual void Generate() = 0;
 	virtual void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) = 0;
+	
+	virtual void updateFromRaw(u_char *rawData) = 0;
 protected :
 	static std::vector<std::vector<Chunk*>> loadedChunks;
 

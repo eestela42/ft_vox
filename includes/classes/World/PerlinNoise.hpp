@@ -32,7 +32,9 @@ public:
 	void							noise2d(int nWidth, int nheight, float *fSeed, int nOctaves, float fBias, float *fOutput);
 
 	double 							Octave2D(double x, double y, const std::int32_t octaves, const double persistence);
-	double							newNoise2d(double x, double y, double z);
+	double 							Octave3D(double x, double y, double z, const std::int32_t octaves, const double persistence);
+
+	double							newNoise3d(double x, double y, double z);
 	// double							noise(double x, double y, double z);
 
 

@@ -1,5 +1,4 @@
 #include <classes/World/ChunkInstantiator.hpp>
-
 bool isInCircle(long int x, long int y, long int radius, long int circleX, long int circleY) {
 	if ((x - circleX) * (x - circleX) + (y - circleY) * (y - circleY) <= radius * radius) {
 		return true;
@@ -24,7 +23,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
 
 	PerlinNoise *noise3 = new PerlinNoise(seed + 59);
-	ChunkRLE init;
+	ChunkGenerator init;
 	init.pushBackNoiseList(noise);
 	init.pushBackNoiseList(noise2);
 	init.pushBackNoiseList(noise3);
@@ -48,8 +47,10 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	showChunkDebug && std::cout << "Chunk compilation started " << std::endl;
 	for (auto const& x : chunks)
 	{
+		showChunkDebug && std::cout << "compil " << x->GetX() << " " << x->GetY() << std::endl;
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(x->GetVertexData()), new ElementBufferObject(x->GetShapeAssemblyData()), shader);
 		chunkMap[x] = vertexArrayObjectHandler->AddVAO(VAO);
+		showChunkDebug && std::cout << "END compil " << x->GetX() << " " << x->GetY() << std::endl;
 	}
 	showChunkDebug && std::cout << "Chunk are compiled " << std::endl;
 }
@@ -69,35 +70,31 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 
 	if (playerChunkPosX != oldPlayerChunkPosX || playerChunkPosY != oldPlayerChunkPosY) {
 		for (int x = oldPlayerChunkPosX - renderDistance; x <= oldPlayerChunkPosX + renderDistance; x++) { //Deleting chunks
-		for (int y = oldPlayerChunkPosY - renderDistance; y <= oldPlayerChunkPosY + renderDistance; y++) {
-			if (loadedChunks[(x % size + size) % size][(y % size + size) % size] && !isInCircle(x, y, renderDistance, playerChunkPosX, playerChunkPosY)) {
-				generationQueueMap.erase(std::pair(x, y));
-				compilationQueueMap.erase(std::pair(x, y));
-				updateQueueMap.erase(std::pair(x, y));
-				vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(x % size + size) % size][(y % size + size) % size]]);
-				chunkMap.erase(loadedChunks[(x % size + size) % size][(y % size + size) % size]);
-				delete loadedChunks[(x % size + size) % size][(y % size + size) % size];
-			}
-		}
-		}
-		for (int x = playerChunkPosX - renderDistance; x <= playerChunkPosX + renderDistance; x++) { //Creating chunks
-		for (int y = playerChunkPosY - renderDistance; y <= playerChunkPosY + renderDistance; y++) {
-			if (isInCircle(x, y, renderDistance, playerChunkPosX, playerChunkPosY) && !isInCircle(x, y, renderDistance, oldPlayerChunkPosX, oldPlayerChunkPosY)) {
-				if (generationQueueMap.find(std::pair(x, y)) == generationQueueMap.end()) {
-					Chunk* chunk = new ChunkRLE(x, y);
-					generationQueueMap[std::pair(x, y)] = chunk;
-					compilationQueueMap[std::pair(x, y)] = chunk;
+			for (int y = oldPlayerChunkPosY - renderDistance; y <= oldPlayerChunkPosY + renderDistance; y++) {
+				if (loadedChunks[(x % size + size) % size][(y % size + size) % size] && !isInCircle(x, y, renderDistance, playerChunkPosX, playerChunkPosY)) {
+					generationQueueMap.erase(std::pair(x, y));
+					compilationQueueMap.erase(std::pair(x, y));
+					updateQueueMap.erase(std::pair(x, y));
+					vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(x % size + size) % size][(y % size + size) % size]]);
+					chunkMap.erase(loadedChunks[(x % size + size) % size][(y % size + size) % size]);
+					delete loadedChunks[(x % size + size) % size][(y % size + size) % size];
 				}
 			}
-		}}
+		}
+		for (int x = playerChunkPosX - renderDistance; x <= playerChunkPosX + renderDistance; x++) { //Creating chunks
+			for (int y = playerChunkPosY - renderDistance; y <= playerChunkPosY + renderDistance; y++) {
+				if (isInCircle(x, y, renderDistance, playerChunkPosX, playerChunkPosY) && !isInCircle(x, y, renderDistance, oldPlayerChunkPosX, oldPlayerChunkPosY)) {
+					if (generationQueueMap.find(std::pair(x, y)) == generationQueueMap.end()) {
+						Chunk* chunk = new ChunkRLE(x, y);
+						generationQueueMap[std::pair(x, y)] = chunk;
+						compilationQueueMap[std::pair(x, y)] = chunk;
+					}
+				}
+			}
+		}
 	}
 	std::vector<std::pair<int,int>> toErase;
-	u_int seed = 32543;
-	PerlinNoise *noise = new PerlinNoise(seed);
-	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
-
-	std::vector<PerlinNoise*> noiseList;
-	std::vector<std::vector<double>> weightList;
+	
 
 	for (auto const& pos : generationQueueMap)
 	{
