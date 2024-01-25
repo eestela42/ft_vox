@@ -30,7 +30,8 @@ class ChunkGenerator
 		ChunkGenerator();
 		ChunkGenerator(u_int seed);
 		
-		u_char		*generator(Chunk &chunk);
+		void		generateTree(u_char *data, int x, int y, int z);
+		u_char*		generator(Chunk &chunk);
 };
 
 #endif

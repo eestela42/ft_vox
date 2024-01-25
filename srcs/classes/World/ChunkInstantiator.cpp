@@ -24,11 +24,14 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 
 	PerlinNoise *noise2 = new PerlinNoise(seed + 59);
 	PerlinNoise *noise3 = new PerlinNoise(seed + 42);
+	PerlinNoise *noise4 = new PerlinNoise(seed + 53);
+
 	ChunkGenerator init;
 	init.pushBackNoiseList(noise0);
 	init.pushBackNoiseList(noise1);
 	init.pushBackNoiseList(noise2);
 	init.pushBackNoiseList(noise3);
+	init.pushBackNoiseList(noise4);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
