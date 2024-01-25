@@ -72,7 +72,7 @@ public :
 	virtual ~Chunk();
 };
 
-
+# define AIR 0
 # define ANDESITH 16
 # define STONE 17
 # define DIRT 18

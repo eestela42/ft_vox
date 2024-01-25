@@ -19,12 +19,14 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	std::vector<Chunk*> chunks;
 
 	u_int seed = 6534668;
-	PerlinNoise *noise = new PerlinNoise(seed);
-	PerlinNoise *noise2 = new PerlinNoise(seed + 13);
+	PerlinNoise *noise0 = new PerlinNoise(seed);
+	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
 
-	PerlinNoise *noise3 = new PerlinNoise(seed + 59);
+	PerlinNoise *noise2 = new PerlinNoise(seed + 59);
+	PerlinNoise *noise3 = new PerlinNoise(seed + 42);
 	ChunkGenerator init;
-	init.pushBackNoiseList(noise);
+	init.pushBackNoiseList(noise0);
+	init.pushBackNoiseList(noise1);
 	init.pushBackNoiseList(noise2);
 	init.pushBackNoiseList(noise3);
 
