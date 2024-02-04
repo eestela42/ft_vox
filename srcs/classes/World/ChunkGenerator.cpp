@@ -103,6 +103,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 			z++;
 		}
 
+	
 		if (z > detail_height && z == dirt_height && dirt_factor > 0.1)
 		{
 			data[x * sizeZ + z - 1 + y * sizeX * sizeZ] = GRASS;
@@ -114,8 +115,8 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 
 	}
 	}
-
 	// return data;
+
 
 
 	for (int y = 0; y < sizeY; y++) {
@@ -124,7 +125,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		double p_y = ((double)posY * sizeY + y);
 
 		int z = 1;
-		for ( ; z < hill_height * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5); z++) {
+		for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++) {
 			double cave_factor = noiseList[3]->Octave3D(0.0356 * (posX * sizeX + x), 0.0395 * (posY * sizeY + y), z * 0.13, 1, 0.5);
 			if (cave_factor > 0.6) {
 				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
