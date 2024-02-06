@@ -48,18 +48,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
 		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
 		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
-
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 1.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos +  vec3(0.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
-
-
 		
 		break;
 	case  1 :
@@ -68,20 +56,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[3]);
 		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
 
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[0];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 1.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos +  vec3(1.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
-
-		
 		break;
 	case 2 :
 		create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
@@ -89,19 +63,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
 		create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[2]);
 		
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[0];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos +  vec3(0.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
-
 		break;
 	
 	case 3 :
@@ -109,19 +70,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[1]);
 		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
 		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[2]);
-
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[0];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 0.0, 1.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
 
 		break;
 	
@@ -131,21 +79,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[3]);
 		create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[2]);
 
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[0];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 0.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos +  vec3(0.0, 0.0, 1.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 0.0, 1.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
-
-
-
 		break;
 	case  5 :
 		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[0]);
@@ -153,20 +86,6 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
 		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
 
-		// gl_Position = matrix * vec4(pos + vec3(0.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[0];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 1.0, 0.0), 1);
-		// tex_out = texCoords[1];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos +  vec3(0.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[3];
-		// EmitVertex();
-		// gl_Position = matrix * vec4(pos + vec3(1.0, 1.0, 1.0), 1);
-		// tex_out = texCoords[2];
-		// EmitVertex();
-
-		
 		break;
 	}
 	EndPrimitive();
@@ -208,5 +127,4 @@ void main() {
 
 
 	
-	// 	break;
-	// }
+	
