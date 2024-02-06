@@ -11,31 +11,27 @@ std::vector<std::vector<float>> ChunkRLE::weightList;
 		/*****	2 - methods 		*****/
 void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
 {
-	for (char i = 0; i < 4; i++)
-	{
+	// for (char i = 0; i < 4; i++)
+	// {
 		vertexes.push_back(posX);
 		vertexes.push_back(posY);
 		vertexes.push_back(pos);
 		vertexes.push_back(orientation);
 		vertexes.push_back(type);
-		if (orientation == 2 || orientation == 3 || orientation == 4)
-			vertexes.push_back(8);
-		else
-			vertexes.push_back(10);
-	}
+	// }
 }
 
 void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
 	
-	offset = vData.size() / 6;
+	offset = vData.size();
 
 	iData.push_back(0 + offset);
-    iData.push_back(1 + offset);
-    iData.push_back(2 + offset);
+    // iData.push_back(1 + offset);
+    // iData.push_back(2 + offset);
 
-    iData.push_back(0 + offset);
-    iData.push_back(2 + offset);
-    iData.push_back(3 + offset);
+    // iData.push_back(0 + offset);
+    // iData.push_back(2 + offset);
+    // iData.push_back(3 + offset);
 
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 
