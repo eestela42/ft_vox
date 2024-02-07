@@ -18,7 +18,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	int chunkLoadingSize = Chunk::GetLoadedChunks().size();
 	std::vector<Chunk*> chunks;
 
-	u_int seed = 6534668;
+	u_int seed = 653988;
 	PerlinNoise *noise0 = new PerlinNoise(seed);
 	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
 
@@ -54,6 +54,8 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	{
 		showChunkDebug && std::cout << "compil " << x->GetX() << " " << x->GetY() << std::endl;
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(x->GetVertexData()), new ElementBufferObject(x->GetShapeAssemblyData()), shader);
+		VAO->posX = x->GetX();
+		VAO->posY = x->GetY();
 		chunkMap[x] = vertexArrayObjectHandler->AddVAO(VAO);
 		showChunkDebug && std::cout << "END compil " << x->GetX() << " " << x->GetY() << std::endl;
 	}
@@ -126,6 +128,8 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			return ;
 		}
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
+		VAO->posX = pos.second->GetX();
+		VAO->posY = pos.second->GetY();
 		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
 		toErase.push_back(pos.first);
 	}
@@ -153,6 +157,8 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 		vertexArrayObjectHandler->RemoveVAO(chunkMap[pos.second]);
 		chunkMap.erase(pos.second);
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
+		VAO->posX = pos.second->GetX();
+		VAO->posY = pos.second->GetY();
 		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
 		toErase.push_back(pos.first);
 	}

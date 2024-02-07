@@ -54,7 +54,9 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	int posY = chunk.GetY();
 	u_char *data = (u_char*)calloc(sizeX * sizeY * sizeZ, sizeof(*data));
 
-	int hill_height;
+	int ground_height = 0;
+	int hill_height = 0;
+	
 	std::default_random_engine engine(389 * posX * posY);
 
 	for (int y = 0; y < sizeY; y++) {
@@ -68,30 +70,55 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		double p_y = ((double)posY * sizeY + y);
 		
 		double ground_factor = noiseList[0]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 3, 0.5);
-		int ground_height = (int)(ground_factor * 60 + 40);
+		ground_height = (int)(ground_factor * 50 + 40);
 
 		while (z < ground_height) {
 			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
 			z++;
 		}
 
-		double hill_factor = noiseList[1]->Octave2D(0.0158 * p_x, 0.01568 * p_y, 3, 0.5);
-		hill_height = ground_height + (int)((hill_factor + ground_factor) * 70 + 5);
+		double hill_factor = noiseList[1]->Octave2D(0.0158 * p_x, 0.01568 * p_y, 4, 0.5);
+		hill_height = ground_height + (int)((hill_factor + ground_factor) * 80 + 5);
 		
-		while (z < hill_height) {
-			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
-			z++;
+		// if (ground_factor < 0.6)
+		// {
+		// 	while (z < hill_height) {
+		// 		data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+		// 		z++;
+		// 	}
+		// }
+		// else
+		{
+			int air_end = 0;
+			// std::cout << "hill" << std::endl;
+			for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
+			{
+				double montain_factor = noiseList[3]->Octave3D(0.00356 * p_x, 0.00395 * p_y, z * 0.013, 1, 0.5);
+				// std::cout << "mountain" << std::endl;
+				if (montain_factor < float(z)/hill_height)
+				
+				{
+					air_end++;
+					data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
+					continue ;
+				}
+				air_end = 0;
+				data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+			}
+			z -= air_end;
+			hill_height = z;
 		}
 
-		//faire que ce soit perpendiculaire a l'inclinaison du sol
-		double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
-		// int detail_height = hill_height + (int)((detail_factor + (hill_factor / 10)) * (6 * (detail_factor / 2 + detail_factor * detail_factor)));
-		int detail_height = hill_height + std::pow(detail_factor, 5) * 6;
+
+		// //faire que ce soit perpendiculaire a l'inclinaison du sol
+		// double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
+		// // int detail_height = hill_height + (int)((detail_factor + (hill_factor / 10)) * (6 * (detail_factor / 2 + detail_factor * detail_factor)));
+		// int detail_height = hill_height + detail_factor * 6;
 		
-		while (z < detail_height) {
-			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
-			z++;
-		}
+		// while (z < detail_height) {
+		// 	data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+		// 	z++;
+		// }
 
 
 
@@ -104,41 +131,30 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		}
 
 	
-		if (z > detail_height && z == dirt_height && dirt_factor > 0.1)
+		if (/*z > detail_height && */  z == dirt_height && dirt_factor > 0.1)
 		{
+			double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
+			tree_factor /= 10;
 			data[x * sizeZ + z - 1 + y * sizeX * sizeZ] = GRASS;
-			if (engine.operator()() % 100 == 0)
+			if ((engine.operator()() % 1000) / tree_factor < 1)
 			{
 				generateTree(data, x, y, z - 1);
 			}
 		}
 
-	}
-	}
-	// return data;
-
-
-
-	for (int y = 0; y < sizeY; y++) {
-	for (int x = 0; x < sizeX; x++) {
-		double p_x = ((double)posX * sizeX + x);
-		double p_y = ((double)posY * sizeY + y);
-
-		int z = 1;
-		for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++) {
+		z = 1;
+		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++) {
 			double cave_factor = noiseList[3]->Octave3D(0.0356 * (posX * sizeX + x), 0.0395 * (posY * sizeY + y), z * 0.13, 1, 0.5);
 			if (cave_factor > 0.6) {
 				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
 				continue ;
 			}
-			if (cave_factor < 0.58442 && cave_factor > 0.58438) {
-				data[x * sizeZ + z + y * sizeX * sizeZ] = GOLD_MINERAL;
-			}
-			if (cave_factor < 0.582201 && cave_factor > 0.5815) {
-				data[x * sizeZ + z + y * sizeX * sizeZ] = IRON_MINERAL;
-			}
 		}
+
 	}
 	}
+
+
+	
 	return data;
 }

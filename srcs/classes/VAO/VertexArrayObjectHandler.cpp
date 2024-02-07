@@ -8,11 +8,24 @@ void VertexArrayObjectHandler::Draw() {
 	}
 }
 
-void VertexArrayObjectHandler::DrawAll() {
+void VertexArrayObjectHandler::DrawAll(glm::vec3 originCameraPosition, glm::vec3 originCameraDirection) {
 	Unbind();
 	int i = 0;
+	glm::vec2 cameraDirection = glm::normalize(glm::vec2(originCameraDirection.x, originCameraDirection.z));
+	glm::vec2 cameraPosition =  glm::normalize(glm::vec2(originCameraPosition.x, originCameraPosition.z));
+	// cameraPosition -= cameraDirection * 10.0f;
 	for (auto const& x : vaoMap)
 	{
+
+		// glm::vec2 VAO_direction = glm::normalize(glm::vec2(x.second->posX, x.second->posY)) - cameraPosition;
+
+		// VAO_direction = glm::normalize(VAO_direction);
+		
+		// if (glm::dot(VAO_direction, cameraDirection) < 0.0f)
+		// 	{
+		// 		continue;
+		// 	}
+
 		x.second->Bind();
 		glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
 		x.second->Unbind();

@@ -21,6 +21,8 @@ public:
     VertexBufferObject *GetVBO();
     ElementBufferObject *GetEBO();
 	size_t GetIndicesSize();
+	float posX;
+	float posY;
 
 	~VertexArrayObject();
 private:

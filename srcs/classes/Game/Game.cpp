@@ -53,7 +53,9 @@ void Game::Loop() {
 		assert(!"The loop is running and there are no active shader");
 	}
 
-	vertexArrayObjectHandler->DrawAll();
+
+
+	vertexArrayObjectHandler->DrawAll(cameraPosition, cameraDirection);
 
 	window->SwapBuffersAndPollEvents();
 }
