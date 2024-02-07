@@ -14,6 +14,6 @@ void main()
 	if (out_grass == 1)
 		FragColor = texture(ourTexture, tex_out) * vec4(0.4, 1, 0.4, 1);
 	else
-		FragColor = texture(ourTexture, tex_out);
+		FragColor = texture(ourTexture, tex_out) * out_light;
 	// FragColor = vec4(0.3, 0.1, 0.4, 1);
 }

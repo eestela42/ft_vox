@@ -22,6 +22,7 @@ uniform mat4 matrix;
 
 out vec2 tex_out;
 out float out_grass;
+out float out_light;
 
 
 void create_vertex(vec3 pos, vec2 texCoords)
@@ -43,7 +44,7 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 	switch (face)
 	{
 	case 0 :
-
+		
 		create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[0]);
 		create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
 		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
@@ -114,7 +115,10 @@ void main() {
 						1 - (vtype / 16 * 128) / width_Texture);
 
 	
-
+	if (geo_in[0].face == 2 || geo_in[0].face == 3 || geo_in[0].face == 4)
+			out_light = 0.8;
+		else
+			out_light = 1.0;
 	create_face(pos, zero_texture, geo_in[0].face);
 
 }

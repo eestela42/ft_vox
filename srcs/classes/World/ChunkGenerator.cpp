@@ -115,7 +115,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 
 	}
 	}
-	return data;
+	// return data;
 
 
 
