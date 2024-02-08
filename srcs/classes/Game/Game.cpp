@@ -55,7 +55,7 @@ void Game::Loop() {
 
 
 
-	vertexArrayObjectHandler->DrawAll(cameraPosition, cameraDirection);
+	vertexArrayObjectHandler->DrawAll();
 
 	window->SwapBuffersAndPollEvents();
 }

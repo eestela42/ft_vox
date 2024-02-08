@@ -14,6 +14,7 @@ public:
     ~VertexArrayObjectHandler();
 
 	void Draw();
+	void DrawAll();
 	void DrawAll(glm::vec3 cameraPosition, glm::vec3 cameraDirection);
 	VertexArrayObject *GetVAO(u_int VAO);
 	
