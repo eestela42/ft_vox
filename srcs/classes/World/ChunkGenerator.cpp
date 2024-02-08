@@ -59,9 +59,10 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	
 	std::default_random_engine engine(389 * posX * posY);
 
+
+
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
-
 		data[x * sizeZ + y * sizeX * sizeZ] = BEDROCK;
 
 		int z = 1;
@@ -73,6 +74,8 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		ground_height = (int)(ground_factor * 50 + 40);
 
 		while (z < ground_height) {
+			if (z == 254)
+				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
 			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
 			z++;
 		}
@@ -93,6 +96,8 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 			// std::cout << "hill" << std::endl;
 			for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
 			{
+				if (z == 254)
+				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
 				double montain_factor = noiseList[3]->Octave3D(0.00356 * p_x, 0.00395 * p_y, z * 0.013, 1, 0.5);
 				// std::cout << "mountain" << std::endl;
 				if (montain_factor < float(z)/hill_height)
@@ -126,6 +131,8 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		int dirt_height = hill_height + (int)((dirt_factor) * 12);
 
 		while (z < dirt_height) {
+			if (z == 254)
+				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
 			data[x * sizeZ + z + y * sizeX * sizeZ] = DIRT;
 			z++;
 		}
@@ -143,12 +150,40 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		}
 
 		z = 1;
-		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++) {
-			double cave_factor = noiseList[3]->Octave3D(0.0356 * (posX * sizeX + x), 0.0395 * (posY * sizeY + y), z * 0.13, 1, 0.5);
-			if (cave_factor > 0.6) {
+		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
+		{
+			if (z < 32)
+			{
+				double diamond_factor = noiseList[0]->Octave3D(0.0156 * (posX * sizeX + x), 0.095 * (posY * sizeY + y), z * 0.39, 1, 0.5);
+				if ((diamond_factor > 0.90 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ || diamond_factor < 0.1)) {
+					data[x * sizeZ + z + y * sizeX * sizeZ] = DIAMOUND_BLOCK;
+					continue ;
+				}
+			}
+			if (z < 64)
+			{
+				double iron_factor = noiseList[1]->Octave3D(0.0156 * (posX * sizeX + x), 0.0195 * (posY * sizeY + y), z * 0.49, 1, 0.5);
+				if ((iron_factor > 0.49 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ && iron_factor < 0.51)) {
+					data[x * sizeZ + z + y * sizeX * sizeZ] = IRON_MINERAL;
+					continue ;
+				}
+			}
+		}
+
+		z = 1;
+		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
+		{
+			double cave_factor = noiseList[3]->Octave3D(0.01556 * (posX * sizeX + x), 0.01595 * (posY * sizeY + y), z * 0.06, 1, 0.5);
+			if (cave_factor > 0.8) {
 				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
 				continue ;
 			}
+			double spag_factor = noiseList[0]->Octave3D(0.0256 * (posX * sizeX + x), 0.0295 * (posY * sizeY + y), z * 0.039, 1, 0.5);
+			if ((spag_factor > 0.45 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ && spag_factor < 0.54)) {
+				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
+				continue ;
+			}
+			
 		}
 
 	}
