@@ -39,6 +39,7 @@ void Game::StartLoop() {
 }
 
 void Game::Loop() {
+	// std::cout << "Loop" << std::endl;
 	inputHandler->HandleInput();
 	window->Clear();
 	instantiator->Update(cameraPosition, std::chrono::milliseconds(10));
@@ -54,10 +55,10 @@ void Game::Loop() {
 	}
 
 
-
 	vertexArrayObjectHandler->DrawAll();
-
 	window->SwapBuffersAndPollEvents();
+
+	// std::cout << "OUT Loop" << std::endl;
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {

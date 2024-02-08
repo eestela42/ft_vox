@@ -60,7 +60,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	std::default_random_engine engine(389 * posX * posY);
 
 
-
+	// std::cout << "chunk " << posX << " " << posY << std::endl;
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
 		data[x * sizeZ + y * sizeX * sizeZ] = BEDROCK;
@@ -70,38 +70,39 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		double p_x = ((double)posX * sizeX + x);
 		double p_y = ((double)posY * sizeY + y);
 		
-		double ground_factor = noiseList[0]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 3, 0.5);
-		ground_height = (int)(ground_factor * 50 + 40);
+		double ground_factor = noiseList[0]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 2, 0.67);
+		ground_height = (int)(ground_factor * 90);
+
+		bool isWater = false;
+		if (ground_factor < 0.25)
+		{
+			isWater = true;
+		}
 
 		while (z < ground_height) {
-			if (z == 254)
-				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
 			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
 			z++;
 		}
 
 		double hill_factor = noiseList[1]->Octave2D(0.0158 * p_x, 0.01568 * p_y, 4, 0.5);
-		hill_height = ground_height + (int)((hill_factor + ground_factor) * 80 + 5);
+		hill_height = ground_height + (int)((hill_factor * ground_factor) * 80 + 5);
 		
-		// if (ground_factor < 0.6)
-		// {
-		// 	while (z < hill_height) {
-		// 		data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
-		// 		z++;
-		// 	}
-		// }
-		// else
+		if (ground_factor < 0.6)
+		{
+			while (z < hill_height) {
+				data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+				z++;
+			}
+		}
+		else
 		{
 			int air_end = 0;
 			// std::cout << "hill" << std::endl;
 			for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
 			{
-				if (z == 254)
-				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
-				double montain_factor = noiseList[3]->Octave3D(0.00356 * p_x, 0.00395 * p_y, z * 0.013, 1, 0.5);
+				double montain_factor = noiseList[3]->Octave3D(0.0356 * p_x, 0.0395 * p_y, z * 0.013, 1, 0.5);
 				// std::cout << "mountain" << std::endl;
-				if (montain_factor < float(z)/hill_height)
-				
+				if (montain_factor < float(z)/(hill_height*2))
 				{
 					air_end++;
 					data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
@@ -115,39 +116,55 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		}
 
 
-		// //faire que ce soit perpendiculaire a l'inclinaison du sol
-		// double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
-		// // int detail_height = hill_height + (int)((detail_factor + (hill_factor / 10)) * (6 * (detail_factor / 2 + detail_factor * detail_factor)));
-		// int detail_height = hill_height + detail_factor * 6;
+		//faire que ce soit perpendiculaire a l'inclinaison du sol
+		double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
+		// int detail_height = hill_height + (int)((detail_factor + (hill_factor / 10)) * (6 * (detail_factor / 2 + detail_factor * detail_factor)));
+		int detail_height = hill_height + detail_factor * 6;
 		
-		// while (z < detail_height) {
-		// 	data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
-		// 	z++;
-		// }
+		while (z < detail_height) {
+			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+			z++;
+		}
 
 
 
-		double dirt_factor = noiseList[2]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 1, 0.5);
+		double dirt_factor = noiseList[2]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 2, 0.5);
 		int dirt_height = hill_height + (int)((dirt_factor) * 12);
 
+		u_char under_layer = DIRT;
+		u_char over_layer = GRASS;
+
+		double temperature = noiseList[5]->Octave2D(0.0002887 * p_x, 0.0002689 * p_y, 5, 0.7);
+
+		
+		if (temperature > 0.6 || isWater)
+		{
+			under_layer = SAND;
+			over_layer = SAND;
+		}
+		
 		while (z < dirt_height) {
-			if (z == 254)
-				std::cout << "SEGFAULTLTLTLTLTL" << std::endl;
-			data[x * sizeZ + z + y * sizeX * sizeZ] = DIRT;
+			data[x * sizeZ + z + y * sizeX * sizeZ] = under_layer;
 			z++;
 		}
 
 	
-		if (/*z > detail_height && */  z == dirt_height && dirt_factor > 0.1)
+		if (/*z > detail_height && */ z > 60 && z == dirt_height && dirt_factor > 0.1)
 		{
 			double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
 			tree_factor /= 10;
-			data[x * sizeZ + z - 1 + y * sizeX * sizeZ] = GRASS;
-			if ((engine.operator()() % 1000) / tree_factor < 1)
+			data[x * sizeZ + z - 1 + y * sizeX * sizeZ] = over_layer;
+			if (over_layer == GRASS && (engine.operator()() % 1000) / tree_factor < 1)
 			{
 				generateTree(data, x, y, z - 1);
 			}
 		}
+
+		while (z < 60) {
+			z++;
+		}
+		if (z == 60)
+			data[x * sizeZ + z + y * sizeX * sizeZ] = WATER;
 
 		z = 1;
 		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
@@ -189,6 +206,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	}
 	}
 
+	// std::cout << "OUT chunk " << posX << " " << posY << std::endl;
 
 	
 	return data;
