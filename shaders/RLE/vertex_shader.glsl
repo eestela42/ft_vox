@@ -34,6 +34,10 @@ void main()
 		vtype = 16;
 		out_grass = 1;
 	}
+
+	if (type == 30)
+		out_grass = 2;
+
 	float tmp = ((vtype - 1) * size_texture) / width_Texture;
 	zero_texture = vec2((vtype % 16 * 128) / width_Texture,
 						1 - (vtype / 16 * 128) / width_Texture);

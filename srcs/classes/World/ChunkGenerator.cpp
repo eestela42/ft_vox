@@ -1,8 +1,5 @@
 #include <classes/World/ChunkGenerator.hpp>
-#include <cmath>
-#include <random>
-#include <algorithm>
-#include <numeric>
+
 
 std::vector<PerlinNoise*> 		ChunkGenerator::noiseList;
 
@@ -26,8 +23,8 @@ ChunkGenerator::ChunkGenerator(u_int seed)
 	
 }
 
-void ChunkGenerator::generateTree(u_char *data, int x, int y, int z) {
-	int tronc = z;
+void ChunkGenerator::generateTree(int &x, int &y, int &z) {
+	int tronc = z - 1;
 	for (; tronc < z + 4; tronc++) {
 		data[x * 256 + tronc + y * 16 * 256] = OAK_WOOD_SIDE;
 	}
@@ -45,31 +42,20 @@ void ChunkGenerator::generateTree(u_char *data, int x, int y, int z) {
 	
 }
 
-u_char		*ChunkGenerator::generator(Chunk &chunk) {
-	u_int sizeX = chunk.sizeX;
-	u_int sizeY = chunk.sizeY;
-	u_int sizeZ = chunk.sizeZ;
+int ChunkGenerator::genBedrock(u_char *data)
+{
+	for (int i = 0; i < sizeX; i++)
+	{
+		for (int j = 0; j < sizeY; j++)
+		{
+			data[i * sizeZ + j * sizeX * sizeZ] = BEDROCK;
+		}
+	}
+	return 0;
+}
 
-	int posX = chunk.GetX();
-	int posY = chunk.GetY();
-	u_char *data = (u_char*)calloc(sizeX * sizeY * sizeZ, sizeof(*data));
-
-	int ground_height = 0;
-	int hill_height = 0;
-	
-	std::default_random_engine engine(389 * posX * posY);
-
-
-	// std::cout << "chunk " << posX << " " << posY << std::endl;
-	for (int y = 0; y < sizeY; y++) {
-	for (int x = 0; x < sizeX; x++) {
-		data[x * sizeZ + y * sizeX * sizeZ] = BEDROCK;
-
-		int z = 1;
-
-		double p_x = ((double)posX * sizeX + x);
-		double p_y = ((double)posY * sizeY + y);
-		
+int ChunkGenerator::genUnderLayer(int pos, int &z)
+{
 		double ground_factor = noiseList[0]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 2, 0.67);
 		ground_height = (int)(ground_factor * 90);
 
@@ -80,7 +66,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		}
 
 		while (z < ground_height) {
-			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+			data[pos + z] = STONE;
 			z++;
 		}
 
@@ -90,39 +76,39 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		if (ground_factor < 0.6)
 		{
 			while (z < hill_height) {
-				data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+				data[pos + z] = STONE;
 				z++;
 			}
 		}
 		else
 		{
 			int air_end = 0;
-			// std::cout << "hill" << std::endl;
-			for ( ; z < hill_height /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
+			for ( ; z < hill_height ; z++)
 			{
 				double montain_factor = noiseList[3]->Octave3D(0.0356 * p_x, 0.0395 * p_y, z * 0.013, 1, 0.5);
-				// std::cout << "mountain" << std::endl;
 				if (montain_factor < float(z)/(hill_height*2))
 				{
 					air_end++;
-					data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
+					data[pos + z] = AIR;
 					continue ;
 				}
 				air_end = 0;
-				data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+				data[pos + z] = STONE;
 			}
 			z -= air_end;
 			hill_height = z;
 		}
 
+	return 0;
+}
 
-		//faire que ce soit perpendiculaire a l'inclinaison du sol
-		double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
-		// int detail_height = hill_height + (int)((detail_factor + (hill_factor / 10)) * (6 * (detail_factor / 2 + detail_factor * detail_factor)));
+int ChunkGenerator::genOverLayer( int pos, int &z)
+{
+	double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
 		int detail_height = hill_height + detail_factor * 6;
 		
 		while (z < detail_height) {
-			data[x * sizeZ + z + y * sizeX * sizeZ] = STONE;
+			data[pos + z] = STONE;
 			z++;
 		}
 
@@ -137,76 +123,149 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		double temperature = noiseList[5]->Octave2D(0.0002887 * p_x, 0.0002689 * p_y, 5, 0.7);
 
 		
-		if (temperature > 0.6 || isWater)
+		if (temperature > 0.6)
 		{
 			under_layer = SAND;
 			over_layer = SAND;
 		}
 		
 		while (z < dirt_height) {
-			data[x * sizeZ + z + y * sizeX * sizeZ] = under_layer;
+			data[pos + z] = under_layer;
 			z++;
 		}
 
 	
-		if (/*z > detail_height && */ z > 60 && z == dirt_height && dirt_factor > 0.1)
+		if (z > 60 && z == dirt_height && dirt_factor > 0.1)
 		{
 			double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
 			tree_factor /= 10;
-			data[x * sizeZ + z - 1 + y * sizeX * sizeZ] = over_layer;
+			data[pos + z -1] = over_layer;
 			if (over_layer == GRASS && (engine.operator()() % 1000) / tree_factor < 1)
 			{
-				generateTree(data, x, y, z - 1);
+				// generateTree(pos % siz, y, z);
 			}
 		}
+		return 0;
+}
 
-		while (z < 60) {
+int ChunkGenerator::gen2DCave(int hill_height, int pos, int &z)
+{
+	double tunel = noiseList[5]->Octave2D(0.0076 * p_x, 0.0065 * p_y, 3, 0.3);
+		if ((tunel > 0.33 && tunel < 0.36) || (tunel > 0.64 && tunel < 0.67) || (tunel > 0.94 && tunel < 0.97))
+		{
+			int start = noiseList[6]->Octave2D(0.0056 * p_x, 0.0045 * p_y, 3, 0.3) * (hill_height - 8);
+			int size = noiseList[7]->Octave2D(0.0126 * p_x, 0.0135 * p_y, 4, 0.5) * 9;
+			for (z = start; z < start + size; z++)
+			{
+				data[pos + z] = AIR;
+			}
+		}
+	return 0;
+}
+
+int ChunkGenerator::genWater( int pos, int &z)
+{
+	if (!data[pos + 60])
+				data[pos + 60] = WATER;
+	return 0;
+}
+
+int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
+{
+	z = 1;
+	for ( ; z < hill_height + 2; z++)
+	{
+		if (z < 32)
+		{
+			double diamond_factor = noiseList[0]->Octave3D(0.0156 * p_x, 0.095 * p_y, z * 0.39, 1, 0.5);
+			if ((diamond_factor > 0.90  || diamond_factor < 0.1)) {
+				data[pos + z] = DIAMOUND_BLOCK;
+				continue ;
+			}
+		}
+		if (z < 64)
+		{
+			double iron_factor = noiseList[1]->Octave3D(0.0156 * p_x, 0.0195 * p_y, z * 0.49, 1, 0.5);
+			if ((iron_factor > 0.49  && iron_factor < 0.51)) {
+				data[pos + z] = IRON_MINERAL;
+				continue ;
+			}
+		}
+	}
+
+	z = 1;
+	for ( ; z < hill_height + 2; z++)
+	{
+		double cave_factor = noiseList[3]->Octave3D(0.01556 * p_x, 0.01595 * p_y, z * 0.06, 1, 0.5);
+		if (cave_factor > 0.8) {
+			data[pos + z] = AIR;
+			continue ;
+		}
+		double spag_factor = noiseList[0]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.039, 1, 0.5);
+		if ((spag_factor > 0.41  && spag_factor < 0.44)) {
+			data[pos + z] = AIR;
+			continue ;
+		}
+		
+	}
+	return 0;
+}
+
+#define GEN_NOISE3D true
+#define GEN_WATER true
+
+u_char		*ChunkGenerator::generator(Chunk &chunk) {
+	sizeX = chunk.sizeX;
+	sizeY = chunk.sizeY;
+	sizeZ = chunk.sizeZ;
+
+	posX = chunk.GetX();
+	posY = chunk.GetY();
+	data = (u_char*)calloc(sizeX * sizeY * sizeZ, sizeof(*data));
+
+	
+	
+	
+	engine.seed(389 * posX * posY);
+
+	
+
+
+	// std::cout << "chunk " << posX << " " << posY << std::endl;
+
+	genBedrock(data);
+	
+	for (int y = 0; y < sizeY; y++) {
+	for (int x = 0; x < sizeX; x++) {
+		ground_height = 0;
+		hill_height = 0;
+		
+		int pos = x * sizeZ + y * sizeX * sizeZ;
+		
+		int z = 1;
+		while (data[pos + z] == BEDROCK && z < 10)
 			z++;
-		}
-		if (z == 60)
-			data[x * sizeZ + z + y * sizeX * sizeZ] = WATER;
 
-		z = 1;
-		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
-		{
-			if (z < 32)
-			{
-				double diamond_factor = noiseList[0]->Octave3D(0.0156 * (posX * sizeX + x), 0.095 * (posY * sizeY + y), z * 0.39, 1, 0.5);
-				if ((diamond_factor > 0.90 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ || diamond_factor < 0.1)) {
-					data[x * sizeZ + z + y * sizeX * sizeZ] = DIAMOUND_BLOCK;
-					continue ;
-				}
-			}
-			if (z < 64)
-			{
-				double iron_factor = noiseList[1]->Octave3D(0.0156 * (posX * sizeX + x), 0.0195 * (posY * sizeY + y), z * 0.49, 1, 0.5);
-				if ((iron_factor > 0.49 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ && iron_factor < 0.51)) {
-					data[x * sizeZ + z + y * sizeX * sizeZ] = IRON_MINERAL;
-					continue ;
-				}
-			}
-		}
+		p_x = ((double)posX * sizeX + x);
+		p_y = ((double)posY * sizeY + y);
+		
+		genUnderLayer(pos, z);
 
-		z = 1;
-		for ( ; z < hill_height + 2 /* * noiseList[4]->Octave2D(0.00056 * p_x, 0.00045 * p_y, 1, 0.5)*/; z++)
-		{
-			double cave_factor = noiseList[3]->Octave3D(0.01556 * (posX * sizeX + x), 0.01595 * (posY * sizeY + y), z * 0.06, 1, 0.5);
-			if (cave_factor > 0.8) {
-				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
-				continue ;
-			}
-			double spag_factor = noiseList[0]->Octave3D(0.0256 * (posX * sizeX + x), 0.0295 * (posY * sizeY + y), z * 0.039, 1, 0.5);
-			if ((spag_factor > 0.45 /*&& spag_factor < 0.48) || (spag_factor > 0.51*/ && spag_factor < 0.54)) {
-				data[x * sizeZ + z + y * sizeX * sizeZ] = AIR;
-				continue ;
-			}
-			
-		}
+		genOverLayer(pos, z);
+
+
+		if (GEN_WATER)
+			genWater(pos, z);
+
+		if (GEN_NOISE3D)
+			gen3DCave(hill_height, pos, z);
+
+		gen2DCave(hill_height, pos, z);		
+		
 
 	}
 	}
 
-	// std::cout << "OUT chunk " << posX << " " << posY << std::endl;
 
 	
 	return data;

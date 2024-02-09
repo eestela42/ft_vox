@@ -326,15 +326,8 @@ void ChunkRLE::pushBackWeightList(std::vector<float> tmp)
 
 void ChunkRLE::updateFromRaw(u_char *rawData)
 {
-	// std::cout << "updateFromRaw" << std::endl;
 	std::vector<u_char> *rubans = new std::vector<u_char>; // leaks ?
 	rubans->resize(sizeX * sizeY * 2);
-	// for (int i = 0; i < sizeX * sizeY * sizeZ; i++)
-	// {
-	// 	std::cout << (int)rawData[i];
-	// 	if (!(i % (sizeZ)))
-	// 		std::cout << std::endl;
-	// }
 	
 	u_int pos = 0;
 
@@ -347,7 +340,6 @@ void ChunkRLE::updateFromRaw(u_char *rawData)
 		u_char type = 0;
 		u_char size = 0;
 
-		// std::cout << "pos: " << x << " " << y << std::endl;
 		for (u_int z = 0; z < sizeZ; z++)
 		{
 			if (rawData[pos] != type)
@@ -377,92 +369,12 @@ void ChunkRLE::updateFromRaw(u_char *rawData)
 void ChunkRLE::randomGen(int &pos, int x, int y)
 {
 	
-		double p_x = ((double)posX * sizeX + x);
-		double p_y = ((double)posY * sizeY + y);
-
-		// p_x += 0.1;
-		// p_y += 0.1;
-
-		p_x /= (double)(sizeX * 16);
-		p_y /= (double)(sizeY * 16);
-
-		u_char outPut = 0;
-		double desert = noiseList[2]->Octave2D(0.00556 * p_x, 0.00645 * p_y, 4, 1.53);
-
-		int ground_factor = 100 ; 	//rock
-		int hill_factor = 100 * desert;	// over layer
-
-		u_char type_under = DIRT;
-		u_char type_over = GRASS;
-		
-		if (desert < 0.3)
-		{
-			type_under = SAND;
-			type_over = SAND;
-		}
-
-		double v1 = noiseList[0]->Octave2D(0.00456 * p_x, 0.00395 * p_y, 6, 0.5);
-
-		outPut = (int)(v1 * ground_factor);
-		data[pos + 0] = STONE;
-		data[pos + 1] = outPut % 255 ;
-		pos += 2;
-
-
-		
-
-
-		double v2 = (noiseList[1]->Octave2D(0.554 * p_x, 0.454 * p_y, 5, 0.1 + (0.5 / desert / v1)));
-		outPut = (int)(v2 * hill_factor * (0.5 + v1));
-
-		data[pos + 0] = type_under;
-		data[pos + 1] = outPut % 255 ;
-		pos += 2;
-
-		// if ((data[pos-1] + data[pos-3] > 60))
-		// 	data[pos + 0] = GRASS;
-		// else
-		data[pos + 0] = type_over;
-		data[pos + 1] = 1;
-		pos += 2;
 }
 
 
 
 void 					ChunkRLE::Generate()
 {
-	data = (u_char*)malloc(sizeof(u_char) * sizeX * sizeY * 20);
-
-	int pos = 0;
-
-	int x_tab = 0;
-	int y_tab = 0;
-
-
-
-	for (int y = 0; y < sizeY; y++){
-	for (int x = 0; x < sizeX; x++)
-	{
-		rubansIndexes[x][y] = pos;
-
-		///bot
-		data[pos + 0] = BEDROCK;
-		data[pos + 1] = 3;
-		pos += 2;
-
-
-		randomGen(pos, x, y);
-		
-
-		//top
-		data[pos + 0] = 0;
-		data[pos + 1] = (u_char)sizeZ - 4;
-		
-		pos += 2;
-
-	}
-	}
-	this->sizeData = sizeX * sizeY * 10;
 	
 }
 
