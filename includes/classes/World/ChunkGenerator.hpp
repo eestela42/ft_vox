@@ -86,7 +86,7 @@ class ChunkGenerator
 		
 		u_char*		generator(Chunk &chunk);
 
-		void		generateTree(int &x, int &y, int &z);
+		void		generateTree(int x, int y, int z);
 		int 		genBedrock(u_char *data);
 		
 		int			genUnderLayer(int pos, int &z);

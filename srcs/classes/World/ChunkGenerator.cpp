@@ -42,22 +42,31 @@ ChunkGenerator::ChunkGenerator(u_int seed)
 	
 }
 
-void ChunkGenerator::generateTree(int &x, int &y, int &z) {
+void ChunkGenerator::generateTree(int x, int y, int z) {
 	int tronc = z - 1;
 	for (; tronc < z + 4; tronc++) {
 		data[x * 256 + tronc + y * 16 * 256] = OAK_WOOD_SIDE;
 	}
-	data[x * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	data[x * 256 + tronc + 1 + y * 16 * 256] = MOSSY_COBBLESTONE;
+	for (int i = -1; i < 2; i++) {
+	for (int j = -1; j < 2; j++) {
+	for (int k = 0; k < 2; k++) {
+		if (x+i >= 0 && x+i <= 15 && y+j >= 0 && y+j <= 15 && tronc+k >= 0 && tronc+k < 255)
+			data[(x+i) * 256 + (tronc+k) + (y+j) * 16 * 256] = MOSSY_COBBLESTONE;
+	}
+	}
+	}
 
-	if (x > 0)
-	data[(x - 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	if (x < 15)
-	data[(x + 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	if (y > 0)
-	data[x * 256 + tronc + (y - 1) * 16 * 256] = MOSSY_COBBLESTONE;
-	if (y < 15)
-	data[x * 256 + tronc + (y + 1) * 16 * 256] = MOSSY_COBBLESTONE;
+	// data[x * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
+	// data[x * 256 + tronc + 1 + y * 16 * 256] = MOSSY_COBBLESTONE;
+
+	// if (x > 0)
+	// data[(x - 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
+	// if (x < 15)
+	// data[(x + 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
+	// if (y > 0)
+	// data[x * 256 + tronc + (y - 1) * 16 * 256] = MOSSY_COBBLESTONE;
+	// if (y < 15)
+	// data[x * 256 + tronc + (y + 1) * 16 * 256] = MOSSY_COBBLESTONE;
 	
 }
 
@@ -75,7 +84,9 @@ int ChunkGenerator::genBedrock(u_char *data)
 
 int ChunkGenerator::genUnderLayer(int pos, int &z)
 {
-		double ground_factor = noiseList[0]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 2, 0.67);
+		double ground_factor = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 3, 0.67);
+		if (ground_factor > 0.5)
+			ground_factor *= 1.0f + (ground_factor - 0.5f) * 2;
 		ground_height = (int)(ground_factor * 90);
 
 		bool isWater = false;
@@ -89,7 +100,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 			z++;
 		}
 
-		double hill_factor = noiseList[1]->Octave2D(0.0158 * p_x, 0.01568 * p_y, 4, 0.5);
+		double hill_factor = noiseList[1]->Octave2D(0.00758 * p_x, 0.007568 * p_y, 4, 0.5);
 		hill_height = ground_height + (int)((hill_factor * ground_factor) * 80 + 5);
 		
 		if (ground_factor < 0.6)
@@ -141,7 +152,8 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 
 		double temperature = noiseList[5]->Octave2D(0.0002887 * p_x, 0.0002689 * p_y, 5, 0.7);
 
-		
+		if (hill_height > 110 + (temperature * 50))
+			over_layer = IRON_BLOCK;
 		if (temperature > 0.6)
 		{
 			under_layer = SAND;
@@ -161,7 +173,10 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 			data[pos + z -1] = over_layer;
 			if (over_layer == GRASS && (engine.operator()() % 1000) / tree_factor < 1)
 			{
-				// generateTree(pos % siz, y, z);
+				int x = pos / sizeZ % sizeX;
+				int y = pos / (sizeZ * sizeX);
+				if (x > 2 && x < 13 && y > 2 && y < 13)
+					generateTree(x, y, z);
 			}
 		}
 		return 0;
