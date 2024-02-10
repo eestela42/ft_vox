@@ -6,6 +6,8 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 	return false;
 }
 
+
+
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
 
 	// updateGen("generation");

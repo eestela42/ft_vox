@@ -14,6 +14,8 @@
 #include <classes/ShaderHandler.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/World/ChunkInstantiator.hpp>
+#include <classes/Texture/Texture.hpp>
+#include <classes/Game/SkyBox.hpp>
 
 class Game : I_Input
 {
@@ -27,14 +29,14 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 10;
+		int renderDistance = 15;
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
 
 		float yaw = -90;
 		float pitch = 0;
-		glm::vec3 cameraPosition = glm::vec3(0, 30, 0);
+		glm::vec3 cameraPosition = glm::vec3(0, 100, 0);
 		glm::vec3 cameraDirection = glm::vec3(	cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
 												sin(glm::radians(pitch)),
 												sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
@@ -44,12 +46,19 @@ class Game : I_Input
 	public:
 		Game();
 
+
+		SkyBox *skyBox;
 		void SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
 		void StartLoop();
 
 		glm::mat4 GetCameraView() const;
 		int	GetRenderDistance() const;
 		int	GetChunkLoadingSize() const;
+
+		Texture blockTexture;
+
+		bool	putBlock(glm::vec3 pos, u_char type);
+		void deleteBlock();
 
 		~Game();
 };

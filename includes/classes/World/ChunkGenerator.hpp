@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include <map>
 #include <cmath>
 #include <glm/glm.hpp>
 # include <math.h>
@@ -17,6 +18,39 @@
 #include <classes/World/ChunkRLE.hpp>
 #include <classes/World/PerlinNoise.hpp>
 
+class position
+{
+	public :
+		int x;
+		int y;
+		position(int x, int y) : x(x), y(y) {}
+	
+	bool operator==(const position &p) const
+	{
+		return (x == p.x && y == p.y);
+	}
+
+	bool operator<(const position &p) const
+	{
+		return (x < p.x || (x == p.x && y < p.y));
+	}
+
+	bool operator>(const position &p) const
+	{
+		return (x > p.x || (x == p.x && y > p.y));
+	}
+
+	bool operator<=(const position &p) const
+	{
+		return (x <= p.x || (x == p.x && y <= p.y));
+	}
+
+	bool operator>=(const position &p) const
+	{
+		return (x >= p.x || (x == p.x && y >= p.y));
+	}
+
+};
 
 class ChunkGenerator
 {
@@ -41,6 +75,8 @@ class ChunkGenerator
 	int hill_height;
 	double p_x;
 	double p_y;
+
+	static std::map<position, std::vector<u_char>*> modifMap;
 
 	std::default_random_engine engine;
 

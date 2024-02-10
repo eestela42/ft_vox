@@ -20,7 +20,7 @@
 
 # include <classes/Game/Game.hpp>
 # include <classes/Game/InputHandler.hpp>
-# include <classes/Game/skyBox.hpp>
+# include <classes/Game/SkyBox.hpp>
 
 
 		/*****	 Texture	*****/

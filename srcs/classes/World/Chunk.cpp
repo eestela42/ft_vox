@@ -165,6 +165,12 @@ int Chunk::GetY() {
 	return posY;
 }
 
+void Chunk::MakeDirty()
+{
+	isCompiled = false;
+	didUpdate = true;
+}
+
 t_vertexData &Chunk::GetVertexData() {
 	SetReady(false);
 	didUpdate = false;
