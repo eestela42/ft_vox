@@ -19,9 +19,9 @@ Game::Game() {
 
 	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
 	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
+	std::cout << "Game::Game()" << std::endl;
+	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"));
 
-	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"),
-						TextureLoader::LoadTexture("textures/sky.jpeg"));
 }
 
 void Game::StartLoop() {
@@ -29,7 +29,6 @@ void Game::StartLoop() {
 	u_int fps = 0;
 
 	bool info = true;
-
 	while(window->ShouldContinue())
 	{
 		fps++;
@@ -61,19 +60,7 @@ void Game::Loop() {
 	
 
 
-	skyBox->VAO->Bind();
-	glDepthMask(GL_FALSE);
-	glBindTexture(GL_TEXTURE_2D, skyBox->texture.id);
-	if (Shader::GetActiveShader()) {
-		Shader::GetActiveShader()->Setmat4("matrix", matrix);
-		Shader::GetActiveShader()->SetFloat("playerPosX", cameraPosition.x);
-		Shader::GetActiveShader()->SetFloat("playerPosY", cameraPosition.y);
-		Shader::GetActiveShader()->SetFloat("playerPosZ", cameraPosition.z);
-
-	}
-	glDrawElements(GL_TRIANGLES, skyBox->vertices.size(), GL_UNSIGNED_INT, 0);
-	glDepthMask(GL_TRUE);
-	skyBox->VAO->Unbind();
+	skyBox->drawSkybox(matrix, cameraPosition);
 
 
 
@@ -107,7 +94,7 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockY);
 				modif->push_back(blockZ);
 				modif->push_back(type);
-				Chunk::loadedChunks[i][j]->MakeDirty();
+				Chunk::loadedChunks[i][j]->MakeDirty(); //not working
 				std::cout << "------putBlock" << std::endl;
 				return true;
 			}

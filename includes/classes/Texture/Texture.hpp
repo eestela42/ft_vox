@@ -8,7 +8,7 @@ class Texture
     public:
 		Texture();
         Texture(u_int id, int width, int height, int nrChannels);
-		Texture(Texture &other);
+		Texture(const Texture &other);
 
         ~Texture();
 

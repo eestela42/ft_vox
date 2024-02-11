@@ -9,22 +9,27 @@
 
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/Texture/Texture.hpp>
+#include <string>
+#include <stb/stb_image.h>
 
 
 class SkyBox
 {
 	public:
-		SkyBox(Shader *skyBoxShader, Texture skyBoxTexture);
+		SkyBox(Shader *skyBoxShader);
 		~SkyBox();
 
+		void drawSkybox(glm::mat4 matrix, glm::vec3 pos);
+		
 		void replace(int x, int y);
 		void setRenderDistance(unsigned int renderDistance);
 		std::vector<unsigned int> indices = {0, 1, 2};
-		VertexArrayObject *VAO;
 		Shader *shader;
-		std::vector<float> vertices;
-		std::vector<u_int> shape;
-		Texture texture;
+
+		std::vector<VertexArrayObject*> VAO;
+		std::vector<std::vector<float>> vertices;
+		std::vector<std::vector<u_int>> shape;
+		std::vector<Texture> texture;
 		
 
 	private:

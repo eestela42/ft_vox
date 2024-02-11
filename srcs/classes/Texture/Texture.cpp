@@ -5,7 +5,7 @@ Texture::Texture()
 
 Texture::Texture(u_int id, int width, int height, int nrChannels) : id(id), width(width), height(height), nrChannels(nrChannels) {}
 
-Texture::Texture(Texture &other)
+Texture::Texture(const Texture &other)
 {
 	id = other.id;
 	width = other.width;

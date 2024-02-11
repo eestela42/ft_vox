@@ -248,7 +248,7 @@ int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
 	return 0;
 }
 
-#define GEN_NOISE3D true
+#define GEN_NOISE3D false
 #define GEN_WATER true
 
 u_char		*ChunkGenerator::generator(Chunk &chunk) {
