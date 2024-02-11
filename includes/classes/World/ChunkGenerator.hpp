@@ -61,7 +61,6 @@ class ChunkGenerator
 	
 	static std::vector<PerlinNoise*> 		noiseList;
 
-	void pushBackNoiseList(PerlinNoise* tmp);
 
 	u_char *data;
 	
@@ -84,10 +83,13 @@ class ChunkGenerator
 		ChunkGenerator();
 		ChunkGenerator(u_int seed);
 		
+		static void initNoise(u_int seed);
+
 		u_char*		generator(Chunk &chunk);
 
 		void		generateTree(int x, int y, int z);
-		int 		genBedrock(u_char *data);
+		int 		genBedrock(u_char *data, int x, int y);
+
 		
 		int			genUnderLayer(int pos, int &z);
 		int			genOverLayer( int pos, int &z);

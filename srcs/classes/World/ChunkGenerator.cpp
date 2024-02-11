@@ -4,36 +4,37 @@
 std::vector<PerlinNoise*> 		ChunkGenerator::noiseList;
 std::map<position, std::vector<u_char>*> ChunkGenerator::modifMap;
 
-void ChunkGenerator::pushBackNoiseList(PerlinNoise* tmp)
-{
-	ChunkGenerator::noiseList.push_back(tmp);
-}
+
 
 ChunkGenerator::~ChunkGenerator()
 {
-	
+}
+
+void ChunkGenerator::initNoise(u_int seed)
+{
+	PerlinNoise *noise0 = new PerlinNoise(seed);
+	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
+
+	PerlinNoise *noise2 = new PerlinNoise(seed + 59);
+	PerlinNoise *noise3 = new PerlinNoise(seed + 42);
+	PerlinNoise *noise4 = new PerlinNoise(seed + 53);
+	PerlinNoise *noise5 = new PerlinNoise(seed + 23);
+	PerlinNoise *noise6 = new PerlinNoise(seed + 17);
+	PerlinNoise *noise7 = new PerlinNoise(seed + 19);
+
+	ChunkGenerator init;
+	ChunkGenerator::noiseList.push_back(noise0);
+	ChunkGenerator::noiseList.push_back(noise1);
+	ChunkGenerator::noiseList.push_back(noise2);
+	ChunkGenerator::noiseList.push_back(noise3);
+	ChunkGenerator::noiseList.push_back(noise4);
+	ChunkGenerator::noiseList.push_back(noise5);
+	ChunkGenerator::noiseList.push_back(noise6);
+	ChunkGenerator::noiseList.push_back(noise7);
 }
 
 ChunkGenerator::ChunkGenerator()
 {
-	std::vector<u_char> *modif = new std::vector<u_char>;
-	modif->push_back(10);
-	modif->push_back(10);
-	modif->push_back(100);
-	modif->push_back(BEDROCK);
-	position p(0, 0);
-	modif = new std::vector<u_char>;
-	modifMap[p] = modif;
-	modif->push_back(10);
-	modif->push_back(10);
-	modif->push_back(100);
-	modif->push_back(BEDROCK);
-	modif->push_back(10);
-	modif->push_back(10);
-	modif->push_back(101);
-	modif->push_back(BEDROCK);
-	position p2(10, 10);
-	modifMap[p2] = modif;
 	
 }
 
@@ -55,31 +56,23 @@ void ChunkGenerator::generateTree(int x, int y, int z) {
 	}
 	}
 	}
-
-	// data[x * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	// data[x * 256 + tronc + 1 + y * 16 * 256] = MOSSY_COBBLESTONE;
-
-	// if (x > 0)
-	// data[(x - 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	// if (x < 15)
-	// data[(x + 1) * 256 + tronc + y * 16 * 256] = MOSSY_COBBLESTONE;
-	// if (y > 0)
-	// data[x * 256 + tronc + (y - 1) * 16 * 256] = MOSSY_COBBLESTONE;
-	// if (y < 15)
-	// data[x * 256 + tronc + (y + 1) * 16 * 256] = MOSSY_COBBLESTONE;
+	if (tronc + 2 < 255)
+		data[x * 256 + tronc + 2 + y * 16 * 256] = MOSSY_COBBLESTONE;
 	
 }
 
-int ChunkGenerator::genBedrock(u_char *data)
+int ChunkGenerator::genBedrock(u_char *data, int x, int y)
 {
-	for (int i = 0; i < sizeX; i++)
+	
+	double bedrock_factor = 0;
+	int bedHigh = 1 + (int)(bedrock_factor * 5);
+	int k = 0;
+	data[x * sizeZ + y * sizeX * sizeZ] = BEDROCK;
+	for (; k < bedHigh; k++)
 	{
-		for (int j = 0; j < sizeY; j++)
-		{
-			data[i * sizeZ + j * sizeX * sizeZ] = BEDROCK;
-		}
+		data[x * sizeZ + y * sizeX * sizeZ + k] = BEDROCK;
 	}
-	return 0;
+	return k;
 }
 
 int ChunkGenerator::genUnderLayer(int pos, int &z)
@@ -103,7 +96,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		double hill_factor = noiseList[1]->Octave2D(0.00758 * p_x, 0.007568 * p_y, 4, 0.5);
 		hill_height = ground_height + (int)((hill_factor * ground_factor) * 80 + 5);
 		
-		if (ground_factor < 0.6)
+		if (ground_factor + hill_factor  < 1.12)
 		{
 			while (z < hill_height) {
 				data[pos + z] = STONE;
@@ -115,7 +108,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 			int air_end = 0;
 			for ( ; z < hill_height ; z++)
 			{
-				double montain_factor = noiseList[3]->Octave3D(0.0356 * p_x, 0.0395 * p_y, z * 0.013, 1, 0.5);
+				double montain_factor = noiseList[3]->Octave3D(0.0356 * p_x, 0.0395 * p_y, z * 0.023, 2, 0.56);
 				if (montain_factor < float(z)/(hill_height*2))
 				{
 					air_end++;
@@ -166,7 +159,7 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 		}
 
 	
-		if (z > 60 && z == dirt_height && dirt_factor > 0.1)
+		if (temperature < 0.6 && z > 60 && z == dirt_height && dirt_factor > 0.1)
 		{
 			double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
 			tree_factor /= 10;
@@ -189,6 +182,16 @@ int ChunkGenerator::gen2DCave(int hill_height, int pos, int &z)
 		{
 			int start = noiseList[6]->Octave2D(0.0056 * p_x, 0.0045 * p_y, 3, 0.3) * (hill_height - 8);
 			int size = noiseList[7]->Octave2D(0.0126 * p_x, 0.0135 * p_y, 4, 0.5) * 9;
+			for (z = start; z < start + size; z++)
+			{
+				data[pos + z] = AIR;
+			}
+		}
+	tunel = noiseList[6]->Octave2D(0.0076 * p_x, 0.0065 * p_y, 3, 0.3);
+		if ((tunel > 0.33 && tunel < 0.36) || (tunel > 0.64 && tunel < 0.67) || (tunel > 0.94 && tunel < 0.97))
+		{
+			int start = noiseList[7]->Octave2D(0.0056 * p_x, 0.0045 * p_y, 3, 0.3) * (hill_height - 8);
+			int size = noiseList[5]->Octave2D(0.0126 * p_x, 0.0135 * p_y, 4, 0.5) * 9;
 			for (z = start; z < start + size; z++)
 			{
 				data[pos + z] = AIR;
@@ -231,21 +234,21 @@ int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
 	for ( ; z < hill_height + 2; z++)
 	{
 		double cave_factor = noiseList[3]->Octave3D(0.01556 * p_x, 0.01595 * p_y, z * 0.06, 1, 0.5);
-		if (cave_factor > 0.8) {
+		if (cave_factor > 0.8 || cave_factor < 0.2) {
 			data[pos + z] = AIR;
 			continue ;
 		}
-		double spag_factor = noiseList[0]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.039, 1, 0.5);
-		if ((spag_factor > 0.41  && spag_factor < 0.44)) {
-			data[pos + z] = AIR;
-			continue ;
-		}
+		// double spag_factor = noiseList[0]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.039, 1, 0.5);
+		// if ((spag_factor > 0.41  && spag_factor < 0.44)) {
+		// 	data[pos + z] = AIR;
+		// 	continue ;
+		// }
 		
 	}
 	return 0;
 }
 
-#define GEN_NOISE3D false
+#define GEN_NOISE3D true
 #define GEN_WATER true
 
 u_char		*ChunkGenerator::generator(Chunk &chunk) {
@@ -267,7 +270,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 
 	// std::cout << "chunk " << posX << " " << posY << std::endl;
 
-	genBedrock(data);
+	
 	
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
@@ -275,14 +278,11 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		hill_height = 0;
 		
 		int pos = x * sizeZ + y * sizeX * sizeZ;
-		
-		int z = 1;
-		while (data[pos + z] == BEDROCK && z < 10)
-			z++;
-
 		p_x = ((double)posX * sizeX + x);
 		p_y = ((double)posY * sizeY + y);
 		
+		int z = genBedrock(data, x, y);
+
 		genUnderLayer(pos, z);
 
 		genOverLayer(pos, z);
