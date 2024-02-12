@@ -94,7 +94,7 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockY);
 				modif->push_back(blockZ);
 				modif->push_back(type);
-				Chunk::loadedChunks[i][j]->MakeDirty(); //not working
+				Chunk::loadedChunks[i][j]->MakeDirty();
 				std::cout << "------putBlock" << std::endl;
 				return true;
 			}
@@ -105,15 +105,53 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 
 void Game::deleteBlock()
 {
-	std::cout << "deleteBlock" << std::endl;
 	glm::vec3 direction = glm::normalize(cameraDirection);
 	glm::vec3 position = cameraPosition;
-	for (int i = 0; i < 20; i++) {
-		position += 0.2f * direction;
-		if (putBlock(position, AIR)) {
-			break;
+	
+	glm::vec3 toFind = position;
+	glm::vec3 incr = glm::vec3(-1, -1, -1);
+	if (direction.x > 0)
+		incr.x = 1;
+	if (direction.y > 0)
+		incr.y = 1;
+	if (direction.z > 0)
+		incr.z = 1;
+
+	int i = 0;
+	while (i < 30 && (position - toFind).length() < 10 && (position - toFind).length() > -10)
+	{
+		i++;
+		glm::vec3 steps = {0, 0, 0};
+		steps.x = abs((incr.x - ceil(toFind.x)) / direction.x);
+		steps.y = abs((incr.y - ceil(toFind.y)) / direction.y);
+		steps.z = abs((incr.z - ceil(toFind.z)) / direction.z);
+		if (steps.x < steps.y && steps.x < steps.z)
+		{
+			toFind += steps.x * direction;
+			if (putBlock(toFind, IRON_BLOCK))
+				return;
+		}
+		else if (steps.y < steps.x && steps.y < steps.z)
+		{
+			toFind += steps.y * direction;
+			if (putBlock(toFind, IRON_BLOCK))
+				return;
+		}
+		else
+		{
+			toFind += steps.z * direction;
+			if (putBlock(toFind, IRON_BLOCK))
+				return;
 		}
 	}
+
+
+	// for (int i = 0; i < 50; i++) {
+	// 	position += 0.1f * direction;
+	// 	if (putBlock(position, AIR)) {
+	// 		break;
+	// 	}
+	// }
 
 }
 

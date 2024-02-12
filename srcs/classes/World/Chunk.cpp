@@ -167,6 +167,7 @@ int Chunk::GetY() {
 
 void Chunk::MakeDirty()
 {
+	isGenerated = false;
 	isCompiled = false;
 	didUpdate = true;
 }
