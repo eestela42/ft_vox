@@ -2,11 +2,92 @@
 # include <cmath>
 # include <classes/Texture/TextureLoader.hpp>
 
-float skyboxVertices[] = {-1.0f,  1.0f, -1.0f,-1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f,-1.0f,  1.0f, -1.0f,-1.0f, -1.0f,  1.0f,-1.0f, -1.0f, -1.0f,-1.0f,  1.0f, -1.0f,-1.0f,  1.0f, -1.0f,-1.0f,  1.0f,  1.0f,-1.0f, -1.0f,  1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f, 1.0f, -1.0f, -1.0f,-1.0f, -1.0f,  1.0f,-1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f, -1.0f,  1.0f,-1.0f, -1.0f,  1.0f,-1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,-1.0f,  1.0f,  1.0f,-1.0f,  1.0f, -1.0f,-1.0f, -1.0f, -1.0f,-1.0f, -1.0f,  1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,-1.0f, -1.0f,  1.0f, 1.0f, -1.0f,  1.0f};
+float skyboxVertices[] = {
+	// Front face
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
 
-float skyboxTexCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f, 1.0f};
+        // Back face
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        // Top face
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+
+        // Bottom face
+        1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        // Left face
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        // Right face
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f
+		};
+
+// float skyboxTexCoords[] = { 
+// 		0.0f, 0.0f,
+// 		1.0f, 0.0f,
+// 		1.0f, 1.0f,
+// 		0.0f, 1.0f
+// 		};
+
+float skyboxTexCoords[] = {
+	// Front face
+        0.0f, 1.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 0.0f,
+
+        // Back face
+        1.0f, 0.0f,
+		1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+
+        // Top face
+		0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+
+        // Bottom face
+        1.0f, 0.0f,
+		1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+
+        // Left face
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+
+        // Right face
+        0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+		};
 
 
+
+unsigned int skyShape[] = {0, 1, 2, 2, 3, 0};
 
 
 
@@ -18,12 +99,12 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 	this->shader = skyBoxShader;
 
 	std::vector<std::string> faces;
-	faces.push_back("textures/sky.jpeg");
-	faces.push_back("textures/sky.jpeg");
-	faces.push_back("textures/sky.jpeg");
-	faces.push_back("textures/sky.jpeg");
-	faces.push_back("textures/sky.jpeg");
-	faces.push_back("textures/sky.jpeg");
+	faces.push_back("textures/front.png");
+	faces.push_back("textures/back.png");
+	faces.push_back("textures/top.png");
+	faces.push_back("textures/bot.png");
+	faces.push_back("textures/left.png");
+	faces.push_back("textures/right.png");
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -32,15 +113,19 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 	}
 
 	vertices.resize(6);
-	int pos = 0;
+	int coo = 0;
+	int text = 0;
 	for (int j = 0; j < 6; j++) {
-		for (int i = 0; i < 6; i++) {
-		vertices[j].push_back(skyboxVertices[pos]);
-		vertices[j].push_back(skyboxVertices[pos+1]);
-		vertices[j].push_back(skyboxVertices[pos+2]);
-		vertices[j].push_back(skyboxTexCoords[i*2]);
-		vertices[j].push_back(skyboxTexCoords[i*2+1]);
-		pos += 3;
+		for (int i = 0; i < 4; i++) {
+		vertices[j].push_back(skyboxVertices[coo]);
+		vertices[j].push_back(skyboxVertices[coo+1]);
+		vertices[j].push_back(skyboxVertices[coo+2]);
+
+		vertices[j].push_back(skyboxTexCoords[text]);
+		vertices[j].push_back(skyboxTexCoords[text+1]);
+		vertices[j].push_back(j);
+		coo += 3;
+		text += 2;
 	}
 	}
 
@@ -49,7 +134,7 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 	shape.resize(6);
 	for (u_int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
-			shape[i].push_back(j);
+			shape[i].push_back(skyShape[j]);
 		}
 	}
 
@@ -60,7 +145,7 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 	{
 		t_vertexData *skyVertData = new t_vertexData();
 		skyVertData->data = (u_char*)vertices[i].data();
-		skyVertData->size = sizeof(skyboxVertices)/6;
+		skyVertData->size = vertices[i].size() * sizeof(float);
 
 		VAO[i] = new VertexArrayObject(new VertexBufferObject(*skyVertData), new ElementBufferObject(shape[i]), skyBoxShader);
 	}
