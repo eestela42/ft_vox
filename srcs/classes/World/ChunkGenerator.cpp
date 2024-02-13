@@ -4,7 +4,8 @@
 std::vector<PerlinNoise*> 		ChunkGenerator::noiseList;
 std::map<position, std::vector<u_char>*> ChunkGenerator::modifMap;
 
-
+#define GEN_NOISE3D true
+#define GEN_WATER true
 
 ChunkGenerator::~ChunkGenerator()
 {
@@ -77,10 +78,17 @@ int ChunkGenerator::genBedrock(u_char *data, int x, int y)
 
 int ChunkGenerator::genUnderLayer(int pos, int &z)
 {
-		double ground_factor = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 3, 0.67);
+		double ground_factor_1 = noiseList[0]->Octave2D(0.001456 * p_x, 0.001495 * p_y, 4, 0.67);
+
+		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 3, 0.67);
+
+		double ground_factor = ground_factor_1 / 2 + ground_factor_2 / 2;
+
 		if (ground_factor > 0.5)
-			ground_factor *= 1.0f + (ground_factor - 0.5f) * 2;
+			ground_factor *= 1.0f + (ground_factor - 0.5f) * 4 * ground_factor;
+
 		ground_height = (int)(ground_factor * 90);
+
 
 		bool isWater = false;
 		if (ground_factor < 0.25)
@@ -93,10 +101,19 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 			z++;
 		}
 
-		double hill_factor = noiseList[1]->Octave2D(0.00758 * p_x, 0.007568 * p_y, 4, 0.5);
-		hill_height = ground_height + (int)((hill_factor * ground_factor) * 80 + 5);
+
+		double hill_factor_1 = noiseList[1]->Octave2D(0.00628 * p_x, 0.006368 * p_y, 4, 0.5);
+		double hill_factor_2 = noiseList[1]->Octave2D(0.00258 * p_x, 0.003568 * p_y, 4, 0.5);
+
+		double hill_factor = hill_factor_1 / 2 + hill_factor_2 / 2;
+
+		if (hill_factor > 0.5)
+			hill_factor *= 1.0f + (hill_factor - 0.5f) * 4 * hill_factor;
+
+		hill_height = ground_height + (int)((hill_factor * ground_factor) * 90 + 5);
 		
-		if (ground_factor + hill_factor  < 1.12)
+
+		if (ground_factor + hill_factor  < 1.25)
 		{
 			while (z < hill_height) {
 				data[pos + z] = STONE;
@@ -108,7 +125,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 			int air_end = 0;
 			for ( ; z < hill_height ; z++)
 			{
-				double montain_factor = noiseList[3]->Octave3D(0.0356 * p_x, 0.0395 * p_y, z * 0.023, 2, 0.56);
+				double montain_factor = noiseList[3]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.023, 2, 0.56);
 				if (montain_factor < float(z)/(hill_height*2))
 				{
 					air_end++;
@@ -127,7 +144,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 
 int ChunkGenerator::genOverLayer( int pos, int &z)
 {
-	double detail_factor =  0.20 + noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
+	double detail_factor =  noiseList[2]->Octave2D(0.206 * p_x, 0.204 * p_y, 5, 0.4);
 		int detail_height = hill_height + detail_factor * 6;
 		
 		while (z < detail_height) {
@@ -137,21 +154,22 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 
 
 
-		double dirt_factor = noiseList[2]->Octave2D(0.00356 * p_x, 0.00395 * p_y, 2, 0.5);
+		double dirt_factor = noiseList[2]->Octave2D(0.00156 * p_x, 0.00195 * p_y, 2, 0.5);
 		int dirt_height = hill_height + (int)((dirt_factor) * 12);
 
 		u_char under_layer = DIRT;
 		u_char over_layer = GRASS;
 
-		double temperature = noiseList[5]->Octave2D(0.0002887 * p_x, 0.0002689 * p_y, 5, 0.7);
-
-		if (hill_height > 110 + (temperature * 50))
-			over_layer = IRON_BLOCK;
+		double temperature = noiseList[5]->Octave2D(0.0002887 * p_x, 0.0002689 * p_y, 1, 0.7);
 		if (temperature > 0.6)
 		{
 			under_layer = SAND;
 			over_layer = SAND;
 		}
+
+		if (hill_height > 80 + (temperature * 180))
+			over_layer = IRON_BLOCK;
+		
 		
 		while (z < dirt_height) {
 			data[pos + z] = under_layer;
@@ -159,17 +177,21 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 		}
 
 	
-		if (temperature < 0.6 && z > 60 && z == dirt_height && dirt_factor > 0.1)
+		if (z > 60 && z == dirt_height && dirt_factor > 0.1)
 		{
-			double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
-			tree_factor /= 10;
+			
 			data[pos + z -1] = over_layer;
-			if (over_layer == GRASS && (engine.operator()() % 1000) / tree_factor < 1)
+			if (temperature < 0.6 && over_layer == GRASS)
 			{
-				int x = pos / sizeZ % sizeX;
-				int y = pos / (sizeZ * sizeX);
-				if (x > 2 && x < 13 && y > 2 && y < 13)
-					generateTree(x, y, z);
+				double tree_factor = noiseList[3]->Octave2D(0.00856 * p_x, 0.00665 * p_y, 4, 0.4);
+				tree_factor /= 10;
+				if ((engine.operator()() % 1000) / tree_factor < 1)
+				{
+					int x = pos / sizeZ % sizeX;
+					int y = pos / (sizeZ * sizeX);
+					if (x > 2 && x < 13 && y > 2 && y < 13)
+						generateTree(x, y, z);
+				}
 			}
 		}
 		return 0;
@@ -248,8 +270,7 @@ int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
 	return 0;
 }
 
-#define GEN_NOISE3D false
-#define GEN_WATER true
+
 
 u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	sizeX = chunk.sizeX;

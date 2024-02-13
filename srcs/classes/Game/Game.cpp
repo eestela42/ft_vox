@@ -35,6 +35,7 @@ void Game::StartLoop() {
 		Loop();
 		if (info && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() >= 500) {
 			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << " " << (int)cameraPosition.y << std::endl;
+			std::cout << "pos : " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
 			std::cout << "FPS: " << fps * 2 << std::endl;
 			fps = 0;
 			begin = std::chrono::steady_clock::now();
@@ -95,6 +96,7 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockZ);
 				modif->push_back(type);
 				Chunk::loadedChunks[i][j]->MakeDirty();
+				std::cout << "pos put: " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 				std::cout << "------putBlock" << std::endl;
 				return true;
 			}
@@ -122,29 +124,29 @@ void Game::deleteBlock()
 	{
 		i++;
 		glm::vec3 steps = {0, 0, 0};
-		steps.x = abs((incr.x - ceil(toFind.x)) / direction.x);
-		steps.y = abs((incr.y - ceil(toFind.y)) / direction.y);
-		steps.z = abs((incr.z - ceil(toFind.z)) / direction.z);
+		steps.x = abs((incr.x - incr.x * ceil(toFind.x)) / direction.x);
+		steps.y = abs((incr.y - incr.y * ceil(toFind.y)) / direction.y);
+		steps.z = abs((incr.z - incr.z * ceil(toFind.z)) / direction.z);
 		if (steps.x < steps.y && steps.x < steps.z)
 		{
 			toFind += steps.x * direction;
-			if (putBlock(toFind, IRON_BLOCK))
+			if (putBlock(toFind, AIR))
 				return;
 		}
 		else if (steps.y < steps.x && steps.y < steps.z)
 		{
 			toFind += steps.y * direction;
-			if (putBlock(toFind, IRON_BLOCK))
+			if (putBlock(toFind, AIR))
 				return;
 		}
 		else
 		{
 			toFind += steps.z * direction;
-			if (putBlock(toFind, IRON_BLOCK))
+			if (putBlock(toFind, AIR))
 				return;
 		}
 	}
-
+	cameraPosition = glm::vec3(16000, 100, 16000);
 
 	// for (int i = 0; i < 50; i++) {
 	// 	position += 0.1f * direction;
