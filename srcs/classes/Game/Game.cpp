@@ -2,6 +2,8 @@
 
 glm::vec3 const Game::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+
+
 Game::Game() {
 	window = new Window("ft_vox", DrawMode::FILL);
 
@@ -16,7 +18,10 @@ Game::Game() {
 	Chunk::setRenderDistance(renderDistance);
 
 	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
-	TextureLoader::LoadTexture("textures/minecraft.png");
+	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
+	std::cout << "Game::Game()" << std::endl;
+	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"));
+
 }
 
 void Game::StartLoop() {
@@ -24,13 +29,13 @@ void Game::StartLoop() {
 	u_int fps = 0;
 
 	bool info = true;
-
 	while(window->ShouldContinue())
 	{
 		fps++;
 		Loop();
 		if (info && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() >= 500) {
 			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << " " << (int)cameraPosition.y << std::endl;
+			std::cout << "pos : " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
 			std::cout << "FPS: " << fps * 2 << std::endl;
 			fps = 0;
 			begin = std::chrono::steady_clock::now();
@@ -52,10 +57,104 @@ void Game::Loop() {
 	else {
 		assert(!"The loop is running and there are no active shader");
 	}
+	
+	
 
+
+	skyBox->drawSkybox(matrix, cameraPosition);
+
+
+
+
+	glBindTexture(GL_TEXTURE_2D, blockTexture.id);
 	vertexArrayObjectHandler->DrawAll();
-
 	window->SwapBuffersAndPollEvents();
+
+}
+
+bool	Game::putBlock(glm::vec3 pos, u_char type) {
+	int chunkX = pos.x / 16;
+	int chunkY = pos.z / 16;
+	int blockX = pos.x - chunkX * 16;
+	int blockY = pos.z - chunkY * 16;
+	int blockZ = pos.y;
+	if (blockX < 0 || blockY < 0 || blockX >= 16 || blockY >= 16 || blockZ < 0 || blockZ >= 256)
+		return false;
+
+	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
+		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY
+				&& Chunk::loadedChunks[i][j]->isFilled(blockX, blockY, blockZ)) {
+				
+				std::vector<u_char> *modif = ChunkGenerator::modifMap[position(chunkX, chunkY)];
+				if (!modif) {
+					modif = new std::vector<u_char>();
+					ChunkGenerator::modifMap[position(chunkX, chunkY)] = modif;
+				}
+				modif->push_back(blockX);
+				modif->push_back(blockY);
+				modif->push_back(blockZ);
+				modif->push_back(type);
+				Chunk::loadedChunks[i][j]->MakeDirty();
+				std::cout << "pos put: " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+				std::cout << "------putBlock" << std::endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Game::deleteBlock()
+{
+	glm::vec3 direction = glm::normalize(cameraDirection);
+	glm::vec3 position = cameraPosition;
+	
+	glm::vec3 toFind = position;
+	glm::vec3 incr = glm::vec3(-1, -1, -1);
+	if (direction.x > 0)
+		incr.x = 1;
+	if (direction.y > 0)
+		incr.y = 1;
+	if (direction.z > 0)
+		incr.z = 1;
+
+	int i = 0;
+	while (i < 30 && (position - toFind).length() < 10 && (position - toFind).length() > -10)
+	{
+		i++;
+		glm::vec3 steps = {0, 0, 0};
+		steps.x = abs((incr.x - incr.x * ceil(toFind.x)) / direction.x);
+		steps.y = abs((incr.y - incr.y * ceil(toFind.y)) / direction.y);
+		steps.z = abs((incr.z - incr.z * ceil(toFind.z)) / direction.z);
+		if (steps.x < steps.y && steps.x < steps.z)
+		{
+			toFind += steps.x * direction;
+			if (putBlock(toFind, AIR))
+				return;
+		}
+		else if (steps.y < steps.x && steps.y < steps.z)
+		{
+			toFind += steps.y * direction;
+			if (putBlock(toFind, AIR))
+				return;
+		}
+		else
+		{
+			toFind += steps.z * direction;
+			if (putBlock(toFind, AIR))
+				return;
+		}
+	}
+	cameraPosition = glm::vec3(16000, 100, 16000);
+
+	// for (int i = 0; i < 50; i++) {
+	// 	position += 0.1f * direction;
+	// 	if (putBlock(position, AIR)) {
+	// 		break;
+	// 	}
+	// }
+
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
@@ -75,6 +174,8 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
 	// 	instantiator->updateGen("generation");
 	// }
+	if(keyState[KEY_DELETE_BLOCK] & KEY_HOLD)
+        deleteBlock();
 
 	yaw += mouseMoveX * sensitivity;
 	pitch -= mouseMoveY * sensitivity;

@@ -24,7 +24,7 @@ DEPS_DIR = $(OBJS_DIR)
 ################################################################################
 
 CC			=	g++ -std=c++17
-CFLAGS = -Llibs -Iincludes -MMD -MP
+CFLAGS = -Llibs -Iincludes -MMD -MP 
 OPENGL = -lglfw3 -lGL -lX11 -llmdb
 RM			=	rm -rf
 
@@ -89,7 +89,7 @@ init:
 
 $(NAME): $(CPP_OBJS) $(C_OBJS)
 	@ echo "\t$(_YELLOW)[Creating program]$(_NC)"
-	@$(CC) $(CFLAGS) $(CPP_OBJS) $(C_OBJS) $(OPENGL) -o $(NAME)
+	@$(CC) $(CFLAGS) $(CPP_OBJS) $(C_OBJS) $(OPENGL) -o $(NAME) -ldl -lpthread
 	@ echo "$(_GREEN)[program created & ready]$(_NC)"
 
 clean:

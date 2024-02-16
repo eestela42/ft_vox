@@ -3,6 +3,11 @@
 #include <classes/VAO/VertexArrayObject.hpp>
 #include <unordered_map>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 class VertexArrayObjectHandler {
 public:
 	VertexArrayObjectHandler();
@@ -10,6 +15,7 @@ public:
 
 	void Draw();
 	void DrawAll();
+	void DrawAll(glm::vec3 cameraPosition, glm::vec3 cameraDirection);
 	VertexArrayObject *GetVAO(u_int VAO);
 	
 	u_int AddVAO(VertexArrayObject*);

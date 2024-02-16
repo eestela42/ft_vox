@@ -5,7 +5,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) //call
     glViewport(0, 0, width, height); // We tell openGL the new size of the window
 }
 
+static void glfwError(int id, const char* description)
+{
+  std::cout << description << std::endl;
+}
+
 Window::Window(const char *name, DrawMode drawMode) {
+    glfwSetErrorCallback(&glfwError);
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
         assert(!"Window::Window glfwInit failed");

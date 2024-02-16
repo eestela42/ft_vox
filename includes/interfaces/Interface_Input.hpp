@@ -23,7 +23,9 @@
 
 #define KEY_SPACE				15
 
-#define KEY_LAST				15
+#define KEY_DELETE_BLOCK		16
+
+#define KEY_LAST				16
 
 
 

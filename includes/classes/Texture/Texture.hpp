@@ -6,10 +6,12 @@
 class Texture
 {
     public:
+		Texture();
         Texture(u_int id, int width, int height, int nrChannels);
+		Texture(const Texture &other);
+
         ~Texture();
 
-    private:
         unsigned int id;
         int width;
         int height;

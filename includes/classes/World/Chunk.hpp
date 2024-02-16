@@ -35,7 +35,6 @@ private:
 	
 	virtual void updateFromRaw(u_char *rawData) = 0;
 protected :
-	static std::vector<std::vector<Chunk*>> loadedChunks;
 
 	Chunk(int posX, int posY);
 	
@@ -50,6 +49,8 @@ protected :
 	bool IsGenerated();
 
 public :
+	static std::vector<std::vector<Chunk*>> loadedChunks;
+
 	/** @brief Not yet ready to be sized down dynamically without neighbor loss issues*/
 	static void setRenderDistance(int renderDistance);
 	static const std::vector<std::vector<Chunk*>> &GetLoadedChunks();
@@ -66,6 +67,7 @@ public :
 	virtual t_vertexData &GetVertexData() final;
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
 	virtual bool DidUpdate() final;
+	virtual void 	MakeDirty() final;
 	virtual int GetX() final;
 	virtual int GetY() final;
 

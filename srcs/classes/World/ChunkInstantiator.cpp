@@ -6,6 +6,8 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 	return false;
 }
 
+
+
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
 
 	// updateGen("generation");
@@ -18,20 +20,9 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	int chunkLoadingSize = Chunk::GetLoadedChunks().size();
 	std::vector<Chunk*> chunks;
 
-	u_int seed = 6534668;
-	PerlinNoise *noise0 = new PerlinNoise(seed);
-	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
+	
 
-	PerlinNoise *noise2 = new PerlinNoise(seed + 59);
-	PerlinNoise *noise3 = new PerlinNoise(seed + 42);
-	PerlinNoise *noise4 = new PerlinNoise(seed + 53);
-
-	ChunkGenerator init;
-	init.pushBackNoiseList(noise0);
-	init.pushBackNoiseList(noise1);
-	init.pushBackNoiseList(noise2);
-	init.pushBackNoiseList(noise3);
-	init.pushBackNoiseList(noise4);
+	ChunkGenerator::initNoise(6849311);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
@@ -54,6 +45,8 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	{
 		showChunkDebug && std::cout << "compil " << x->GetX() << " " << x->GetY() << std::endl;
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(x->GetVertexData()), new ElementBufferObject(x->GetShapeAssemblyData()), shader);
+		VAO->posX = x->GetX();
+		VAO->posY = x->GetY();
 		chunkMap[x] = vertexArrayObjectHandler->AddVAO(VAO);
 		showChunkDebug && std::cout << "END compil " << x->GetX() << " " << x->GetY() << std::endl;
 	}
@@ -126,6 +119,8 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			return ;
 		}
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
+		VAO->posX = pos.second->GetX();
+		VAO->posY = pos.second->GetY();
 		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
 		toErase.push_back(pos.first);
 	}
@@ -153,6 +148,8 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 		vertexArrayObjectHandler->RemoveVAO(chunkMap[pos.second]);
 		chunkMap.erase(pos.second);
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
+		VAO->posX = pos.second->GetX();
+		VAO->posY = pos.second->GetY();
 		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
 		toErase.push_back(pos.first);
 	}
@@ -160,65 +157,3 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 		updateQueueMap.erase(erase);
 	}
 }
-
-// void ChunkInstantiator::updateGen(const char *filePath)
-// {
-// 	std::ifstream file(filePath);
-
-// 	if (!file.is_open())
-//     {
-//         std::cout << "Error opening file : " << filePath << std::endl;
-//         assert(0);
-//     }
-
-//     std::string line;
-    
-// 	while (std::getline(file, line))
-// 	{
-// 		std::istringstream iss(line);
-//         std::vector<std::string> tokens;
-
-//         do
-//         {
-//             std::string token;
-//             iss >> token;
-//             if (!token.empty())
-//                 tokens.push_back(token);
-//         } while (iss);
-
-//         if (tokens.size() >= 4)
-//         {
-//             try
-//             {
-// 				int seed = std::stoi(tokens[1]);
-// 				std::cout << "Seed: " << seed ;
-//                 this->noiseList.push_back(new PerlinNoise(seed));
-// 				std::vector<double> weight;
-//                 weight.push_back(std::stof(tokens[2]));
-//                 weight.push_back(std::stof(tokens[3]));
-//                 weight.push_back(std::stof(tokens[4]));
-// 				this->weightList.push_back(weight);
-// 				for (int i = 0; i < weight.size(); i++) {
-// 					std::cout << "  " << weight[i];
-// 				}
-// 				std::cout << std::endl;
-
-//                 // Now you can use seed, val1, val2, and val3 as needed
-//                 // For example, print them
-//                 // std::cout << "Seed: " << seed << ", Value 1: " << val1 << ", Value 2: " << val2 << ", Value 3: " << val3 << std::endl;
-//             }
-//             catch (const std::exception &e)
-//             {
-//                 // Handle conversion errors
-//                 std::cerr << "Error parsing line: " << line << std::endl;
-//             }
-//         }
-//         else
-//         {
-//             // Handle lines with insufficient tokens
-//             std::cerr << "Invalid line format: " << line << std::endl;
-//         }
-
-
-// 	}
-// }
