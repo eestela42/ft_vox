@@ -13,7 +13,7 @@ void main()
 	// FragColor = vec4(float(int(vertexID) % 256) / 256, float(int(vertexID) % (256 * 256) / 256) / 256 , float(int(vertexID) / (256 * 256)) / 256, 1);
 	if (out_grass == 1)
 	{
-		FragColor = texture(ourTexture, TexCoord) * vec4(0.4, 0.9, 0.6, 0);
+		FragColor = texture(ourTexture, tex_out) * vec4(0.4, 0.9, 0.6, 0);
 		return;
 	}
 	// if (out_grass == 2)
@@ -21,5 +21,5 @@ void main()
 	// 	FragColor += vec4(0, 0, 0.5, 0.3);
 	// 	return;
 	// }
-	FragColor = texture(ourTexture, TexCoord) * out_light;
+	FragColor = texture(ourTexture, tex_out) * out_light;
 }
