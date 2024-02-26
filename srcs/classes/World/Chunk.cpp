@@ -18,7 +18,9 @@ void Chunk::PublicGenerate() {
 	Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
 	ChunkGenerator generator;
+
 	updateFromRaw(generator.generator(*this));
+
 	isCompiled = false;
 	Profiler::StopTracking("Chunk::PublicGenerate()");
 }

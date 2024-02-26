@@ -80,7 +80,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 {
 		double ground_factor_1 = noiseList[0]->Octave2D(0.001456 * p_x, 0.001495 * p_y, 4, 0.67);
 
-		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 3, 0.67);
+		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 2, 0.67);
 
 		double ground_factor = ground_factor_1 / 2 + ground_factor_2 / 2;
 
@@ -105,7 +105,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		double hill_factor_1 = noiseList[1]->Octave2D(0.00628 * p_x, 0.006368 * p_y, 4, 0.5);
 		double hill_factor_2 = noiseList[1]->Octave2D(0.00258 * p_x, 0.003568 * p_y, 4, 0.5);
 
-		double hill_factor = hill_factor_1 / 2 + hill_factor_2 / 2;
+		double hill_factor = hill_factor_1 / 3 + hill_factor_2 / 3;
 
 		if (hill_factor > 0.5)
 			hill_factor *= 1.0f + (hill_factor - 0.5f) * 4 * hill_factor;
@@ -281,17 +281,12 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 	posY = chunk.GetY();
 	data = (u_char*)calloc(sizeX * sizeY * sizeZ, sizeof(*data));
 
-	
-	
+	if (!data)
+	{
+		std::cout << "raw map calloc failed !" << std::endl;
+	}
 	
 	engine.seed(389 * posX * posY);
-
-	
-
-
-	// std::cout << "chunk " << posX << " " << posY << std::endl;
-
-	
 	
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
@@ -303,7 +298,6 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		p_y = ((double)posY * sizeY + y);
 		
 		int z = genBedrock(data, x, y);
-
 		genUnderLayer(pos, z);
 
 		genOverLayer(pos, z);
@@ -320,8 +314,11 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 
 	}
 	}
+
 	if (modifMap.find(position(posX, posY)) == modifMap.end())
+	{
 		return data;
+	}
 
 		
 	std::vector<u_char> *modif = modifMap[position(posX, posY)];

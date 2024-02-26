@@ -11,14 +11,11 @@ std::vector<std::vector<float>> ChunkRLE::weightList;
 		/*****	2 - methods 		*****/
 void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
 {
-	// for (char i = 0; i < 4; i++)
-	// {
 		vertexes.push_back(posX);
 		vertexes.push_back(posY);
 		vertexes.push_back(pos);
 		vertexes.push_back(orientation);
 		vertexes.push_back(type);
-	// }
 }
 
 void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
@@ -26,12 +23,6 @@ void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vect
 	offset = vData.size();
 
 	iData.push_back(0 + offset);
-    // iData.push_back(1 + offset);
-    // iData.push_back(2 + offset);
-
-    // iData.push_back(0 + offset);
-    // iData.push_back(2 + offset);
-    // iData.push_back(3 + offset);
 
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 
@@ -141,7 +132,6 @@ void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size,
 
 void	ChunkRLE::CompileData()
 {
-	// std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	vertexData.clear();
 	shapeAssemblyData.clear();
 	vertexData.reserve(20000);
@@ -326,6 +316,11 @@ void ChunkRLE::updateFromRaw(u_char *rawData)
 	rubans->resize(sizeX * sizeY * 2);
 	
 	u_int pos = 0;
+	if (!rawData)
+	{
+		std::cout << "GEN CORRUPTED" << std::endl;
+		exit(6);
+	}
 
 	for (u_int y = 0; y < sizeY; y++) {
 	for (u_int x = 0; x < sizeX; x++)
@@ -356,9 +351,12 @@ void ChunkRLE::updateFromRaw(u_char *rawData)
 		rubans->push_back(sizeZ - 1);
 	}
 	}
+
 	this->sizeData = rubans->size();
 	this->data = rubans->data();
+
 	free(rawData);
+
 
 }
 

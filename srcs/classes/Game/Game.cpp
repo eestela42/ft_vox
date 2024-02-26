@@ -28,7 +28,7 @@ void Game::StartLoop() {
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	u_int fps = 0;
 
-	bool info = true;
+	bool info = false;
 	while(window->ShouldContinue())
 	{
 		fps++;
@@ -48,7 +48,7 @@ void Game::Loop() {
 	window->Clear();
 	instantiator->Update(cameraPosition, std::chrono::milliseconds(10));
 
-	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 1000.0f);
+	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
 	matrix = proj * GetCameraView();
 	if (Shader::GetActiveShader()) {
@@ -75,12 +75,12 @@ void Game::Loop() {
 bool	Game::putBlock(glm::vec3 pos, u_char type) {
 	int chunkX = pos.x / 16;
 	int chunkY = pos.z / 16;
-	int blockX = pos.x - chunkX * 16;
-	int blockY = pos.z - chunkY * 16;
+	int blockX = abs(pos.x - chunkX * 16);
+	int blockY = abs(pos.z - chunkY * 16);
 	int blockZ = pos.y;
 	if (blockX < 0 || blockY < 0 || blockX >= 16 || blockY >= 16 || blockZ < 0 || blockZ >= 256)
 		return false;
-
+	std::cout << "in" << std::endl;
 	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
 		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
 			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY
@@ -124,37 +124,45 @@ void Game::deleteBlock()
 	{
 		i++;
 		glm::vec3 steps = {0, 0, 0};
-		steps.x = abs((incr.x - incr.x * ceil(toFind.x)) / direction.x);
-		steps.y = abs((incr.y - incr.y * ceil(toFind.y)) / direction.y);
-		steps.z = abs((incr.z - incr.z * ceil(toFind.z)) / direction.z);
+		glm::vec3 distance = {0, 0, 0};
+		
+
+		for (int j = 0; j < 3; j++)
+		{
+			if (direction[j] < 0)
+				distance[j] = abs(ceil(toFind[j])) - abs(toFind[j]);
+			else
+				distance[j] = abs(toFind[j]) - abs(floor(toFind[j]));
+		}
+
+		steps.x = abs(distance.x / direction.x);
+		steps.y = abs(distance.y / direction.y);
+		steps.z = abs(distance.z / direction.z);
+
+
 		if (steps.x < steps.y && steps.x < steps.z)
 		{
+			std::cout << "x" << std::endl;
 			toFind += steps.x * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 		else if (steps.y < steps.x && steps.y < steps.z)
 		{
+			std::cout << "y" << std::endl;
 			toFind += steps.y * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 		else
 		{
+			std::cout << "z" << std::endl;
 			toFind += steps.z * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 	}
-	cameraPosition = glm::vec3(16000, 100, 16000);
-
-	// for (int i = 0; i < 50; i++) {
-	// 	position += 0.1f * direction;
-	// 	if (putBlock(position, AIR)) {
-	// 		break;
-	// 	}
-	// }
-
+	std::cout << "Not put" << std::endl;
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
@@ -174,7 +182,7 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
 	// 	instantiator->updateGen("generation");
 	// }
-	if(keyState[KEY_DELETE_BLOCK] & KEY_HOLD)
+	if(keyState[KEY_DELETE_BLOCK] & KEY_PRESS)
         deleteBlock();
 
 	yaw += mouseMoveX * sensitivity;

@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in float out_light;
 in vec2 tex_out;
-in float out_grass;
+flat in int out_grass;
 
 
 uniform sampler2D ourTexture;

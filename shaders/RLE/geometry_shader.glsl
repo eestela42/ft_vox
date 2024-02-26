@@ -21,7 +21,7 @@ uniform int chunk_size_y = 16;
 uniform mat4 matrix;
 
 out vec2 tex_out;
-out float out_grass;
+flat out int out_grass;
 out float out_light;
 
 
@@ -104,7 +104,7 @@ void main() {
 
 	vec2 zero_texture = vec2(0.0, 0.0);
 	int vtype = geo_in[0].type;
-	out_grass = 0.0;
+	out_grass = 0;
 	if (vtype == 19 && geo_in[0].face == 5)
 	{
 		vtype = 16;

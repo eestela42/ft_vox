@@ -1,4 +1,5 @@
 #include <classes/World/ChunkInstantiator.hpp>
+
 bool isInCircle(long int x, long int y, long int radius, long int circleX, long int circleY) {
 	if ((x - circleX) * (x - circleX) + (y - circleY) * (y - circleY) <= radius * radius) {
 		return true;
@@ -22,7 +23,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 
 	
 
-	ChunkGenerator::initNoise(6849311);
+	ChunkGenerator::initNoise(420);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
@@ -30,12 +31,12 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	for (int y = -renderDistance; y <= renderDistance; y++) {
 		if (isInCircle(x, y, renderDistance, 0, 0)) {
 			showChunkDebug && std::cout << "Generating chunk " << x << " " << y << std::endl;
-			
 			Chunk* chunk = new ChunkRLE(x, y);
 			chunk->PublicGenerate();
 
 
 			chunks.push_back(chunk);
+
 		}
 	}}
 	showChunkDebug && std::cout << "Chunk are generated " << std::endl;
