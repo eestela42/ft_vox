@@ -23,7 +23,7 @@ protected :
 
 	u_int* 					rubans_id;
 	
-	u_int 					rubansIndexes[16][16];
+	u_int 					rubansIndexes[Chunk::sizeX][Chunk::sizeY];
 
 	u_int 					sizeData = 0;
   

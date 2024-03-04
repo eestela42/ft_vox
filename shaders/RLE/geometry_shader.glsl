@@ -15,10 +15,11 @@ in GEO_OUT {
 uniform float size_texture = 128;
 uniform float width_Texture = 2048;
 
-uniform int chunk_size_x = 16;
-uniform int chunk_size_y = 16;
+uniform int chunk_size_x;
+uniform int chunk_size_y;
 
 uniform mat4 matrix;
+uniform vec4 cameraPos;
 
 out vec2 tex_out;
 flat out int out_grass;
@@ -100,7 +101,7 @@ void main() {
 
 	x += geo_in[0].chunk_x * chunk_size_x;
 	y += geo_in[0].chunk_y * chunk_size_x;
-	vec3 pos = vec3(x, z, y);
+	vec3 pos = vec3(x, z, y) - cameraPos.xyz;
 
 	vec2 zero_texture = vec2(0.0, 0.0);
 	int vtype = geo_in[0].type;

@@ -11,8 +11,8 @@ layout (location = 4) in int type;
 uniform float size_texture = 128;
 uniform float width_Texture = 2048;
 
-uniform int chunk_size_x = 16;
-uniform int chunk_size_y = 16;
+uniform int chunk_size_x;
+uniform int chunk_size_y;
 
 uniform mat4 matrix;
 

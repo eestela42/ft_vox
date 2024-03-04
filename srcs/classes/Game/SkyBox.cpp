@@ -49,41 +49,64 @@ float skyboxVertices[] = {
 
 float skyboxTexCoords[] = {
 	// Front face
-        0.0f, 1.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
-
+       	
+        0.0f, 0.3333333333f,
+		0.0f, 0.6666666666f,
+        0.25f, 0.6666666666f,
+        0.25f, 0.33,
+		
         // Back face
-        1.0f, 0.0f,
-		1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
+        0.75f, 0.3333333333f,
+        0.75f, 0.6666666666f,
+		0.5f, 0.6666666666f,
+		0.5f, 0.3333333333f,
+
+
 
         // Top face
-		0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
+		// 0.25, 0.6666666666f,
+		// 0.5f, 0.6666666666f,
+		// 0.5f, 0.3333333333f,
+		// 0.25f,0.3333333333f,
+		
 
-        // Bottom face
-        1.0f, 0.0f,
-		1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
+        // rev Bottom face
+        1.0f, 0.3333333333f,//2
+        1.0f, 0.6666666666f,//1
+        0.75f,  0.6666666666f,//0
+        0.75f,  0.3333333333f,//3
+		
+
+        // 0.75f,  0.6666666666f,//0
+        // 0.75f,  0.3333333333f,//3
+        // 1.0f, 0.3333333333f,//2
+        // 1.0f, 0.6666666666f,//1
+
+		// rev Top face
+        0.25f, 0.3333333333f,
+        0.25f, 0.6666666666f,
+        0.5f, 0.6666666666f,
+        0.5f, 0.3333333333f,
+
+        // 0.5f, 0.6666666666f,
+        // 0.5f, 0.3333333333f,
+        // 0.25f, 0.3333333333f,
+		// 0.25f, 0.6666666666f,
 
         // Left face
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
+       	0.25f, 1.0f,
+        0.25f, 0.6666666666f,
+        0.5f, 0.6666666666f,
+        0.5f, 1.0f,
 
         // Right face
-        0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f
-		};
+        
+        0.25f, 0.0f,
+       	0.25f, 0.3333333333f,
+		0.5f, 0.3333333333f,
+        0.5f, 0.0f
+		
+	};
 
 
 
@@ -99,12 +122,12 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 	this->shader = skyBoxShader;
 
 	std::vector<std::string> faces;
-	faces.push_back("textures/front.png");
-	faces.push_back("textures/back.png");
-	faces.push_back("textures/top.png");
-	faces.push_back("textures/bot.png");
-	faces.push_back("textures/left.png");
-	faces.push_back("textures/right.png");
+	faces.push_back("textures/skyBox.png");
+	faces.push_back("textures/skyBox.png");
+	faces.push_back("textures/skyBox.png");
+	faces.push_back("textures/skyBox.png");
+	faces.push_back("textures/skyBox.png");
+	faces.push_back("textures/skyBox.png");
 
 	for (int i = 0; i < 6; i++)
 	{

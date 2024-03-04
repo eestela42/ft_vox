@@ -62,6 +62,7 @@ void InputHandler::MapKeys() {
     keyMap[GLFW_KEY_KP_7] = KEY_ROTATE_Z_NEGATIVE;
     keyMap[GLFW_KEY_KP_9] = KEY_ROTATE_Z_POSITIVE;
 	keyMap[GLFW_KEY_Q] = KEY_DELETE_BLOCK;
+	keyMap[GLFW_KEY_P] = KEY_DISPLAY_INFO;
 
 
 }

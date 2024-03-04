@@ -206,7 +206,7 @@ void	ChunkRLE::CompileData()
 				}
 			}
 			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
-				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end-1, vertexData.size(), data[pos]);
+				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos]);
 			pos += 2;
 			z = z_end;
 		}
@@ -266,13 +266,13 @@ ChunkRLE::~ChunkRLE()
 ChunkRLE::ChunkRLE() : Chunk(0,0)
 {
 	this->data = NULL;
-	this->rubans_id = new u_int[256];
+	this->rubans_id = new u_int[Chunk::sizeZ];
 }
 
 ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
 {
 	this->data = NULL;
-	this->rubans_id = new u_int[256];
+	this->rubans_id = new u_int[Chunk::sizeZ];
 }
 
 

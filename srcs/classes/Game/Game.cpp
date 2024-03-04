@@ -34,7 +34,7 @@ void Game::StartLoop() {
 		fps++;
 		Loop();
 		if (info && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() >= 500) {
-			std::cout << "chunk : " << (int)cameraPosition.x / 16 << " " << (int)cameraPosition.z / 16 << " " << (int)cameraPosition.y << std::endl;
+			std::cout << "chunk : " << (int)cameraPosition.x / Chunk::sizeX << " " << (int)cameraPosition.z / Chunk::sizeY << " " << (int)cameraPosition.y << std::endl;
 			std::cout << "pos : " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
 			std::cout << "FPS: " << fps * 2 << std::endl;
 			fps = 0;
@@ -50,9 +50,13 @@ void Game::Loop() {
 
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
-	matrix = proj * GetCameraView();
+	// matrix = proj * GetCameraView();
+	matrix = proj * glm::lookAt(glm::vec3(0,0,0) ,cameraDirection, cameraUp);
 	if (Shader::GetActiveShader()) {
+		Shader::GetActiveShader()->SetFloat4("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
 		Shader::GetActiveShader()->Setmat4("matrix", matrix);
+		Shader::GetActiveShader()->SetInt("chunk_size_x", Chunk::sizeX);
+		Shader::GetActiveShader()->SetInt("chunk_size_y", Chunk::sizeY);
 	}
 	else {
 		assert(!"The loop is running and there are no active shader");
@@ -72,15 +76,58 @@ void Game::Loop() {
 
 }
 
+bool quickFix(int &chunkX, int &chunkY ,int blockX ,int blockY)
+{
+	if (blockX == 0)
+	{
+		chunkX--;
+		return true;
+	}
+	if (blockX == Chunk::sizeX - 1)
+	{
+		chunkX++;
+		return true;
+	}
+	if (blockY == 0)
+	{
+		chunkY--;
+		return true;
+	}
+	if (blockY == Chunk::sizeY - 1)
+	{
+		chunkY++;
+		return true;
+	}
+	return false;
+}
+
 bool	Game::putBlock(glm::vec3 pos, u_char type) {
-	int chunkX = pos.x / 16;
-	int chunkY = pos.z / 16;
-	int blockX = abs(pos.x - chunkX * 16);
-	int blockY = abs(pos.z - chunkY * 16);
+	int chunkX = pos.x / Chunk::sizeX;
+	int chunkY = pos.z / Chunk::sizeY;
+	
+
+	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
+
+	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
+
+	if (pos.x < 0)
+	{
+		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
+		chunkX--;
+	}
+
+	if (pos.z < 0)
+	{
+		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
+		chunkY--;
+	}
+
+
 	int blockZ = pos.y;
-	if (blockX < 0 || blockY < 0 || blockX >= 16 || blockY >= 16 || blockZ < 0 || blockZ >= 256)
+
+	if (blockX < 0 || blockY < 0 || blockX >= Chunk::sizeX || blockY >= Chunk::sizeY || blockZ < 0 || blockZ >= Chunk::sizeZ)
 		return false;
-	std::cout << "in" << std::endl;
+	
 	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
 		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
 			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY
@@ -96,8 +143,12 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockZ);
 				modif->push_back(type);
 				Chunk::loadedChunks[i][j]->MakeDirty();
-				std::cout << "pos put: " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-				std::cout << "------putBlock" << std::endl;
+
+				if (quickFix(i, j, blockX, blockY))
+					Chunk::loadedChunks[i][j]->MakeDirty();
+
+					
+
 				return true;
 			}
 		}
@@ -142,27 +193,23 @@ void Game::deleteBlock()
 
 		if (steps.x < steps.y && steps.x < steps.z)
 		{
-			std::cout << "x" << std::endl;
 			toFind += steps.x * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 		else if (steps.y < steps.x && steps.y < steps.z)
 		{
-			std::cout << "y" << std::endl;
 			toFind += steps.y * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 		else
 		{
-			std::cout << "z" << std::endl;
 			toFind += steps.z * direction;
 			if (putBlock(toFind, AIR))
 				return;
 		}
 	}
-	std::cout << "Not put" << std::endl;
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
@@ -182,8 +229,13 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
 	// 	instantiator->updateGen("generation");
 	// }
-	if(keyState[KEY_DELETE_BLOCK] & KEY_PRESS)
+	if(keyState[KEY_DELETE_BLOCK] & KEY_HOLD)
         deleteBlock();
+	if (keyState[KEY_DISPLAY_INFO] & KEY_PRESS)
+	{
+		std::cout << "chunk : " << (int)cameraPosition.x / Chunk::sizeX << " " << (int)cameraPosition.z / Chunk::sizeY << " " << (int)cameraPosition.y << std::endl;
+		std::cout << "pos : " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
+	}
 
 	yaw += mouseMoveX * sensitivity;
 	pitch -= mouseMoveY * sensitivity;

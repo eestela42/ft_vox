@@ -25,7 +25,9 @@
 
 #define KEY_DELETE_BLOCK		16
 
-#define KEY_LAST				16
+#define KEY_DISPLAY_INFO        17
+
+#define KEY_LAST				17
 
 
 

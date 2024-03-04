@@ -23,7 +23,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 
 	
 
-	ChunkGenerator::initNoise(420);
+	ChunkGenerator::initNoise(0145221553456);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
@@ -60,7 +60,8 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 	const std::vector<std::vector<Chunk *>> &loadedChunks = Chunk::GetLoadedChunks();
 	int size = loadedChunks.size();
 
-	playerPos /= 16;//ChunkSize
+	playerPos.x /= Chunk::sizeX;//ChunkSize
+	playerPos.z /= Chunk::sizeY;
 
 	int oldPlayerChunkPosX = playerChunkPosX;
 	int oldPlayerChunkPosY = playerChunkPosY;
