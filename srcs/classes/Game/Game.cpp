@@ -76,29 +76,40 @@ void Game::Loop() {
 
 }
 
-bool quickFix(int &chunkX, int &chunkY ,int blockX ,int blockY)
+bool quickFix(int &i, int &j ,int blockX ,int blockY, int chunkX, int chunkY)
 {
+	bool toDo = false;
 	if (blockX == 0)
 	{
 		chunkX--;
-		return true;
+		toDo =  true;
 	}
 	if (blockX == Chunk::sizeX - 1)
 	{
 		chunkX++;
-		return true;
+		toDo =  true;
 	}
 	if (blockY == 0)
 	{
 		chunkY--;
-		return true;
+		toDo =  true;
 	}
 	if (blockY == Chunk::sizeY - 1)
 	{
 		chunkY++;
-		return true;
+		toDo =  true;
+	}
+	if (toDo)
+	{
+		for (i = 0; i < Chunk::loadedChunks.size(); i++) {
+		for (j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
+				return true;
+		}
+		}
 	}
 	return false;
+
 }
 
 bool	Game::putBlock(glm::vec3 pos, u_char type) {
@@ -143,12 +154,10 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockZ);
 				modif->push_back(type);
 				Chunk::loadedChunks[i][j]->MakeDirty();
-
-				if (quickFix(i, j, blockX, blockY))
+				if (quickFix(i, j, blockX, blockY, chunkX, chunkY))
 					Chunk::loadedChunks[i][j]->MakeDirty();
 
 					
-
 				return true;
 			}
 		}
@@ -210,6 +219,7 @@ void Game::deleteBlock()
 				return;
 		}
 	}
+
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {

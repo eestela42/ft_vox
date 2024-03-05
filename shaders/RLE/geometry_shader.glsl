@@ -111,6 +111,8 @@ void main() {
 		vtype = 16;
 		out_grass = 1;
 	}
+	else if (vtype == 68 || vtype == 69)
+		out_grass = 1;
 
 	zero_texture = vec2((vtype % 16 * 128) / width_Texture,
 						1 - (vtype / 16 * 128) / width_Texture);

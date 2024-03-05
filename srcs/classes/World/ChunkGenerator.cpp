@@ -53,12 +53,12 @@ void ChunkGenerator::generateTree(int x, int y, int z) {
 	for (int j = -1; j < 2; j++) {
 	for (int k = 0; k < 2; k++) {
 		if (x+i >= 0 && x+i <= Chunk::sizeX - 1 && y+j >= 0 && y+j <= Chunk::sizeY - 1 && tronc+k >= 0 && tronc+k < Chunk::sizeZ)
-			data[(x+i) * Chunk::sizeZ + (tronc+k) + (y+j) * Chunk::sizeY * Chunk::sizeZ] = MOSSY_COBBLESTONE;
+			data[(x+i) * Chunk::sizeZ + (tronc+k) + (y+j) * Chunk::sizeY * Chunk::sizeZ] = LEAVES_2;
 	}
 	}
 	}
 	if (tronc + 2 < Chunk::sizeZ)
-		data[x * Chunk::sizeZ + tronc + 2 + y * Chunk::sizeY * Chunk::sizeZ] = MOSSY_COBBLESTONE;
+		data[x * Chunk::sizeZ + tronc + 2 + y * Chunk::sizeY * Chunk::sizeZ] = LEAVES_2;
 	
 }
 
