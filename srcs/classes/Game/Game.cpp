@@ -30,6 +30,7 @@ void Game::StartLoop() {
 	u_int fps = 0;
 
 	bool info = false;
+
 	while(window->ShouldContinue())
 	{
 		fps++;

@@ -227,8 +227,13 @@ int ChunkGenerator::gen2DCave(int hill_height, int pos, int &z)
 
 int ChunkGenerator::genWater( int pos, int &z)
 {
-	if (!data[pos + 60])
-				data[pos + 60] = WATER;
+	int posWater = 60;
+	
+	while (!data[pos + posWater])
+	{
+		data[pos + posWater] = WATER;
+		posWater--;
+	}
 	return 0;
 }
 
