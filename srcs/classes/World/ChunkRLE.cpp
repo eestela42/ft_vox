@@ -175,20 +175,20 @@ void	ChunkRLE::CompileData()
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
 					int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
-
-					if (ruban)
+					if (!ruban)
+					{
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
+						continue ;
+					}
 						neighb_size = ruban[neighb_pos[neighb] + 1];
 
 					if (data[pos] == AIR)  //if we are at an empty block
 					{
-						if (ruban)
-						{
 							int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
 							if (real_z + real_size < z_end)
 								to_draw = real_size;
 							else
 								to_draw = real_size - (real_z + real_size - z_end);
-						}
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
