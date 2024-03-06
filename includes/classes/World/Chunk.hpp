@@ -127,7 +127,7 @@ public :
 # define DIAMOUND_MINERAL 66
 # define LEAVES_1 68
 # define LEAVES_2 69
-# define SNOW_BLOCK 72
+# define SNOW_BLOCK 82
 # define PUMKIN_FACE 135
 
 

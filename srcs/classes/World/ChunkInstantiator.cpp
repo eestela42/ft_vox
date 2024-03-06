@@ -22,8 +22,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	std::vector<Chunk*> chunks;
 
 	
-
-	ChunkGenerator::initNoise(2);
+	ChunkGenerator::initNoise(5);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;

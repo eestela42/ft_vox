@@ -3,6 +3,7 @@
 
 std::vector<PerlinNoise*> 		ChunkGenerator::noiseList;
 std::map<position, std::vector<u_char>*> ChunkGenerator::modifMap;
+int ChunkGenerator::seed;
 
 #define GEN_NOISE3D true
 #define GEN_WATER true
@@ -13,6 +14,8 @@ ChunkGenerator::~ChunkGenerator()
 
 void ChunkGenerator::initNoise(u_int seed)
 {
+	ChunkGenerator::seed = seed;
+
 	PerlinNoise *noise0 = new PerlinNoise(seed);
 	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
 
@@ -123,7 +126,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		else
 		{
 			int air_end = 0;
-			for ( ; z < hill_height ; z++)
+			for ( ; z < hill_height && z < Chunk::sizeZ; z++)
 			{
 				double montain_factor = noiseList[3]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.023, 2, 0.56);
 				if (montain_factor < float(z)/(hill_height*2))
@@ -171,7 +174,7 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 			over_layer = SNOW_BLOCK;
 		
 		
-		while (z < dirt_height) {
+		while (z < dirt_height && z < Chunk::sizeZ) {
 			data[pos + z] = under_layer;
 			z++;
 		}
@@ -286,7 +289,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		std::cout << "raw map calloc failed !" << std::endl;
 	}
 	
-	engine.seed(389 * posX * posY);
+	engine.seed(seed * posX * posY);
 	
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {
