@@ -48,6 +48,20 @@ bool ChunkRLE::isFilled(int x, int y, int z) {
 	return false;
 }
 
+u_char ChunkRLE::blockType(int x, int y, int z) {
+	if (!IsGenerated()) { 
+		return 0;
+	}
+	int pos = this->rubansIndexes[x][y];
+	int tmp_z = 0;
+	while (tmp_z <= z)
+	{
+		tmp_z += this->data[pos + 1];
+		pos += 2;
+	}
+	return this->data[pos - 2];
+}
+
 
 u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
 {

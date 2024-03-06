@@ -62,7 +62,7 @@ class Game : I_Input
 
 		bool	putBlock(glm::vec3 pos, u_char type);
 		void deleteBlock();
-
+		glm::vec4 findColorFilter();
 		~Game();
 };
 

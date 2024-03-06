@@ -7,6 +7,7 @@ flat in int out_grass;
 
 
 uniform sampler2D ourTexture;
+uniform vec4 colorFilter;
 
 void main()
 {
@@ -21,5 +22,5 @@ void main()
 	// 	FragColor += vec4(0, 0, 0.5, 0.3);
 	// 	return;
 	// }
-	FragColor = texture(ourTexture, tex_out) * out_light;
+	FragColor = texture(ourTexture, tex_out) * out_light * colorFilter;
 }
