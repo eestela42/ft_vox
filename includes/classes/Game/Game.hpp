@@ -16,6 +16,8 @@
 #include <classes/World/ChunkInstantiator.hpp>
 #include <classes/Texture/Texture.hpp>
 #include <classes/Game/SkyBox.hpp>
+#include <classes/Game/CrossHair.hpp>
+
 
 class Game : I_Input
 {
@@ -48,6 +50,7 @@ class Game : I_Input
 
 
 		SkyBox *skyBox;
+		CrossHair *crossHair;
 		void SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
 		void StartLoop();
 

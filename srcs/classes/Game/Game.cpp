@@ -21,6 +21,7 @@ Game::Game() {
 	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
 	std::cout << "Game::Game()" << std::endl;
 	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"));
+	crossHair = new CrossHair(shaderHandler->GetShader("CrossHair"));
 
 }
 
@@ -66,12 +67,16 @@ void Game::Loop() {
 
 
 	skyBox->drawSkybox(matrix, cameraPosition);
+	
+	
 
-
-
+	crossHair->draw();
 
 	glBindTexture(GL_TEXTURE_2D, blockTexture.id);
+
 	vertexArrayObjectHandler->DrawAll();
+
+
 	window->SwapBuffersAndPollEvents();
 
 }

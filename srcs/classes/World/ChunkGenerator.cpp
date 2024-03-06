@@ -78,9 +78,9 @@ int ChunkGenerator::genBedrock(u_char *data, int x, int y)
 
 int ChunkGenerator::genUnderLayer(int pos, int &z)
 {
-		double ground_factor_1 = noiseList[0]->Octave2D(0.001456 * p_x, 0.001495 * p_y, 4, 0.67);
+		double ground_factor_1 = noiseList[0]->Octave2D(0.002456 * p_x, 0.001495 * p_y, 4, 0.67);
 
-		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 2, 0.67);
+		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00295 * p_y, 2, 0.67);
 
 		double ground_factor = ground_factor_1 / 2 + ground_factor_2 / 2;
 
@@ -113,7 +113,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		hill_height = ground_height + (int)((hill_factor * ground_factor) * 90 + 5);
 		
 
-		if (ground_factor + hill_factor  < 1.25)
+		if (ground_factor + hill_factor  < 1.15)
 		{
 			while (z < hill_height) {
 				data[pos + z] = STONE;
@@ -168,7 +168,7 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 		}
 
 		if (hill_height > 80 + (temperature * 180))
-			over_layer = IRON_BLOCK;
+			over_layer = SNOW_BLOCK;
 		
 		
 		while (z < dirt_height) {
@@ -238,7 +238,7 @@ int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
 		{
 			double diamond_factor = noiseList[0]->Octave3D(0.0156 * p_x, 0.095 * p_y, z * 0.39, 1, 0.5);
 			if ((diamond_factor > 0.90  || diamond_factor < 0.1)) {
-				data[pos + z] = DIAMOUND_BLOCK;
+				data[pos + z] = DIAMOUND_MINERAL;
 				continue ;
 			}
 		}

@@ -124,8 +124,10 @@ public :
 # define DISPENSER_FRONT 62
 # define WEIRD_RED_2 63
 # define SPONGE 64
+# define DIAMOUND_MINERAL 66
 # define LEAVES_1 68
 # define LEAVES_2 69
+# define SNOW_BLOCK 72
 # define PUMKIN_FACE 135
 
 

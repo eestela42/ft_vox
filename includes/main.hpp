@@ -21,6 +21,7 @@
 # include <classes/Game/Game.hpp>
 # include <classes/Game/InputHandler.hpp>
 # include <classes/Game/SkyBox.hpp>
+# include <classes/Game/CrossHair.hpp>
 
 
 		/*****	 Texture	*****/
