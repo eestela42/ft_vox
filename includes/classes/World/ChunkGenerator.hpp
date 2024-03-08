@@ -56,7 +56,6 @@ class ChunkGenerator
 {
 	private :
 
-		
 	public :
 	
 	static std::vector<PerlinNoise*> 		noiseList;
@@ -74,6 +73,8 @@ class ChunkGenerator
 	int hill_height;
 	double p_x;
 	double p_y;
+
+	static int seed;
 
 	static std::map<position, std::vector<u_char>*> modifMap;
 

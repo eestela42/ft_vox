@@ -3,6 +3,7 @@
 
 std::vector<PerlinNoise*> 		ChunkGenerator::noiseList;
 std::map<position, std::vector<u_char>*> ChunkGenerator::modifMap;
+int ChunkGenerator::seed;
 
 #define GEN_NOISE3D true
 #define GEN_WATER true
@@ -13,6 +14,8 @@ ChunkGenerator::~ChunkGenerator()
 
 void ChunkGenerator::initNoise(u_int seed)
 {
+	ChunkGenerator::seed = seed;
+
 	PerlinNoise *noise0 = new PerlinNoise(seed);
 	PerlinNoise *noise1 = new PerlinNoise(seed + 13);
 
@@ -53,12 +56,12 @@ void ChunkGenerator::generateTree(int x, int y, int z) {
 	for (int j = -1; j < 2; j++) {
 	for (int k = 0; k < 2; k++) {
 		if (x+i >= 0 && x+i <= Chunk::sizeX - 1 && y+j >= 0 && y+j <= Chunk::sizeY - 1 && tronc+k >= 0 && tronc+k < Chunk::sizeZ)
-			data[(x+i) * Chunk::sizeZ + (tronc+k) + (y+j) * Chunk::sizeY * Chunk::sizeZ] = MOSSY_COBBLESTONE;
+			data[(x+i) * Chunk::sizeZ + (tronc+k) + (y+j) * Chunk::sizeY * Chunk::sizeZ] = LEAVES_2;
 	}
 	}
 	}
 	if (tronc + 2 < Chunk::sizeZ)
-		data[x * Chunk::sizeZ + tronc + 2 + y * Chunk::sizeY * Chunk::sizeZ] = MOSSY_COBBLESTONE;
+		data[x * Chunk::sizeZ + tronc + 2 + y * Chunk::sizeY * Chunk::sizeZ] = LEAVES_2;
 	
 }
 
@@ -78,9 +81,9 @@ int ChunkGenerator::genBedrock(u_char *data, int x, int y)
 
 int ChunkGenerator::genUnderLayer(int pos, int &z)
 {
-		double ground_factor_1 = noiseList[0]->Octave2D(0.001456 * p_x, 0.001495 * p_y, 4, 0.67);
+		double ground_factor_1 = noiseList[0]->Octave2D(0.002456 * p_x, 0.001495 * p_y, 4, 0.67);
 
-		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00195 * p_y, 2, 0.67);
+		double ground_factor_2 = noiseList[0]->Octave2D(0.001356 * p_x, 0.00295 * p_y, 2, 0.67);
 
 		double ground_factor = ground_factor_1 / 2 + ground_factor_2 / 2;
 
@@ -113,7 +116,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		hill_height = ground_height + (int)((hill_factor * ground_factor) * 90 + 5);
 		
 
-		if (ground_factor + hill_factor  < 1.25)
+		if (ground_factor + hill_factor  < 1.15)
 		{
 			while (z < hill_height) {
 				data[pos + z] = STONE;
@@ -123,7 +126,7 @@ int ChunkGenerator::genUnderLayer(int pos, int &z)
 		else
 		{
 			int air_end = 0;
-			for ( ; z < hill_height ; z++)
+			for ( ; z < hill_height && z < Chunk::sizeZ; z++)
 			{
 				double montain_factor = noiseList[3]->Octave3D(0.0256 * p_x, 0.0295 * p_y, z * 0.023, 2, 0.56);
 				if (montain_factor < float(z)/(hill_height*2))
@@ -168,10 +171,10 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 		}
 
 		if (hill_height > 80 + (temperature * 180))
-			over_layer = IRON_BLOCK;
+			over_layer = SNOW_BLOCK;
 		
 		
-		while (z < dirt_height) {
+		while (z < dirt_height && z < Chunk::sizeZ) {
 			data[pos + z] = under_layer;
 			z++;
 		}
@@ -224,8 +227,13 @@ int ChunkGenerator::gen2DCave(int hill_height, int pos, int &z)
 
 int ChunkGenerator::genWater( int pos, int &z)
 {
-	if (!data[pos + 60])
-				data[pos + 60] = WATER;
+	int posWater = 60;
+	
+	while (!data[pos + posWater])
+	{
+		data[pos + posWater] = WATER;
+		posWater--;
+	}
 	return 0;
 }
 
@@ -238,7 +246,7 @@ int ChunkGenerator::gen3DCave(int hill_height, int pos, int &z)
 		{
 			double diamond_factor = noiseList[0]->Octave3D(0.0156 * p_x, 0.095 * p_y, z * 0.39, 1, 0.5);
 			if ((diamond_factor > 0.90  || diamond_factor < 0.1)) {
-				data[pos + z] = DIAMOUND_BLOCK;
+				data[pos + z] = DIAMOUND_MINERAL;
 				continue ;
 			}
 		}
@@ -286,7 +294,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		std::cout << "raw map calloc failed !" << std::endl;
 	}
 	
-	engine.seed(389 * posX * posY);
+	engine.seed(seed * posX * posY);
 	
 	for (int y = 0; y < sizeY; y++) {
 	for (int x = 0; x < sizeX; x++) {

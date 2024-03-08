@@ -59,7 +59,8 @@ public :
 	static u_int const sizeY = 16;
 	static u_int const sizeZ = 256;
 
-	virtual bool isFilled(int x, int y, int z) = 0;
+	virtual bool 	isFilled(int x, int y, int z) = 0;
+	virtual	u_char 	blockType(int x, int y, int z) = 0;
 	bool IsRealNeighbor(int chunkX, int chunkY);
 	virtual void PublicGenerate() final;
 	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
@@ -124,6 +125,11 @@ public :
 # define DISPENSER_FRONT 62
 # define WEIRD_RED_2 63
 # define SPONGE 64
+# define DIAMOUND_MINERAL 66
+# define LEAVES_1 68
+# define LEAVES_2 69
+# define SNOW_BLOCK 82
+# define PUMKIN_FACE 135
 
 
 

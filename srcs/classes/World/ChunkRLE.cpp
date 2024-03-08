@@ -48,6 +48,20 @@ bool ChunkRLE::isFilled(int x, int y, int z) {
 	return false;
 }
 
+u_char ChunkRLE::blockType(int x, int y, int z) {
+	if (!IsGenerated()) { 
+		return 0;
+	}
+	int pos = this->rubansIndexes[x][y];
+	int tmp_z = 0;
+	while (tmp_z <= z)
+	{
+		tmp_z += this->data[pos + 1];
+		pos += 2;
+	}
+	return this->data[pos - 2];
+}
+
 
 u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
 {
@@ -149,34 +163,38 @@ void	ChunkRLE::CompileData()
 		{
 
 			u_int z_end  = z + data[pos + 1];
-			if ((!z && data[pos]) || (data[pos] && !data[pos - 2]))
+			if ((!z && data[pos]) || (data[pos] && (data[pos - 2] == AIR || data[pos - 2] == WATER)))
 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
 			for (u_int neighb = 0; neighb < 4; neighb++)
 			{
-				u_char *ruban = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb);
+				u_char *ruban = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb); //find neighb of our block's ruban
+
 				while (neighb_z[neighb] + neighb_over[neighb] < z_end)
 				{
 					int real_z = neighb_z[neighb] + neighb_over[neighb];
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
 					int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
-					if (ruban)
-						neighb_size = ruban[neighb_pos[neighb] + 1];
-					if (data[pos] == 0) 
+					if (!ruban)
 					{
-						if (ruban)
-						{
+						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
+						continue ;
+					}
+						neighb_size = ruban[neighb_pos[neighb] + 1];
+
+					if (data[pos] == AIR)  //if we are at an empty block
+					{
 							int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
 							if (real_z + real_size < z_end)
 								to_draw = real_size;
 							else
 								to_draw = real_size - (real_z + real_size - z_end);
-						}
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
 
-					if (ruban && ruban[neighb_pos[neighb]] != 0)
+					if (ruban && ((data[pos] == WATER && ruban[neighb_pos[neighb]] == WATER)
+											|| (ruban[neighb_pos[neighb]] != WATER && ruban[neighb_pos[neighb]] != AIR))) //if neighb is not an empty block
 					{
 						int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
 						if (real_z + real_size < z_end)
@@ -186,7 +204,8 @@ void	ChunkRLE::CompileData()
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
-					if (ruban)
+
+					if (ruban) // if we found the neighb ruban
 					{
 						int real_size = ruban[neighb_pos[neighb] + 1] - neighb_over[neighb];
 						to_draw = 0;
@@ -195,6 +214,7 @@ void	ChunkRLE::CompileData()
 						else
 							to_draw = real_size - (real_z + real_size - z_end);
 					}
+
 					for (int i = 0; to_draw - i; i++)
 						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z + i, vertexData.size(), data[pos]);
 					while (to_draw)
@@ -205,7 +225,7 @@ void	ChunkRLE::CompileData()
 					}
 				}
 			}
-			if (data[pos] && z < sizeZ - 1 && !data[pos + 2]) 
+			if (data[pos] && z < sizeZ - 1 && (data[pos + 2] == AIR || data[pos + 2] == WATER))
 				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos]);
 			pos += 2;
 			z = z_end;

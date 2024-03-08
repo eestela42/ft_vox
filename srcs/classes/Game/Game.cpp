@@ -21,6 +21,7 @@ Game::Game() {
 	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
 	std::cout << "Game::Game()" << std::endl;
 	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"));
+	crossHair = new CrossHair(shaderHandler->GetShader("CrossHair"));
 
 }
 
@@ -29,6 +30,7 @@ void Game::StartLoop() {
 	u_int fps = 0;
 
 	bool info = false;
+
 	while(window->ShouldContinue())
 	{
 		fps++;
@@ -52,11 +54,13 @@ void Game::Loop() {
 	glm::mat4 matrix = glm::mat4(1.0f);
 	// matrix = proj * GetCameraView();
 	matrix = proj * glm::lookAt(glm::vec3(0,0,0) ,cameraDirection, cameraUp);
+	glm::vec4 colorFilter = findColorFilter();
 	if (Shader::GetActiveShader()) {
 		Shader::GetActiveShader()->SetFloat4("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
 		Shader::GetActiveShader()->Setmat4("matrix", matrix);
 		Shader::GetActiveShader()->SetInt("chunk_size_x", Chunk::sizeX);
 		Shader::GetActiveShader()->SetInt("chunk_size_y", Chunk::sizeY);
+		Shader::GetActiveShader()->SetFloat4("colorFilter", colorFilter[0], colorFilter[1], colorFilter[2], colorFilter[3]);
 	}
 	else {
 		assert(!"The loop is running and there are no active shader");
@@ -66,39 +70,92 @@ void Game::Loop() {
 
 
 	skyBox->drawSkybox(matrix, cameraPosition);
+	
+	
 
-
-
+	crossHair->draw();
 
 	glBindTexture(GL_TEXTURE_2D, blockTexture.id);
+
 	vertexArrayObjectHandler->DrawAll();
+
+
 	window->SwapBuffersAndPollEvents();
 
 }
 
-bool quickFix(int &chunkX, int &chunkY ,int blockX ,int blockY)
+glm::vec4 Game::findColorFilter()
 {
+	glm::vec4 colorFilter = {1.0f,1.0f,1.0f,1.0f};
+	glm::vec3 pos = cameraPosition;
+	int chunkX = pos.x / Chunk::sizeX;
+	int chunkY = pos.z / Chunk::sizeY;
+	
+
+	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
+
+	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
+
+	if (pos.x < 0)
+	{
+		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
+		chunkX--;
+	}
+
+	if (pos.z < 0)
+	{
+		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
+		chunkY--;
+	}
+
+
+	int blockZ = pos.y;
+
+	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
+		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY) {
+					if (Chunk::loadedChunks[i][j]->blockType(blockX, blockY, blockZ) == WATER)
+						colorFilter = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+				}
+		}
+	}
+	return(colorFilter);
+}
+
+bool quickFix(int &i, int &j ,int blockX ,int blockY, int chunkX, int chunkY)
+{
+	bool toDo = false;
 	if (blockX == 0)
 	{
 		chunkX--;
-		return true;
+		toDo =  true;
 	}
 	if (blockX == Chunk::sizeX - 1)
 	{
 		chunkX++;
-		return true;
+		toDo =  true;
 	}
 	if (blockY == 0)
 	{
 		chunkY--;
-		return true;
+		toDo =  true;
 	}
 	if (blockY == Chunk::sizeY - 1)
 	{
 		chunkY++;
-		return true;
+		toDo =  true;
+	}
+	if (toDo)
+	{
+		for (i = 0; i < Chunk::loadedChunks.size(); i++) {
+		for (j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
+				return true;
+		}
+		}
 	}
 	return false;
+
 }
 
 bool	Game::putBlock(glm::vec3 pos, u_char type) {
@@ -143,12 +200,10 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockZ);
 				modif->push_back(type);
 				Chunk::loadedChunks[i][j]->MakeDirty();
-
-				if (quickFix(i, j, blockX, blockY))
+				if (quickFix(i, j, blockX, blockY, chunkX, chunkY))
 					Chunk::loadedChunks[i][j]->MakeDirty();
 
 					
-
 				return true;
 			}
 		}
@@ -210,6 +265,7 @@ void Game::deleteBlock()
 				return;
 		}
 	}
+
 }
 
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {

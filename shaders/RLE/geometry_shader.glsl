@@ -28,12 +28,12 @@ out float out_light;
 
 void create_vertex(vec3 pos, vec2 texCoords)
 {
-	gl_Position = matrix * vec4(pos, 1);
+	gl_Position = matrix * vec4(pos, 1.0f);
 	tex_out = texCoords;
 	EmitVertex();
 }
 
-void create_face(vec3 pos, vec2 zero_texture, int face)
+void create_face(vec3 pos, vec2 zero_texture, int face, int type)
 {
 	vec2 texCoords[4];
 	texCoords[0] = vec2(zero_texture.x + 0.0, zero_texture.y + 0.0);
@@ -83,10 +83,20 @@ void create_face(vec3 pos, vec2 zero_texture, int face)
 
 		break;
 	case  5 :
-		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[0]);
-		create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[1]);
-		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
-		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
+		if (type != 30)
+		{
+			create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
+		}
+		else
+		{
+			create_vertex(pos + vec3(0.0, 0.80, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.80, 0.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 0.80, 1.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 0.80, 1.0), texCoords[2]);
+		}
 
 		break;
 	}
@@ -111,6 +121,8 @@ void main() {
 		vtype = 16;
 		out_grass = 1;
 	}
+	else if (vtype == 68 || vtype == 69)
+		out_grass = 1;
 
 	zero_texture = vec2((vtype % 16 * 128) / width_Texture,
 						1 - (vtype / 16 * 128) / width_Texture);
@@ -120,7 +132,7 @@ void main() {
 			out_light = 0.8;
 		else
 			out_light = 1.0;
-	create_face(pos, zero_texture, geo_in[0].face);
+	create_face(pos, zero_texture, geo_in[0].face, vtype);
 
 }
 

@@ -49,67 +49,7 @@ PerlinNoise::PerlinNoise(unsigned int seed) {
 	p.insert(p.end(), p.begin(), p.end());
 }
 
-		/*****	2 - noise makers	 	*****/
 
-// void	PerlinNoise::noise1d(int nCount, float *fSeed, int nOctaves, float fBias, float *fOutput)
-// {
-// 	for (int x = 0; x < nCount; x++)
-// 	{
-// 		float fNoise = 0.0f;
-// 		float fScale = 1.0f;
-// 		float fScaleAcc = 0.0f;
-
-// 		for (int o = 0; o < nOctaves; o++)
-// 		{
-// 			int nPitch = nCount >> o;
-// 			int nSample1 = (x / nPitch) * nPitch;
-// 			int nSample2 = (nSample1 + nPitch) % nCount;
-
-// 			float fBlend = (float)(x - nSample1) / (float)nPitch;
-
-// 			float fSample = (1.0f - fBlend) * fSeed[nSample1] + fBlend * fSeed[nSample2];
-
-// 			fScaleAcc += fScale;
-// 			fNoise += fSample * fScale;
-// 			fScale = fScale / fBias;
-// 		}
-// 		fOutput[x] = fNoise / fScaleAcc;
-// 	}
-// }
-
-// void	PerlinNoise::noise2d(int nWidth, int nheight, float *fSeed, int nOctaves, float fBias, float *fOutput)
-// {
-// 	for (int y = 0; y < nheight; y++)
-// 	{
-// 		for (int x = 0; x < nWidth; x++)
-// 		{
-// 			float fNoise = 0.0f;
-// 			float fScale = 1.0f;
-// 			float fScaleAcc = 0.0f;
-
-// 			for (int o = 0; o < nOctaves; o++)
-// 			{
-// 				int nPitch = nWidth >> o;
-// 				int nSampleX1 = (x / nPitch) * nPitch;
-// 				int nSampleY1 = (y / nPitch) * nPitch;
-
-// 				int nSampleX2 = (nSampleX1 + nPitch) % nWidth;
-// 				int nSampleY2 = (nSampleY1 + nPitch) % nWidth;
-
-// 				float fBlendX = (float)(x - nSampleX1) / (float)nPitch;
-// 				float fBlendY = (float)(x - nSampleY1) / (float)nPitch;
-
-// 				float fSampleT = (1.0f - fBlendX) * fSeed[nSampleX1 + nSampleY1 * nWidth] + fBlendX * fSeed[nSampleX2 + nSampleY1 * nWidth];
-// 				float fSampleB = (1.0f - fBlendX) * fSeed[nSampleX1 + nSampleY2 * nWidth] + fBlendX * fSeed[nSampleX2 + nSampleY2 * nWidth];
-
-// 				fScaleAcc += fScale;
-// 				fNoise += (fBlendY * (fSampleB - fSampleT) + fSampleT) * fScale;
-// 				fScale = fScale / fBias;
-// 			}
-// 			fOutput[x + y * nWidth] = std::abs(fNoise / fScaleAcc);
-// 			}
-// 	}
-// }
 double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, const double persistence) 
 {
 	double total = 0;
@@ -126,22 +66,7 @@ double PerlinNoise::Octave2D(double x, double y, const std::int32_t octaves, con
     }
     
     return total/maxValue;
-// 	double result = 0;
-// 	double amplitude = 1;
-// 	double fScale = 0;
 
-// 	for (std::int32_t i = 0; i < octaves; ++i)
-// 	{
-// 		double tmp = newNoise3d(x, y, 0);
-// 		// std::cout << "tmp " << tmp << std::endl;
-// 		result += tmp  * amplitude;
-// 		x *= 2;
-// 		y *= 2;
-// 		fScale += amplitude;
-// 		amplitude /= persistence;
-// 	}
-
-// 	return result / fScale;
 }
 
 double PerlinNoise::Octave3D(double x, double y, double z, const std::int32_t octaves, const double persistence) 
