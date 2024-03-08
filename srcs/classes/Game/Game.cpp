@@ -48,7 +48,7 @@ void Game::StartLoop() {
 void Game::Loop() {
 	inputHandler->HandleInput();
 	window->Clear();
-	instantiator->Update(cameraPosition, std::chrono::milliseconds(10));
+	instantiator->Update(cameraPosition, std::chrono::milliseconds(20));
 
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
@@ -124,35 +124,48 @@ glm::vec4 Game::findColorFilter()
 
 bool quickFix(int &i, int &j ,int blockX ,int blockY, int chunkX, int chunkY)
 {
-	bool toDo = false;
+	int toDo = 0;
+	int fixX = chunkX;
+	int fixY = chunkY;
 	if (blockX == 0)
 	{
-		chunkX--;
-		toDo =  true;
+		fixX--;
+		toDo++;
 	}
-	if (blockX == Chunk::sizeX - 1)
+	else if (blockX == Chunk::sizeX - 1)
 	{
-		chunkX++;
-		toDo =  true;
+		fixX++;
+		toDo++;
 	}
+
 	if (blockY == 0)
 	{
-		chunkY--;
-		toDo =  true;
+		fixY--;
+		toDo++;
 	}
-	if (blockY == Chunk::sizeY - 1)
+	else if (blockY == Chunk::sizeY - 1)
 	{
-		chunkY++;
-		toDo =  true;
+		fixY++;
+		toDo++;
 	}
-	if (toDo)
-	{
-		for (i = 0; i < Chunk::loadedChunks.size(); i++) {
-		for (j = 0; j < Chunk::loadedChunks[i].size(); j++) {
-			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
-				return true;
+	
+	for (i = 0; toDo && i < Chunk::loadedChunks.size(); i++) {
+	for (j = 0; toDo && j < Chunk::loadedChunks[i].size(); j++) {
+		if (Chunk::loadedChunks[i][j])	
+		{
+			if (fixX != chunkX && Chunk::loadedChunks[i][j]->GetX() == fixX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
+			{
+				Chunk::loadedChunks[i][j]->MakeDirty();
+				toDo--;
+			}
+			else if (fixY != chunkY && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == fixY)
+			{
+				Chunk::loadedChunks[i][j]->MakeDirty();
+				toDo--;
+			}
+			
 		}
-		}
+	}
 	}
 	return false;
 
@@ -199,9 +212,11 @@ bool	Game::putBlock(glm::vec3 pos, u_char type) {
 				modif->push_back(blockY);
 				modif->push_back(blockZ);
 				modif->push_back(type);
+
 				Chunk::loadedChunks[i][j]->MakeDirty();
-				if (quickFix(i, j, blockX, blockY, chunkX, chunkY))
-					Chunk::loadedChunks[i][j]->MakeDirty();
+
+				quickFix(i, j, blockX, blockY, chunkX, chunkY);
+					
 
 					
 				return true;
@@ -285,7 +300,9 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
 	// 	instantiator->updateGen("generation");
 	// }
-	if(keyState[KEY_DELETE_BLOCK] & KEY_HOLD)
+	if(keyState[KEY_DELETE_ONE_BLOCK] & KEY_PRESS)
+        deleteBlock();
+	if(keyState[KEY_DELETE_MORE_BLOCK] & KEY_HOLD)
         deleteBlock();
 	if (keyState[KEY_DISPLAY_INFO] & KEY_PRESS)
 	{

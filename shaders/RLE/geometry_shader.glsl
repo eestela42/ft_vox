@@ -45,34 +45,69 @@ void create_face(vec3 pos, vec2 zero_texture, int face, int type)
 	switch (face)
 	{
 	case 0 :
-		
-		create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[0]);
-		create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
-		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
-		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
-		
+		if (type != 30)
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
+		}
+		else
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 0.80, 1.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 0.80, 1.0), texCoords[2]);
+		}
 		break;
 	case  1 :
-		create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[0]);
-		create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
-		create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[3]);
-		create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
-
+	if (type != 30)
+		{
+			create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 1.0, 1.0), texCoords[2]);
+		}
+		else
+		{
+			create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(1.0, 0.80, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 0.80, 1.0), texCoords[2]);
+		}
 		break;
 	case 2 :
-		create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
-		create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[1]);
-		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
-		create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[2]);
-		
+	if (type != 30)
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 1.0, 0.0), texCoords[2]);
+		}
+		else
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(1.0, 0.0, 0.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 0.80, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(1.0, 0.80, 0.0), texCoords[2]);
+		}
 		break;
 	
 	case 3 :
-		create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
-		create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[1]);
-		create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
-		create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[2]);
-
+	if (type != 30)
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 1.0, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(0.0, 1.0, 1.0), texCoords[2]);
+		}
+		else
+		{
+			create_vertex(pos + vec3(0.0, 0.0, 0.0), texCoords[0]);
+			create_vertex(pos + vec3(0.0, 0.0, 1.0), texCoords[1]);
+			create_vertex(pos + vec3(0.0, 0.80, 0.0), texCoords[3]);
+			create_vertex(pos + vec3(0.0, 0.80, 1.0), texCoords[2]);
+		}
 		break;
 	
 	case  4 :
