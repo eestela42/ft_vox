@@ -37,8 +37,8 @@ class Shader
 		std::vector<t_vertexAttribute> &GetVertexAttributes();
 		static Shader *GetActiveShader();
 	private:
-		static Shader *activeShader;
 		unsigned int ID; // the program ID
+		static Shader *activeShader;
 		std::vector<t_vertexAttribute> attributes;
 			
 		u_int CompileSingleShader(const char *path, GLenum type, std::string sType);

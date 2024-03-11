@@ -6,11 +6,17 @@
 #include <cmath>
 #include <glm/glm.hpp>
 # include <stdio.h>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/Texture/Texture.hpp>
 #include <string>
 #include <stb/stb_image.h>
+# include <filesystem>
 
 
 class SkyBox
@@ -19,7 +25,10 @@ class SkyBox
 		SkyBox(Shader *skyBoxShader);
 		~SkyBox();
 
+
 		void drawSkybox(glm::mat4 matrix, glm::vec3 pos);
+
+		
 		
 		void replace(int x, int y);
 		void setRenderDistance(unsigned int renderDistance);
@@ -30,6 +39,9 @@ class SkyBox
 		std::vector<std::vector<float>> vertices;
 		std::vector<std::vector<u_int>> shape;
 		std::vector<Texture> texture;
+
+		unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
+		unsigned int cubemapTexture;
 		
 
 	private:

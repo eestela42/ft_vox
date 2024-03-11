@@ -20,7 +20,7 @@ Game::Game() {
 	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
 	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
 	std::cout << "Game::Game()" << std::endl;
-	skyBox = new SkyBox(shaderHandler->GetShader("skyBox"));
+	skyBox = new SkyBox(shaderHandler->GetShader("cubemap"));
 	crossHair = new CrossHair(shaderHandler->GetShader("CrossHair"));
 
 }
@@ -49,7 +49,7 @@ void Game::Loop() {
 	inputHandler->HandleInput();
 	window->Clear();
 	instantiator->Update(cameraPosition, std::chrono::milliseconds(20));
-
+	glm::mat4 view = glm::lookAt(glm::vec3(0,0,0) , cameraDirection, cameraUp);
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
 	// matrix = proj * GetCameraView();
@@ -69,9 +69,7 @@ void Game::Loop() {
 	
 
 
-	skyBox->drawSkybox(matrix, cameraPosition);
-	
-	
+	skyBox->drawSkybox(proj * glm::mat4(glm::mat3(view)), cameraPosition);
 
 	crossHair->draw();
 
