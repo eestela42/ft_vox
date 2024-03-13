@@ -217,12 +217,12 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 
 	std::vector<std::string> faces
     {
-        std::filesystem::path("textures/skyBox/right.png"),
-        std::filesystem::path("textures/skyBox/left.png"),
-        std::filesystem::path("textures/skyBox/top.png"),
-        std::filesystem::path("textures/skyBox/bot.png"),
-        std::filesystem::path("textures/skyBox/front.png"),
-        std::filesystem::path("textures/skyBox/back.png")
+        std::filesystem::path("textures/skybox/right.jpg"),
+        std::filesystem::path("textures/skybox/left.jpg"),
+        std::filesystem::path("textures/skybox/bottom.jpg"),
+        std::filesystem::path("textures/skybox/top.jpg"),
+        std::filesystem::path("textures/skybox/front.jpg"),
+        std::filesystem::path("textures/skybox/back.jpg")
     };
 
 	cubemapTexture = loadCubemap(faces);
@@ -298,14 +298,14 @@ void SkyBox::drawSkybox(glm::mat4 matrix, glm::vec3 pos)
 		glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
 		shader->Use();
 		shader->SetInt("skybox", 0);
-        shader->Setmat4("matrix", matrix);
-        // skybox cube
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        glDepthMask(GL_TRUE); 
+		shader->Setmat4("matrix", matrix);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthMask(GL_TRUE); 
 
 
 	// 	VAO[0]->Bind();
