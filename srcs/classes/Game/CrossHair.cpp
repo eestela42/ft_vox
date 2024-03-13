@@ -31,7 +31,7 @@ CrossHair::CrossHair(Shader *CrossHairShader)
 		6,7,4
 		};
 
-		t_vertexData *skyVertData = new t_vertexData();
+		skyVertData = new t_vertexData();
 		skyVertData->data = (u_char*)vertices.data();
 		skyVertData->size = vertices.size() * sizeof(float);
 
@@ -40,6 +40,8 @@ CrossHair::CrossHair(Shader *CrossHairShader)
 
 CrossHair::~CrossHair()
 {
+	delete skyVertData;
+	delete VAO;
 }
 
 void CrossHair::draw()

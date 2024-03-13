@@ -32,6 +32,7 @@ class CrossHair
 		
 
 	private:
+		t_vertexData *skyVertData;
 	
 };
 
