@@ -1,7 +1,8 @@
 #include <classes/Game/Game.hpp>
 #include <classes/Profiler.hpp>
 #include <thread>
-int main(int argc, char **argv) {
+
+int main(int argc, __attribute__((unused)) char **argv) {
 	if (argc > 1) {
 		Profiler::SetSaveOn();
 	}
@@ -13,5 +14,6 @@ int main(int argc, char **argv) {
 	
 	game->StartLoop();
 	Profiler::LogData();
+	delete game;
 	return 0;
 }

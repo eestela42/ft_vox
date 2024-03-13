@@ -7,6 +7,7 @@ class ShaderHandler
 {
 	public:
 	/** @brief Compiles one shader program per subfolder.*/ 
+	~ShaderHandler();
 	ShaderHandler(const char* shaderFolderPath);
 	/** @brief Activates Shader with the given name.*/ 
 	void Use(const char* shaderFolderName);
@@ -14,5 +15,5 @@ class ShaderHandler
 
 	private:
 		std::unordered_map<std::string, Shader*> shaderMap;
-		Shader *activeShader = NULL;
+		// Shader *activeShader = NULL;
 };

@@ -40,12 +40,14 @@ class SkyBox
 		std::vector<std::vector<u_int>> shape;
 		std::vector<Texture> texture;
 
-		unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
+		unsigned int skyboxVAO, skyboxVBO;
 		unsigned int cubemapTexture;
 		
 
 	private:
 };
+
+
 
 
 

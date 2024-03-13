@@ -23,8 +23,8 @@ DEPS_DIR = $(OBJS_DIR)
 #                              Commands and arguments                          #
 ################################################################################
 
-CC			=	g++ -std=c++17
-CFLAGS = -Llibs -Iincludes -MMD -MP 
+CC			=	clang++ -std=c++17
+CFLAGS = -g -Iincludes -MMD -MP -Wall -Wextra
 OPENGL = -lglfw3 -lGL -lX11 -llmdb
 RM			=	rm -rf
 
@@ -49,11 +49,11 @@ $(shell mkdir -p $(sort $(dir $(CPP_OBJS))) $(sort $(dir $(C_OBJS))))
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@ echo "\t$(_YELLOW) compiling... $*.c$(_NC)"
-	@$(CC) $(CFLAGS) $(OPENGL) -c $< -o $@
+	clang $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@ echo "\t$(_YELLOW) compiling... $*.cpp$(_NC)"
-	@$(CC) $(CFLAGS) $(OPENGL) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 ################################################################################
 #                                  Dependances                                 #
@@ -89,7 +89,7 @@ init:
 
 $(NAME): $(CPP_OBJS) $(C_OBJS)
 	@ echo "\t$(_YELLOW)[Creating program]$(_NC)"
-	@$(CC) $(CFLAGS) $(CPP_OBJS) $(C_OBJS) $(OPENGL) -o $(NAME) -ldl -lpthread
+	@$(CC) $(CFLAGS) $(CPP_OBJS) $(C_OBJS) $(OPENGL) -Llibs -o $(NAME) -ldl -lpthread
 	@ echo "$(_GREEN)[program created & ready]$(_NC)"
 
 clean:

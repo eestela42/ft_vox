@@ -187,6 +187,7 @@ std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
 }
 
 Chunk::~Chunk() {
+
 	UnloadChunk();
 	if ((void*)data != (void*)"") {
 		free(data);

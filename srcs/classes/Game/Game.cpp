@@ -2,6 +2,27 @@
 
 glm::vec3 const Game::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+Game::~Game() {
+	std::cout << " start game destruction" << std::endl;
+	std::cout << ChunkGenerator::noiseList.size() << std::endl;
+	
+	size_t i = 0;
+	while (i < ChunkGenerator::noiseList.size())
+		delete ChunkGenerator::noiseList[i++];
+
+	std::cout << " in game destru" << std::endl;
+
+	delete crossHair;
+	delete skyBox;
+	delete instantiator;
+	delete vertexArrayObjectHandler;
+	delete shaderHandler;
+	delete inputHandler;
+	delete window;
+
+	std::cout << " end game destru" << std::endl;
+
+}
 
 
 Game::Game() {
@@ -53,7 +74,7 @@ void Game::Loop() {
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
 	// matrix = proj * GetCameraView();
-	matrix = proj * glm::lookAt(glm::vec3(0,0,0) ,cameraDirection, cameraUp);
+	matrix = proj * view;
 	glm::vec4 colorFilter = findColorFilter();
 	if (Shader::GetActiveShader()) {
 		Shader::GetActiveShader()->SetFloat4("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
@@ -284,17 +305,17 @@ void Game::deleteBlock()
 void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	float speedMultiplier = (keyState[KEY_MOVE_UPWARD] & KEY_HOLD) ? 20 : 1;
 	if(keyState[KEY_MOVE_FORWARD] & KEY_HOLD)
-        cameraPosition += speed * speedMultiplier * cameraDirection;
-    if(keyState[KEY_MOVE_BACKWARD] & KEY_HOLD)
-        cameraPosition -= speed * speedMultiplier * cameraDirection;
-    if(keyState[KEY_MOVE_RIGHTWARD] & KEY_HOLD)
-        cameraPosition += speed * speedMultiplier * glm::normalize(glm::cross(cameraDirection, cameraUp));
-    if(keyState[KEY_MOVE_LEFTWARD] & KEY_HOLD)
-        cameraPosition -= speed * speedMultiplier * glm::normalize(glm::cross(cameraDirection, cameraUp));
-    if(keyState[KEY_SPACE] & KEY_HOLD)
-        cameraPosition += glm::vec3(0, speed * speedMultiplier, 0);
-    if(keyState[KEY_MOVE_DOWNWARD] & KEY_HOLD)
-        cameraPosition += glm::vec3(0, -speed * speedMultiplier, 0);
+  		cameraPosition += speed * speedMultiplier * cameraDirection;
+	if(keyState[KEY_MOVE_BACKWARD] & KEY_HOLD)
+			cameraPosition -= speed * speedMultiplier * cameraDirection;
+	if(keyState[KEY_MOVE_RIGHTWARD] & KEY_HOLD)
+			cameraPosition += speed * speedMultiplier * glm::normalize(glm::cross(cameraDirection, cameraUp));
+	if(keyState[KEY_MOVE_LEFTWARD] & KEY_HOLD)
+			cameraPosition -= speed * speedMultiplier * glm::normalize(glm::cross(cameraDirection, cameraUp));
+	if(keyState[KEY_SPACE] & KEY_HOLD)
+			cameraPosition += glm::vec3(0, speed * speedMultiplier, 0);
+	if(keyState[KEY_MOVE_DOWNWARD] & KEY_HOLD)
+			cameraPosition += glm::vec3(0, -speed * speedMultiplier, 0);
 	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
 	// 	instantiator->updateGen("generation");
 	// }
@@ -339,5 +360,3 @@ glm::mat4	Game::GetCameraView() const {
 // {
 // 	return cameraPosition;
 // }
-
-Game::~Game() {}

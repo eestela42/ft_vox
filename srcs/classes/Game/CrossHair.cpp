@@ -39,7 +39,8 @@ CrossHair::CrossHair(Shader *CrossHairShader)
 }
 
 CrossHair::~CrossHair()
-{}
+{
+}
 
 void CrossHair::draw()
 {

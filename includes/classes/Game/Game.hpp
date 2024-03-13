@@ -30,7 +30,7 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 10;
+		int renderDistance = 1;
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
@@ -62,7 +62,7 @@ class Game : I_Input
 		bool	putBlock(glm::vec3 pos, u_char type);
 		void deleteBlock();
 		glm::vec4 findColorFilter();
-		~Game();
+		virtual ~Game();
 };
 
 #endif

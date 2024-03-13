@@ -30,6 +30,7 @@ class ChunkInstantiator
 		int renderDistance;
 		ShaderHandler *shaderHandler;
 	public:
+		~ChunkInstantiator();
 		ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler);
 		bool	putBlock(glm::vec3 pos, u_char type);
 		// void updateGen(const char *filePath);

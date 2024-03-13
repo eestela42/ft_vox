@@ -5,6 +5,10 @@
 #define GMTR 1 << 2
 
 Shader *Shader::activeShader = NULL;
+Shader::~Shader()
+{
+	
+}
 
 Shader::Shader(const std::string &folderPath) {
 	u_char activeShaders = 0;

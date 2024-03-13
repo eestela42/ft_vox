@@ -11,7 +11,7 @@
 class VertexArrayObjectHandler {
 public:
 	VertexArrayObjectHandler();
-    ~VertexArrayObjectHandler();
+	~VertexArrayObjectHandler();
 
 	void Draw();
 	void DrawAll();

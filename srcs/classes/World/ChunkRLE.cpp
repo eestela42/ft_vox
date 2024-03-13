@@ -174,7 +174,7 @@ void	ChunkRLE::CompileData()
 					int real_z = neighb_z[neighb] + neighb_over[neighb];
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
-					int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
+					// int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 					if (!ruban)
 					{
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
@@ -376,11 +376,9 @@ void ChunkRLE::updateFromRaw(u_char *rawData)
 	this->data = rubans->data();
 
 	free(rawData);
-
-
 }
 
-void ChunkRLE::randomGen(int &pos, int x, int y)
+void ChunkRLE::randomGen(__attribute__((unused)) int &pos, __attribute__((unused)) int x, __attribute__((unused)) int y)
 {
 	
 }
@@ -392,18 +390,17 @@ void 					ChunkRLE::Generate()
 	
 }
 
-
 void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
 										std::vector<glm::ivec3> sizeList)
 {
 	std::vector<u_char> rubans;
 	rubans.resize(sizeX * sizeY * 2);
-	for (int y = 0; y < sizeY; y++)
+	for (unsigned long y = 0; y < sizeY; y++)
 	{
-		for (int x = 0; x < sizeX; x++)
+		for (unsigned long x = 0; x < sizeX; x++)
 		{
 			std::vector<u_char> objRubans;
-			for (int obj = 0; obj < positionList.size(); obj++) // trouver tous les rubans en cette pos
+			for (unsigned long obj = 0; obj < positionList.size(); obj++) // trouver tous les rubans en cette pos
 			{
 				if (x >= positionList[obj].x && x < positionList[obj].x + sizeList[obj].x &&
 					y >= positionList[obj].y && y < positionList[obj].y + sizeList[obj].y)

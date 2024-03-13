@@ -2,6 +2,12 @@
 
 VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
+VertexArrayObjectHandler::~VertexArrayObjectHandler() {
+	vaoMap.clear();
+}
+
+
+
 void VertexArrayObjectHandler::Draw() {
 	if (activeVAO) {
 		glDrawElements(GL_TRIANGLES, vaoMap[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
@@ -32,14 +38,11 @@ bool isInFrustum(const glm::vec4& clipSpacePosition) {
 }
 
 
-void VertexArrayObjectHandler::DrawAll(glm::vec3 originCameraPosition, glm::vec3 originCameraDirection) {
+void VertexArrayObjectHandler::DrawAll( __attribute__((unused)) glm::vec3 originCameraPosition, __attribute__((unused)) glm::vec3 originCameraDirection) {
     Unbind();
 
 
     for (auto const& x : vaoMap) {
-        // 
-
-        // Bind VAO and draw
         x.second->Bind();
         glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
         x.second->Unbind();
@@ -85,5 +88,3 @@ void VertexArrayObjectHandler::Unbind() {
 VertexArrayObject *VertexArrayObjectHandler::GetVAO(u_int VAO) {
 	return (vaoMap[VAO]);
 }
-
-VertexArrayObjectHandler::~VertexArrayObjectHandler() {}

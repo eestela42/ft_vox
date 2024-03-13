@@ -7,6 +7,23 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 	return false;
 }
 
+ChunkInstantiator::~ChunkInstantiator()
+{
+	std::cout << "ChunkInstanciator destructor in" << std::endl;
+	const std::vector<std::vector<Chunk *>> &loadedChunks = Chunk::GetLoadedChunks();
+
+	for (unsigned long i = 0; i  < loadedChunks.size(); i++)
+	{
+		for (unsigned long y = 0; y < loadedChunks[i].size(); y++)
+		{
+			std::cout << "delete " << i << " " << y << std::endl;
+			delete loadedChunks[i][y];
+		}
+	}
+
+	std::cout << "ChunkInstanciator destructor out" << std::endl;
+	
+}
 
 
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
@@ -18,7 +35,7 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	bool showChunkDebug = false;
 	this->vertexArrayObjectHandler = vertexArrayObjectHandler;
 	this->renderDistance = renderDistance;
-	int chunkLoadingSize = Chunk::GetLoadedChunks().size();
+	// int chunkLoadingSize = Chunk::GetLoadedChunks().size();
 	std::vector<Chunk*> chunks;
 
 	

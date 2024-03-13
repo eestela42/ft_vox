@@ -10,6 +10,7 @@ int ChunkGenerator::seed;
 
 ChunkGenerator::~ChunkGenerator()
 {
+	
 }
 
 void ChunkGenerator::initNoise(u_int seed)
@@ -26,7 +27,6 @@ void ChunkGenerator::initNoise(u_int seed)
 	PerlinNoise *noise6 = new PerlinNoise(seed + 17);
 	PerlinNoise *noise7 = new PerlinNoise(seed + 19);
 
-	ChunkGenerator init;
 	ChunkGenerator::noiseList.push_back(noise0);
 	ChunkGenerator::noiseList.push_back(noise1);
 	ChunkGenerator::noiseList.push_back(noise2);
@@ -42,7 +42,7 @@ ChunkGenerator::ChunkGenerator()
 	
 }
 
-ChunkGenerator::ChunkGenerator(u_int seed)
+ChunkGenerator::ChunkGenerator(__attribute__((unused)) u_int seed)
 {
 	
 }
@@ -225,7 +225,7 @@ int ChunkGenerator::gen2DCave(int hill_height, int pos, int &z)
 	return 0;
 }
 
-int ChunkGenerator::genWater( int pos, int &z)
+int ChunkGenerator::genWater( int pos, __attribute__((unused)) int &z)
 {
 	int posWater = 60;
 	

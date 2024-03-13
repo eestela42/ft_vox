@@ -1,11 +1,11 @@
 #include <classes/Window.hpp>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) //callback called by GLFW whevenever window is resized
+void framebuffer_size_callback( __attribute__((unused)) GLFWwindow* window, int width, int height) //callback called by GLFW whevenever window is resized
 {
     glViewport(0, 0, width, height); // We tell openGL the new size of the window
 }
 
-static void glfwError(int id, const char* description)
+static void glfwError( __attribute__((unused)) int id, const char* description)
 {
   std::cout << description << std::endl;
 }
@@ -68,7 +68,7 @@ void Window::SwapBuffersAndPollEvents() {
     glfwPollEvents(); //Checks for event and calls callbacks (framebuffer_size_callback wouldn't be called if it wasn't for this function)
 }
 
-void Window::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
+void Window::SendKeys(u_char *keyState, __attribute__((unused)) double mouseMoveX, __attribute__((unused)) double mouseMoveY) {
 	if(keyState[KEY_ESCAPE] & KEY_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
