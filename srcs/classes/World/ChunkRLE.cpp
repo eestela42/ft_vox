@@ -281,17 +281,20 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 ChunkRLE::~ChunkRLE()
 {
 	delete this->rubans_id;
+	delete this->rubans;
 }
 
 ChunkRLE::ChunkRLE() : Chunk(0,0)
 {
 	this->data = NULL;
+	this->rubans = NULL;
 	this->rubans_id = new u_int[Chunk::sizeZ];
 }
 
 ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
 {
 	this->data = NULL;
+	this->rubans = NULL;
 	this->rubans_id = new u_int[Chunk::sizeZ];
 }
 
@@ -332,7 +335,7 @@ void ChunkRLE::pushBackWeightList(std::vector<float> tmp)
 
 void ChunkRLE::updateFromRaw(u_char *rawData)
 {
-	std::vector<u_char> *rubans = new std::vector<u_char>; // leaks ?
+	rubans = new std::vector<u_char>;
 	rubans->resize(sizeX * sizeY * 2);
 	
 	u_int pos = 0;

@@ -23,8 +23,8 @@ DEPS_DIR = $(OBJS_DIR)
 #                              Commands and arguments                          #
 ################################################################################
 
-CC			=	clang++ -std=c++17
-CFLAGS = -g -Iincludes -MMD -MP -Wall -Wextra
+CC			=	clang++ 
+CFLAGS = -std=c++17 -g -Iincludes -MMD -MP
 OPENGL = -lglfw3 -lGL -lX11 -llmdb
 RM			=	rm -rf
 
@@ -49,7 +49,7 @@ $(shell mkdir -p $(sort $(dir $(CPP_OBJS))) $(sort $(dir $(C_OBJS))))
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@ echo "\t$(_YELLOW) compiling... $*.c$(_NC)"
-	clang $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@ echo "\t$(_YELLOW) compiling... $*.cpp$(_NC)"

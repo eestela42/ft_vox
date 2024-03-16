@@ -3,7 +3,10 @@
 VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
 VertexArrayObjectHandler::~VertexArrayObjectHandler() {
-	vaoMap.clear();
+	for (auto const& x : vaoMap)
+	{
+		delete x.second;
+	}
 }
 
 

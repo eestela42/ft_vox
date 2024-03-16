@@ -2,7 +2,9 @@
 
 ShaderHandler::~ShaderHandler()
 {
-	shaderMap.clear();
+	for (auto& shader : shaderMap) {
+		delete shader.second;
+	}
 }
 
 ShaderHandler::ShaderHandler(const char* folderPath) {

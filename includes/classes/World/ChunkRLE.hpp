@@ -16,6 +16,7 @@ class ChunkRLE : public Chunk
 {
 private:
 	std::vector<int> vertexData;
+	std::vector<u_char> *rubans;
 
 protected :
 

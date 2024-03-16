@@ -38,8 +38,12 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	// int chunkLoadingSize = Chunk::GetLoadedChunks().size();
 	std::vector<Chunk*> chunks;
 
-	
-	ChunkGenerator::initNoise(42);
+	//get an random long int 
+
+	std::srand(std::time(0));
+	long int seed = std::rand();
+	std::cout << "seed " << seed << std::endl;
+	ChunkGenerator::initNoise(seed);
 
 
 	showChunkDebug && std::cout << "Chunk generation started " << std::endl;
