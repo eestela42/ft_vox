@@ -63,7 +63,7 @@ u_char ChunkRLE::blockType(int x, int y, int z) {
 }
 
 
-u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
+std::vector<u_char>* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction)
 {
 
 	ChunkRLE* 				neighbours;
@@ -79,7 +79,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 				if (!neighbours || (neighbours->posY != this->posY + 1  && neighbours->posX == this->posX))
 					return (NULL);
 				pos = neighbours->GetRubanPos(x, 0, z);
-				return (neighbours->data);
+				return (neighbours->rubans);
 			}
 			pos = GetRubanPos(x, y + 1, z);
 			break;
@@ -92,7 +92,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 				if (!neighbours || (neighbours->posX != this->posX + 1  && neighbours->posY == this->posY))
 					return (NULL);
 				pos = neighbours->GetRubanPos(0, y, z);
-				return (neighbours->data);
+				return (neighbours->rubans);
 			}
 			pos = GetRubanPos(x+1, y, z);
 			break;
@@ -105,7 +105,7 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 				if (!neighbours || (neighbours->posY != this->posY - 1  && neighbours->posX == this->posX))
 					return (NULL);
 				pos = neighbours->GetRubanPos(x, sizeY - 1, z);
-				return (neighbours->data);
+				return (neighbours->rubans);
 			}
 			pos = GetRubanPos(x, y-1, z);
 			break;
@@ -120,14 +120,14 @@ u_char* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, u_char direct
 					return (NULL);
 				}
 				pos = neighbours->GetRubanPos(sizeX - 1, y, z);
-				return (neighbours->data);
+				return (neighbours->rubans);
 			}
 			pos = GetRubanPos(x-1, y, z);
 			break;
 		}
 	}
 
-	return (this->data);
+	return (this->rubans);
 }
 
 void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size, int& over)
@@ -163,24 +163,27 @@ void	ChunkRLE::CompileData()
 		{
 
 			u_int z_end  = z + data[pos + 1];
+			
+
 			if ((!z && data[pos]) || (data[pos] && (data[pos - 2] == AIR || data[pos - 2] == WATER)))
 				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
 			for (u_int neighb = 0; neighb < 4; neighb++)
 			{
-				u_char *ruban = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb); //find neighb of our block's ruban
-
+				std::vector<u_char> *ruban_vec = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb); //find neighb of our block's ruban
+				u_char *ruban = ruban_vec ? ruban_vec->data() : NULL;
 				while (neighb_z[neighb] + neighb_over[neighb] < z_end)
 				{
 					int real_z = neighb_z[neighb] + neighb_over[neighb];
 					int neighb_size = data[pos + 1];
 					int to_draw = z_end - z;
 					// int tmp_pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
-					if (!ruban)
+					if (!ruban || neighb_pos[neighb] >= ruban_vec->size())
 					{
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
 						continue ;
 					}
-						neighb_size = ruban[neighb_pos[neighb] + 1];
+					
+					neighb_size = ruban[neighb_pos[neighb] + 1];
 
 					if (data[pos] == AIR)  //if we are at an empty block
 					{
@@ -189,8 +192,8 @@ void	ChunkRLE::CompileData()
 								to_draw = real_size;
 							else
 								to_draw = real_size - (real_z + real_size - z_end);
-						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
-						continue ;
+							incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
+							continue ;
 					}
 
 					if (ruban && ((data[pos] == WATER && ruban[neighb_pos[neighb]] == WATER)
@@ -280,8 +283,11 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 
 ChunkRLE::~ChunkRLE()
 {
-	delete this->rubans_id;
+
+	delete [] this->rubans_id;
 	delete this->rubans;
+	this->data = NULL;
+
 }
 
 ChunkRLE::ChunkRLE() : Chunk(0,0)

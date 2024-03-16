@@ -20,7 +20,7 @@ private:
 
 protected :
 
-	u_char* 				GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction);
+	std::vector<u_char>* 	GetAdjacentRuban(int x, int y, int z, int &pos, u_char direction);
 
 	u_int* 					rubans_id;
 	
@@ -49,7 +49,7 @@ public :
 	void 					CreateFaceRLE(int oreientation, std::vector<int> &vData, std::vector<u_int> &iData,
 												int x, int y, int z, int offset, u_char type);
 	bool					isFilled(int x, int y, int z) override;
-	u_char 				blockType(int x, int y, int z) override;
+	u_char 					blockType(int x, int y, int z) override;
 
 	u_int					GetRubanPos(int x, int y, int z);
 	void					loadChunk();

@@ -15,22 +15,22 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
-	Profiler::StartTracking("Chunk::PublicGenerate()");
+	// Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
 	ChunkGenerator generator;
 
 	updateFromRaw(generator.generator(*this));
 
 	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate()");
+	// Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
 void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
-	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
+	// Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
 	isGenerated = true;
 	Generate(positionList, sizeList);
 	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
+	// Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
 }
 
 
@@ -144,9 +144,9 @@ void Chunk::SetReady(bool isRecursive) {
 				neighborChunks[i]->SetReady(true);
 			}
 		}
-		Profiler::StartTracking("Chunk::CompileData()");
+		// Profiler::StartTracking("Chunk::CompileData()");
 		CompileData();
-		Profiler::StopTracking("Chunk::CompileData()");
+		// Profiler::StopTracking("Chunk::CompileData()");
 		didUpdate = true;
 	}
 }
@@ -187,10 +187,11 @@ std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
 }
 
 Chunk::~Chunk() {
-
 	UnloadChunk();
-	if ((void*)data != (void*)"") {
+	if (data && (void*)data != (void*)"") {
+		std::cout << "Deleting data" << std::endl;
 		free(data);
+		std::cout << "----Deleting data" << std::endl;
 	}
 
 }

@@ -107,7 +107,6 @@ SkyBox::SkyBox(Shader *skyBoxShader)
 
 	
     glGenVertexArrays(1, &skyboxVAO);
-		std::cout << "skybox" << skyboxVAO << std::endl;
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);

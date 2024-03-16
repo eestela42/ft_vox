@@ -9,19 +9,16 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 
 ChunkInstantiator::~ChunkInstantiator()
 {
-	std::cout << "ChunkInstanciator destructor in" << std::endl;
 	const std::vector<std::vector<Chunk *>> &loadedChunks = Chunk::GetLoadedChunks();
 
 	for (unsigned long i = 0; i  < loadedChunks.size(); i++)
 	{
 		for (unsigned long y = 0; y < loadedChunks[i].size(); y++)
 		{
-			std::cout << "delete " << i << " " << y << std::endl;
 			delete loadedChunks[i][y];
 		}
 	}
 
-	std::cout << "ChunkInstanciator destructor out" << std::endl;
 	
 }
 
@@ -31,6 +28,9 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	// updateGen("generation");
 
 	this->shaderHandler = shaderHandler;
+
+	playerChunkPosX = 0;
+	playerChunkPosY = 0;
 	Shader *shader = shaderHandler->GetShader(ChunkRLE::shaderName);
 	bool showChunkDebug = false;
 	this->vertexArrayObjectHandler = vertexArrayObjectHandler;
@@ -41,7 +41,9 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 	//get an random long int 
 
 	std::srand(std::time(0));
-	long int seed = std::rand();
+	long int seed;
+	seed = 42;
+	seed = std::rand();
 	std::cout << "seed " << seed << std::endl;
 	ChunkGenerator::initNoise(seed);
 

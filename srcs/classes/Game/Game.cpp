@@ -3,14 +3,10 @@
 glm::vec3 const Game::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 Game::~Game() {
-	std::cout << " start game destruction" << std::endl;
-	std::cout << ChunkGenerator::noiseList.size() << std::endl;
 	
-	size_t i = 0;
-	while (i < ChunkGenerator::noiseList.size())
+	for (size_t i = 0; i < ChunkGenerator::noiseList.size(); i++)
 		delete ChunkGenerator::noiseList[i++];
 
-	std::cout << " in game destru" << std::endl;
 
 	delete crossHair;
 	delete skyBox;
@@ -20,7 +16,6 @@ Game::~Game() {
 	delete inputHandler;
 	delete window;
 
-	std::cout << " end game destru" << std::endl;
 
 }
 
@@ -40,7 +35,6 @@ Game::Game() {
 
 	instantiator = new ChunkInstantiator(vertexArrayObjectHandler, renderDistance, shaderHandler);
 	blockTexture = TextureLoader::LoadTexture("textures/minecraft.png");
-	std::cout << "Game::Game()" << std::endl;
 	skyBox = new SkyBox(shaderHandler->GetShader("cubemap"));
 	crossHair = new CrossHair(shaderHandler->GetShader("CrossHair"));
 
@@ -70,6 +64,7 @@ void Game::Loop() {
 	inputHandler->HandleInput();
 	window->Clear();
 	instantiator->Update(cameraPosition, std::chrono::milliseconds(20));
+
 	glm::mat4 view = glm::lookAt(glm::vec3(0,0,0) , cameraDirection, cameraUp);
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);

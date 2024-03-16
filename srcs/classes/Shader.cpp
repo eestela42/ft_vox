@@ -81,7 +81,7 @@ void Shader::parseAttributes(const char *path) {
         std::cout << "Error opening file : " << path << std::endl;
         assert(0);
     }
-	std::cout << "Vertex Shader at " << path << std::endl;
+	// std::cout << "Vertex Shader at " << path << std::endl;
     std::string line;
     while (std::getline(file, line)) {
         std::istringstream lineStream(line);
@@ -103,17 +103,17 @@ void Shader::parseAttributes(const char *path) {
 			if (typeName == "int") {
 				attribute.type = GL_INT;
 				attribute.size = 1;
-				std::cout << "Int, size " << attribute.size << std::endl;
+				// std::cout << "Int, size " << attribute.size << std::endl;
 			}
 			else if (typeName == "float") {
 				attribute.type = GL_FLOAT;
 				attribute.size = 1;
-				std::cout << "Float, size " << attribute.size << std::endl;
+				// std::cout << "Float, size " << attribute.size << std::endl;
 			}
 			else if (typeName.find("vec") != std::string::npos) {
 				attribute.type = GL_FLOAT;
 				attribute.size = typeName[3] - '0';
-				std::cout << "Float, size " << attribute.size << std::endl;
+				// std::cout << "Float, size " << attribute.size << std::endl;
 			}
 			else {
 				std::cout << "Type not supported by current codebase : " << typeName << std::endl;
