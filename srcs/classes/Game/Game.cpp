@@ -5,7 +5,7 @@ glm::vec3 const Game::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 Game::~Game() {
 	
 	for (size_t i = 0; i < ChunkGenerator::noiseList.size(); i++)
-		delete ChunkGenerator::noiseList[i++];
+		delete  ChunkGenerator::noiseList[i];
 
 
 	delete crossHair;
