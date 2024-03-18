@@ -319,7 +319,7 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	if(keyState[KEY_DELETE_MORE_BLOCK] & KEY_HOLD)
         deleteBlock();
 	if (keyState[KEY_DISPLAY_INFO] & KEY_PRESS)
-	{
+	{ tmp++;
 		std::cout << "chunk : " << (int)cameraPosition.x / Chunk::sizeX << " " << (int)cameraPosition.z / Chunk::sizeY << " " << (int)cameraPosition.y << std::endl;
 		std::cout << "pos : " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
 	}

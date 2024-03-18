@@ -19,10 +19,8 @@ void VertexArrayObjectHandler::Draw() {
 
 void VertexArrayObjectHandler::DrawAll() {
 	Unbind();
-
 	for (auto const& x : vaoMap)
 	{
-		
 
 		x.second->Bind();
 		// glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);

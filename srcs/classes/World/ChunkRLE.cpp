@@ -19,7 +19,8 @@ void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char ori
 }
 
 void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
-	
+	if (type == 0)
+		return ;
 	offset = vData.size();
 
 	iData.push_back(0 + offset);

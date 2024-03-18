@@ -32,7 +32,7 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 30;
+		int renderDistance = 1;
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
@@ -49,6 +49,7 @@ class Game : I_Input
 	public:
 		Game();
 
+	int tmp = 0;
 
 		SkyBox *skyBox;
 		CrossHair *crossHair;

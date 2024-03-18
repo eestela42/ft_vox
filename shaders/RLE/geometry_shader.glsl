@@ -150,6 +150,8 @@ void main() {
 
 	vec2 zero_texture = vec2(0.0, 0.0);
 	int vtype = geo_in[0].type;
+	if (vtype == 0)
+		return ;
 	out_grass = 0;
 	if (vtype == 19 && geo_in[0].face == 5)
 	{
