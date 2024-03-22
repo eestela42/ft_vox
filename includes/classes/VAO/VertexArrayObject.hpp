@@ -21,6 +21,7 @@ public:
     VertexBufferObject *GetVBO();
     ElementBufferObject *GetEBO();
 	size_t GetIndicesSize();
+    size_t GetIndicesDataSize();
 	float posX;
 	float posY;
 
@@ -30,7 +31,8 @@ private:
     VertexBufferObject *VBO;
     ElementBufferObject *EBO;
 	Shader *shader;
-	std::size_t indicesSize;
+	size_t indicesSize;
+    size_t indicesDataSize;
     std::vector<glm::uvec4> locationList;
     int totalStride = 0;
 

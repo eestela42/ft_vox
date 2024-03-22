@@ -42,8 +42,9 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 
 	std::srand(std::time(0));
 	long int seed;
-	seed = 42;
+	seed = 12381373;
 	seed = std::rand();
+	std::cout << ChunkRLE::shaderName << std::endl;
 	std::cout << "seed " << seed << std::endl;
 	ChunkGenerator::initNoise(seed);
 

@@ -2,6 +2,7 @@
 
 VertexArrayObject::VertexArrayObject(VertexBufferObject *VBO, ElementBufferObject *EBO, Shader *shader) : VBO(VBO), EBO(EBO), shader(shader) {
 	indicesSize = EBO->GetSize();
+	indicesDataSize = EBO->GetDataSize();
 
 	glGenVertexArrays(1, &VAO);
 	
@@ -48,6 +49,10 @@ ElementBufferObject *VertexArrayObject::GetEBO() {
 
 size_t VertexArrayObject::GetIndicesSize() {
 	return indicesSize;
+}
+
+size_t VertexArrayObject::GetIndicesDataSize() {
+	return indicesDataSize;
 }
 
 void VertexArrayObject::Bind() {

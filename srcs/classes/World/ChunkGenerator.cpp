@@ -158,7 +158,7 @@ int ChunkGenerator::genOverLayer( int pos, int &z)
 
 
 		double dirt_factor = noiseList[2]->Octave2D(0.00156 * p_x, 0.00195 * p_y, 2, 0.5);
-		int dirt_height = hill_height + (int)((dirt_factor) * 12);
+		int dirt_height = hill_height + (int)((dirt_factor) * 30);
 
 		u_char under_layer = DIRT;
 		u_char over_layer = GRASS;

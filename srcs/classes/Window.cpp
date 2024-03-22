@@ -21,7 +21,7 @@ Window::Window(const char *name, DrawMode drawMode) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);  //OpenGL version   4.6<-
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We use the core profile because we want to use the modulable part of OpenGL
 
-    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, name, glfwGetPrimaryMonitor(), NULL);
+    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, name, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -47,7 +47,7 @@ Window::Window(const char *name, DrawMode drawMode) {
     else {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // default draw (filled)
     }
-    
+    glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // We tell glfw which function to call whenever window is resized
 }
 

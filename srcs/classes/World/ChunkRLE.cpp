@@ -9,27 +9,78 @@ std::vector<PerlinNoise*> 		ChunkRLE::noiseList;
 std::vector<std::vector<float>> ChunkRLE::weightList;
 
 		/*****	2 - methods 		*****/
-void ChunkRLE::createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
+void ChunkRLE::createPointVertexGeometry(std::vector<int> &vertexes, int pos, u_char orientation, u_char type, int sizeX, int sizeY)
 {
 		vertexes.push_back(posX);
 		vertexes.push_back(posY);
 		vertexes.push_back(pos);
 		vertexes.push_back(orientation);
 		vertexes.push_back(type);
+		vertexes.push_back(sizeX);
+		vertexes.push_back(sizeY);
 }
 
-void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
-	if (type == 0)
-		return ;
+void ChunkRLE::CreateFaceRLEGeometry(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type, int sizeX, int sizeY) {
 	offset = vData.size();
 
-	iData.push_back(0 + offset);
+	iData.push_back(offset);
 
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 
-	createPointVertex(vData, pos, orientation, type);
+	createPointVertexGeometry(vData, pos, orientation, type, sizeX, sizeY);
+}
 
+
+
+void ChunkRLE::createPointVertexRegular(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
+{
+	for (char i = 0; i < 4; i++)
+	{
+		vertexes.push_back(posX);
+		vertexes.push_back(posY);
+		vertexes.push_back(pos);
+		vertexes.push_back(orientation);
+		vertexes.push_back(type);
+		
+		if (orientation == 2 || orientation == 3 || orientation == 4)
+			vertexes.push_back(8);
+		else
+			vertexes.push_back(10);
+	}
+}
+
+void ChunkRLE::CreateFaceRLERegular(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type) {
 	
+	offset = vData.size() / 6;
+
+	iData.push_back(0 + offset);
+    iData.push_back(1 + offset);
+    iData.push_back(2 + offset);
+
+    iData.push_back(0 + offset);
+    iData.push_back(2 + offset);
+    iData.push_back(3 + offset);
+
+	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
+
+	createPointVertexRegular(vData, pos, orientation, type);
+}
+
+
+
+
+void ChunkRLE::CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type, int sizeX, int sizeY)
+{
+	if (this->shaderName == (char*)"RLE-Geometry")
+	{
+		CreateFaceRLEGeometry(orientation, vData, iData, x, y, z, offset, type, sizeX, sizeY);
+		return ;
+	}
+	else if (this->shaderName == (char*)"RLE-Regular")
+	{
+		CreateFaceRLERegular(orientation, vData, iData, x, y, z, offset, type);
+		return ;
+	}
 }
 
 
@@ -131,7 +182,7 @@ std::vector<u_char>* 	ChunkRLE::GetAdjacentRuban(int x, int y, int z, int &pos, 
 	return (this->rubans);
 }
 
-void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size, int& over)
+void	ChunkRLE::incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size, int& over)
 {
 	if (over + incr >= neighb_size)
 	{
@@ -147,10 +198,11 @@ void	incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size,
 
 void	ChunkRLE::CompileData()
 {
+	// there is still some dead data at the end of vbo, bug to fix
 	vertexData.clear();
 	shapeAssemblyData.clear();
-	vertexData.reserve(20000);
-	shapeAssemblyData.reserve(7000);
+	// vertexData.reserve(10);
+	// shapeAssemblyData.reserve(10);
 	u_int pos = 0;
 	for (u_int y = 0; y < sizeY; y++) {
 	for (u_int x = 0; x < sizeX; x++)
@@ -167,7 +219,7 @@ void	ChunkRLE::CompileData()
 			
 
 			if ((!z && data[pos]) || (data[pos] && (data[pos - 2] == AIR || data[pos - 2] == WATER)))
-				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos]);
+				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos], 1, 1);
 			for (u_int neighb = 0; neighb < 4; neighb++)
 			{
 				std::vector<u_char> *ruban_vec = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb); //find neighb of our block's ruban
@@ -218,9 +270,11 @@ void	ChunkRLE::CompileData()
 						else
 							to_draw = real_size - (real_z + real_size - z_end);
 					}
-
-					for (int i = 0; to_draw - i; i++)
-						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z + i, vertexData.size(), data[pos]);
+					int i;
+					for (i = 0; to_draw - i; i++)
+						;
+					if (to_draw)
+						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z, vertexData.size(), data[pos], 1, to_draw);
 					while (to_draw)
 					{
 						incrementNeighb(neighb_pos[neighb], neighb_z[neighb], to_draw, neighb_size, neighb_over[neighb]);
@@ -230,12 +284,13 @@ void	ChunkRLE::CompileData()
 				}
 			}
 			if (data[pos] && z < sizeZ - 1 && (data[pos + 2] == AIR || data[pos + 2] == WATER))
-				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos]);
+				CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos], 1, 1);
 			pos += 2;
 			z = z_end;
 		}
 	}
 	}
+
 	dataStruct.data = (u_char*)vertexData.data();
 	dataStruct.size = vertexData.size() * sizeof(int);
 }
@@ -400,65 +455,4 @@ void 					ChunkRLE::Generate()
 	
 }
 
-void 					ChunkRLE::Generate(std::vector<glm::ivec3> positionList,
-										std::vector<glm::ivec3> sizeList)
-{
-	std::vector<u_char> rubans;
-	rubans.resize(sizeX * sizeY * 2);
-	for (unsigned long y = 0; y < sizeY; y++)
-	{
-		for (unsigned long x = 0; x < sizeX; x++)
-		{
-			std::vector<u_char> objRubans;
-			for (unsigned long obj = 0; obj < positionList.size(); obj++) // trouver tous les rubans en cette pos
-			{
-				if (x >= positionList[obj].x && x < positionList[obj].x + sizeList[obj].x &&
-					y >= positionList[obj].y && y < positionList[obj].y + sizeList[obj].y)
-				{
-						objRubans.push_back(obj % (sizeZ - 1) + 1);
-						objRubans.push_back(positionList[obj].z);
-						objRubans.push_back(sizeList[obj].z);
-				}
-			}
-			this->rubans_id[x * sizeY + y] = rubans.size();
-			int z = 0;
-			int filled = 0;
-			while (objRubans.size())
-			{
-				int min = 0;
-				int indexObj = 0;
-				for (int i = 1; i < objRubans.size(); i+=3)
-					if (objRubans[i] < objRubans[min]) // find the lowest block
-					{
-						min = objRubans[i];
-						indexObj = i;
-					}
-				if (min > filled) // si air avant
-				{
-					rubans.push_back(0);
-					rubans.push_back(min - filled);
-					rubans.push_back(objRubans[indexObj - 1]);
-					rubans.push_back(objRubans[indexObj + 1]);
-					z = objRubans[indexObj];
-					filled = objRubans[indexObj] + objRubans[indexObj + 1];
-				}
-				else if (min <= filled && min + objRubans[indexObj + 1] > filled)
-				{
-					rubans.push_back(objRubans[indexObj - 1]);
-					rubans.push_back(objRubans[indexObj] + objRubans[indexObj + 1] - filled);
-					z = objRubans[indexObj];
-					filled = objRubans[indexObj] + objRubans[indexObj + 1];
-				}
-				
-				objRubans.erase(objRubans.begin() + indexObj - 1, objRubans.begin() + indexObj + 1);
-					
-			}
-			if (filled < sizeZ)
-			{
-				rubans.push_back(0);
-				rubans.push_back(255 - filled);
-			}
-		}
-	}
-}
 

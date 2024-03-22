@@ -18,5 +18,4 @@ class ChunkDefault : public Chunk
 		
 		void CompileData() override;
 		void Generate() override;
-		void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) override;
 };

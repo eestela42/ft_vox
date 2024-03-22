@@ -3,16 +3,16 @@
 #include <thread>
 
 int main(int argc, __attribute__((unused)) char **argv) {
-	// if (argc > 1) {
-	// 	Profiler::SetSaveOn();
-	// }
+	if (argc > 1) {
+		Profiler::SetSaveOn();
+	}
 	unsigned int numThreads = std::thread::hardware_concurrency();
-	// TRACKER Profiler::StartTracking("Game Constructor");
+	Profiler::StartTracking("Game Constructor");
 	Game *game = new Game();
-	// Profiler::StopTracking("Game Constructor");
+	Profiler::StopTracking("Game Constructor");
 	
 	game->StartLoop();
-	// Profiler::LogData();
+	Profiler::LogData();
 	delete game;
 	return 0;
 }

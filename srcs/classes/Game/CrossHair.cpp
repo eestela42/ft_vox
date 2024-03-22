@@ -46,12 +46,12 @@ CrossHair::~CrossHair()
 
 void CrossHair::draw()
 {
-	// glDepthFunc(GL_ALWAYS); 
+	glDepthFunc(GL_ALWAYS); 
 
 		VAO->Bind();
 		
 		glDrawElements(GL_TRIANGLES, vertices.size(), GL_UNSIGNED_INT, 0);
 		VAO->Unbind();
 
-	// glDepthFunc(GL_LESS); 
+	glDepthFunc(GL_LESS); 
 }

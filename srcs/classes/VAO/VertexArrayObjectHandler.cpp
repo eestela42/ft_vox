@@ -11,19 +11,58 @@ VertexArrayObjectHandler::~VertexArrayObjectHandler() {
 
 
 
-void VertexArrayObjectHandler::Draw() {
-	if (activeVAO) {
-		glDrawElements(GL_TRIANGLES, vaoMap[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+void VertexArrayObjectHandler::Draw(u_int type) {
+	switch (type) {
+		case 0:
+			DrawElements();
+			break;
+		case 1:
+			DrawArray();
+			break;
 	}
 }
 
-void VertexArrayObjectHandler::DrawAll() {
+void VertexArrayObjectHandler::DrawElements() {	
+	if (activeVAO) {	
+		glDrawElements(GL_TRIANGLES, vaoMap[activeVAO - 1]->GetIndicesDataSize(), GL_UNSIGNED_INT, 0);	
+	}
+}
+
+void VertexArrayObjectHandler::DrawArray() {	
+	if (activeVAO) {	
+		glDrawArrays(GL_POINTS, 0, vaoMap[activeVAO - 1]->GetIndicesSize());
+	}
+}
+
+
+void VertexArrayObjectHandler::DrawAll(u_int type) {
+	switch (type) {
+		case 0:
+			DrawAllElements();
+			break;
+		case 1:
+			DrawAllArray();
+			break;
+	}
+}
+
+void VertexArrayObjectHandler::DrawAllElements() {
 	Unbind();
 	for (auto const& x : vaoMap)
 	{
 
 		x.second->Bind();
-		// glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, x.second->GetIndicesDataSize(), GL_UNSIGNED_INT, 0);
+		x.second->Unbind();
+	}
+}
+
+void VertexArrayObjectHandler::DrawAllArray() {
+	Unbind();
+	for (auto const& x : vaoMap)
+	{
+
+		x.second->Bind();
 		glDrawArrays(GL_POINTS, 0, x.second->GetIndicesSize());
 		x.second->Unbind();
 	}
@@ -37,21 +76,6 @@ bool isInFrustum(const glm::vec4& clipSpacePosition) {
     }
     return false;
 }
-
-
-void VertexArrayObjectHandler::DrawAll( __attribute__((unused)) glm::vec3 originCameraPosition, __attribute__((unused)) glm::vec3 originCameraDirection) {
-    Unbind();
-
-
-    for (auto const& x : vaoMap) {
-        x.second->Bind();
-        glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
-        x.second->Unbind();
-    }
-}
-
-
-
 
 
 u_int VertexArrayObjectHandler::AddVAO(VertexArrayObject *vao) {

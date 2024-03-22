@@ -31,7 +31,6 @@ private:
 	void UnloadChunk();
 	virtual void CompileData() = 0;
 	virtual void Generate() = 0;
-	virtual void Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) = 0;
 	
 	virtual void updateFromRaw(u_char *rawData) = 0;
 protected :
@@ -63,7 +62,6 @@ public :
 	virtual	u_char 	blockType(int x, int y, int z) = 0;
 	bool IsRealNeighbor(int chunkX, int chunkY);
 	virtual void PublicGenerate() final;
-	virtual void PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) final;
 
 	virtual t_vertexData &GetVertexData() final;
 	virtual std::vector<u_int>&	GetShapeAssemblyData() final;
@@ -74,12 +72,16 @@ public :
 
 	virtual ~Chunk();
 };
+# define DIRT 1
+# define GRASS 2
+# define STONE 3
+# define SAND 4
 
 # define AIR 0
 # define ANDESITH 16
-# define STONE 17
-# define DIRT 18
-# define GRASS 19
+// # define STONE 17
+// # define DIRT 18
+// # define GRASS 19
 # define OAK_PLANCH 20
 # define SMOOTH_CUT_SEMI_STONE 21
 # define SMOOTH_CUT_STONE 22
@@ -94,7 +96,7 @@ public :
 # define OAK_SAPLING 31
 # define COBBLE_STONE 32
 # define BEDROCK 33
-# define SAND 34
+// # define SAND 34
 # define GRAVEL 35
 # define OAK_WOOD_SIDE 36
 # define OAK_WOOD_TOP 37

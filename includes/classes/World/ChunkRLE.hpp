@@ -29,7 +29,7 @@ protected :
 	u_int 					sizeData = 0;
   
 public :
-	static constexpr char * shaderName = (char*)"RLE";
+	static constexpr char * shaderName = (char*)"RLE-Geometry";
 
 	static std::vector<PerlinNoise*> 		noiseList;
 	static std::vector<std::vector<float>>	weightList;
@@ -44,10 +44,18 @@ public :
 	ChunkRLE();
 	ChunkRLE(int posX, int posY);
 
-	void 					createPointVertex(std::vector<int> &vertexes, int pos, u_char orientation, u_char type);
+	void 					createPointVertexGeometry(std::vector<int> &vertexes, int pos, u_char orientation, u_char type, int sizeX, int sizeY);
+	void 					createPointVertexRegular(std::vector<int> &vertexes, int pos, u_char orientation, u_char type);
 
-	void 					CreateFaceRLE(int oreientation, std::vector<int> &vData, std::vector<u_int> &iData,
-												int x, int y, int z, int offset, u_char type);
+	void					CreateFaceRLE(int orientation, std::vector<int> &vData, std::vector<u_int> &iData,
+												int x, int y, int z, int offset, u_char type, int sizeX, int sizeY);
+
+	void 					CreateFaceRLEGeometry(int oreientation, std::vector<int> &vData, std::vector<u_int> &iData,
+												int x, int y, int z, int offset, u_char type, int sizeX, int sizeY);
+
+	void 					CreateFaceRLERegular(int oreientation, std::vector<int> &vData, std::vector<u_int> &iData,
+												int x, int y, int z, int offset, u_char type);										
+
 	bool					isFilled(int x, int y, int z) override;
 	u_char 					blockType(int x, int y, int z) override;
 
@@ -55,6 +63,8 @@ public :
 	void					loadChunk();
 
 	ChunkRLE*				GetNeighbour(int cardinal);
+	void					incrementNeighb(int& neighb_pos, int& neighb_z, int& incr, int neighb_size, int& over);
+
 
 
 
@@ -68,8 +78,6 @@ public :
 	void 					randomGen(int &pos, int x, int y);
 	void 					Generate() override;
 	
-	void 					Generate(std::vector<glm::ivec3> positionList,
-										std::vector<glm::ivec3> sizeList) override;
 
 	void 					updateFromRaw(u_char *rawData) override;
 

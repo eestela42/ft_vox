@@ -15,6 +15,7 @@
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/World/ChunkInstantiator.hpp>
 #include <classes/Texture/Texture.hpp>
+#include <classes/Texture/TextureArray.hpp>
 #include <classes/Game/SkyBox.hpp>
 #include <classes/Game/CrossHair.hpp>
 
@@ -32,7 +33,7 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 25;
+		int renderDistance = 50;
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
@@ -61,6 +62,8 @@ class Game : I_Input
 		int	GetChunkLoadingSize() const;
 
 		Texture blockTexture;
+		TextureArray blockTextureArray;
+
 
 		bool	putBlock(glm::vec3 pos, u_char type);
 		void deleteBlock();
