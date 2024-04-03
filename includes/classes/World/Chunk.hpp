@@ -76,6 +76,18 @@ public :
 # define GRASS 2
 # define STONE 3
 # define SAND 4
+# define OAK_WOOD_SIDE 5
+# define LEAVES_2 6
+# define BEDROCK 7
+# define WATER 8
+# define SNOW_BLOCK 9
+# define GOLD_MINERAL 10
+# define IRON_MINERAL 11
+# define DIAMOUND_MINERAL 12
+
+
+
+
 
 # define AIR 0
 # define ANDESITH 16
@@ -92,13 +104,13 @@ public :
 # define SPIDER_WEB 27
 # define FLOWER_ROSE 28
 # define FLOWER_YELLOW 29
-# define WATER 30
+// # define WATER 30
 # define OAK_SAPLING 31
 # define COBBLE_STONE 32
-# define BEDROCK 33
+// # define BEDROCK 33
 // # define SAND 34
 # define GRAVEL 35
-# define OAK_WOOD_SIDE 36
+// # define OAK_WOOD_SIDE 36
 # define OAK_WOOD_TOP 37
 # define IRON_BLOCK 38
 # define GOLD_BLOCK 39
@@ -110,8 +122,8 @@ public :
 # define MUSHROOM_BROWM 45
 # define SEKOIA_SAPPLING 46
 # define WEIRD_RED 47
-# define GOLD_MINERAL 48
-# define IRON_MINERAL 49
+// # define GOLD_MINERAL 48
+// # define IRON_MINERAL 49
 # define CHARCOAL_MINERAL 50
 # define BOOKSHELF 51
 # define MOSSY_COBBLESTONE 52
@@ -127,10 +139,10 @@ public :
 # define DISPENSER_FRONT 62
 # define WEIRD_RED_2 63
 # define SPONGE 64
-# define DIAMOUND_MINERAL 66
+// # define DIAMOUND_MINERAL 66
 # define LEAVES_1 68
-# define LEAVES_2 69
-# define SNOW_BLOCK 82
+// # define LEAVES_2 69
+// # define SNOW_BLOCK 82
 # define PUMKIN_FACE 135
 
 

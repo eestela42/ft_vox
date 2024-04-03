@@ -49,6 +49,14 @@ Game::Game() {
 	std::filesystem::path("textures/texturePack/grass.jpg"),
 	std::filesystem::path("textures/texturePack/stone.jpg"),
 	std::filesystem::path("textures/texturePack/sand.jpg"),
+	std::filesystem::path("textures/texturePack/oak_wood_side.jpg"),
+	std::filesystem::path("textures/texturePack/leaves_2.jpg"),
+	std::filesystem::path("textures/texturePack/bedrock.jpg"),
+	std::filesystem::path("textures/texturePack/water.jpg"),
+	std::filesystem::path("textures/texturePack/snow.jpg"),
+	std::filesystem::path("textures/texturePack/iron_ore.jpg"),
+	std::filesystem::path("textures/texturePack/gold_ore.jpg"),
+	std::filesystem::path("textures/texturePack/diamond_ore.jpg"),
 	std::filesystem::path("textures/texturePack/UNKNOWN.jpg"),
 	});
 	skyBox = new SkyBox(shaderHandler->GetShader("cubemap"));
@@ -85,13 +93,11 @@ void Game::Loop() {
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)DEFAULT_WINDOW_WIDTH/(float)DEFAULT_WINDOW_HEIGHT, 0.1f, 16000.0f);
 	glm::mat4 matrix = glm::mat4(1.0f);
 	matrix = proj * view;
-	glm::vec4 colorFilter = findColorFilter();
 	if (Shader::GetActiveShader()) {
 		Shader::GetActiveShader()->SetFloat4("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
 		Shader::GetActiveShader()->Setmat4("matrix", matrix);
 		Shader::GetActiveShader()->SetInt("chunk_size_x", Chunk::sizeX);
 		Shader::GetActiveShader()->SetInt("chunk_size_y", Chunk::sizeY);
-		Shader::GetActiveShader()->SetFloat4("colorFilter", colorFilter[0], colorFilter[1], colorFilter[2], colorFilter[3]);
 		Shader::GetActiveShader()->SetInt("TextureArraySize", 6);
 	}
 	else {
@@ -134,13 +140,11 @@ void Game::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 			cameraPosition += glm::vec3(0, speed * speedMultiplier, 0);
 	if(keyState[KEY_MOVE_DOWNWARD] & KEY_HOLD)
 			cameraPosition += glm::vec3(0, -speed * speedMultiplier, 0);
-	// if (glfwGetKey(window->GetWindow(), GLFW_KEY_G) == GLFW_PRESS) {
-	// 	instantiator->updateGen("generation");
-	// }
-	if(keyState[KEY_DELETE_ONE_BLOCK] & KEY_PRESS)
-        deleteBlock();
-	if(keyState[KEY_DELETE_MORE_BLOCK] & KEY_HOLD)
-        deleteBlock();
+	
+	// if(keyState[KEY_DELETE_ONE_BLOCK] & KEY_PRESS)
+    //     deleteBlock();
+	// if(keyState[KEY_DELETE_MORE_BLOCK] & KEY_HOLD)
+    //     deleteBlock();
 	if (keyState[KEY_DISPLAY_INFO] & KEY_PRESS)
 	{ 
 		std::cout << "chunk : " << (int)cameraPosition.x / Chunk::sizeX << " " << (int)cameraPosition.z / Chunk::sizeY << " " << (int)cameraPosition.y << std::endl;
@@ -175,201 +179,200 @@ glm::mat4	Game::GetCameraView() const {
 }
 
 
-glm::vec4 Game::findColorFilter()
-{
-	glm::vec4 colorFilter = {1.0f,1.0f,1.0f,1.0f};
-	glm::vec3 pos = cameraPosition;
-	int chunkX = pos.x / Chunk::sizeX;
-	int chunkY = pos.z / Chunk::sizeY;
+// glm::vec4 Game::findColorFilter()
+// {
+// 	glm::vec4 colorFilter = {1.0f,1.0f,1.0f,1.0f};
+// 	glm::vec3 pos = cameraPosition;
+// 	int chunkX = pos.x / Chunk::sizeX;
+// 	int chunkY = pos.z / Chunk::sizeY;
 	
 
-	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
+// 	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
 
-	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
+// 	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
 
-	if (pos.x < 0)
-	{
-		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
-		chunkX--;
-	}
+// 	if (pos.x < 0)
+// 	{
+// 		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
+// 		chunkX--;
+// 	}
 
-	if (pos.z < 0)
-	{
-		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
-		chunkY--;
-	}
+// 	if (pos.z < 0)
+// 	{
+// 		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
+// 		chunkY--;
+// 	}
 
 
-	int blockZ = pos.y;
+// 	int blockZ = pos.y;
 
-	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
-		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
-			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY) {
-					if (Chunk::loadedChunks[i][j]->blockType(blockX, blockY, blockZ) == WATER)
-						colorFilter = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-				}
-		}
-	}
-	return(colorFilter);
-}
+// 	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
+// 		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+// 			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY) {
+// 					if (Chunk::loadedChunks[i][j]->blockType(blockX, blockY, blockZ) == WATER)
+// 						colorFilter = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+// 				}
+// 		}
+// 	}
+// 	return(colorFilter);
+// }
 
-bool quickFix(int &i, int &j ,int blockX ,int blockY, int chunkX, int chunkY)
-{
-	int toDo = 0;
-	int fixX = chunkX;
-	int fixY = chunkY;
-	if (blockX == 0)
-	{
-		fixX--;
-		toDo++;
-	}
-	else if (blockX == Chunk::sizeX - 1)
-	{
-		fixX++;
-		toDo++;
-	}
+// bool quickFix(int &i, int &j ,int blockX ,int blockY, int chunkX, int chunkY)
+// {
+// 	int toDo = 0;
+// 	int fixX = chunkX;
+// 	int fixY = chunkY;
+// 	if (blockX == 0)
+// 	{
+// 		fixX--;
+// 		toDo++;
+// 	}
+// 	else if (blockX == Chunk::sizeX - 1)
+// 	{
+// 		fixX++;
+// 		toDo++;
+// 	}
 
-	if (blockY == 0)
-	{
-		fixY--;
-		toDo++;
-	}
-	else if (blockY == Chunk::sizeY - 1)
-	{
-		fixY++;
-		toDo++;
-	}
+// 	if (blockY == 0)
+// 	{
+// 		fixY--;
+// 		toDo++;
+// 	}
+// 	else if (blockY == Chunk::sizeY - 1)
+// 	{
+// 		fixY++;
+// 		toDo++;
+// 	}
 	
-	for (i = 0; toDo && i < Chunk::loadedChunks.size(); i++) {
-	for (j = 0; toDo && j < Chunk::loadedChunks[i].size(); j++) {
-		if (Chunk::loadedChunks[i][j])	
-		{
-			if (fixX != chunkX && Chunk::loadedChunks[i][j]->GetX() == fixX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
-			{
-				Chunk::loadedChunks[i][j]->MakeDirty();
-				toDo--;
-			}
-			else if (fixY != chunkY && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == fixY)
-			{
-				Chunk::loadedChunks[i][j]->MakeDirty();
-				toDo--;
-			}
+// 	for (i = 0; toDo && i < Chunk::loadedChunks.size(); i++) {
+// 	for (j = 0; toDo && j < Chunk::loadedChunks[i].size(); j++) {
+// 		if (Chunk::loadedChunks[i][j])	
+// 		{
+// 			if (fixX != chunkX && Chunk::loadedChunks[i][j]->GetX() == fixX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
+// 			{
+// 				Chunk::loadedChunks[i][j]->MakeDirty();
+// 				toDo--;
+// 			}
+// 			else if (fixY != chunkY && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == fixY)
+// 			{
+// 				Chunk::loadedChunks[i][j]->MakeDirty();
+// 				toDo--;
+// 			}
 			
-		}
-	}
-	}
-	return false;
+// 		}
+// 	}
+// 	}
+// 	return false;
 
-}
+// }
 
-bool	Game::putBlock(glm::vec3 pos, u_char type) {
-	int chunkX = pos.x / Chunk::sizeX;
-	int chunkY = pos.z / Chunk::sizeY;
+// bool	Game::putBlock(glm::vec3 pos, u_char type) {
+// 	int chunkX = pos.x / Chunk::sizeX;
+// 	int chunkY = pos.z / Chunk::sizeY;
 	
 
-	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
+// 	int blockX = (int)pos.x - chunkX * Chunk::sizeX;
 
-	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
+// 	int blockY = (int)pos.z - chunkY * Chunk::sizeY;
 
-	if (pos.x < 0)
-	{
-		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
-		chunkX--;
-	}
+// 	if (pos.x < 0)
+// 	{
+// 		blockX = Chunk::sizeX - 1 + ((int)pos.x - chunkX * Chunk::sizeX);
+// 		chunkX--;
+// 	}
 
-	if (pos.z < 0)
-	{
-		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
-		chunkY--;
-	}
+// 	if (pos.z < 0)
+// 	{
+// 		blockY = Chunk::sizeY - 1 + ((int)pos.z - chunkY * Chunk::sizeY);
+// 		chunkY--;
+// 	}
 
 
-	int blockZ = pos.y;
+// 	int blockZ = pos.y;
 
-	if (blockX < 0 || blockY < 0 || blockX >= Chunk::sizeX || blockY >= Chunk::sizeY || blockZ < 0 || blockZ >= Chunk::sizeZ)
-		return false;
+// 	if (blockX < 0 || blockY < 0 || blockX >= Chunk::sizeX || blockY >= Chunk::sizeY || blockZ < 0 || blockZ >= Chunk::sizeZ)
+// 		return false;
 	
-	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
-		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
-			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY
-				&& Chunk::loadedChunks[i][j]->isFilled(blockX, blockY, blockZ)) {
+// 	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
+// 		for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+// 			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY
+// 				&& Chunk::loadedChunks[i][j]->isFilled(blockX, blockY, blockZ)) {
 				
-				std::vector<u_char> *modif = ChunkGenerator::modifMap[position(chunkX, chunkY)];
-				if (!modif) {
-					modif = new std::vector<u_char>();
-					ChunkGenerator::modifMap[position(chunkX, chunkY)] = modif;
-				}
-				modif->push_back(blockX);
-				modif->push_back(blockY);
-				modif->push_back(blockZ);
-				modif->push_back(type);
+// 				std::vector<u_char> *modif = ChunkGenerator::modifMap[position(chunkX, chunkY)];
+// 				if (!modif) {
+// 					modif = new std::vector<u_char>();
+// 					ChunkGenerator::modifMap[position(chunkX, chunkY)] = modif;
+// 				}
+// 				modif->push_back(blockX);
+// 				modif->push_back(blockY);
+// 				modif->push_back(blockZ);
+// 				modif->push_back(type);
 
-				Chunk::loadedChunks[i][j]->MakeDirty();
+// 				Chunk::loadedChunks[i][j]->MakeDirty();
 
-				quickFix(i, j, blockX, blockY, chunkX, chunkY);
+// 				quickFix(i, j, blockX, blockY, chunkX, chunkY);
 					
 
 					
-				return true;
-			}
-		}
-	}
-	return false;
-}
+// 				return true;
+// 			}
+// 		}
+// 	}
+// 	return false;
+// }
 
-void Game::deleteBlock()
-{
-	glm::vec3 direction = glm::normalize(cameraDirection);
-	glm::vec3 position = cameraPosition;
+// void Game::deleteBlock()
+// {
+// 	glm::vec3 direction = glm::normalize(cameraDirection);
+// 	glm::vec3 position = cameraPosition;
 	
-	glm::vec3 toFind = position;
-	glm::vec3 incr = glm::vec3(-1, -1, -1);
-	if (direction.x > 0)
-		incr.x = 1;
-	if (direction.y > 0)
-		incr.y = 1;
-	if (direction.z > 0)
-		incr.z = 1;
+// 	glm::vec3 toFind = position;
+// 	glm::vec3 incr = glm::vec3(-1, -1, -1);
+// 	if (direction.x > 0)
+// 		incr.x = 1;
+// 	if (direction.y > 0)
+// 		incr.y = 1;
+// 	if (direction.z > 0)
+// 		incr.z = 1;
 
-	int i = 0;
-	while (i < 30 && (position - toFind).length() < 10 && (position - toFind).length() > -10)
-	{
-		i++;
-		glm::vec3 steps = {0, 0, 0};
-		glm::vec3 distance = {0, 0, 0};
+// 	int i = 0;
+// 	while (i < 30 && (position - toFind).length() < 10 && (position - toFind).length() > -10)
+// 	{
+// 		i++;
+// 		glm::vec3 steps = {0, 0, 0};
+// 		glm::vec3 distance = {0, 0, 0};
 		
 
-		for (int j = 0; j < 3; j++)
-		{
-			if (direction[j] < 0)
-				distance[j] = abs(ceil(toFind[j])) - abs(toFind[j]);
-			else
-				distance[j] = abs(toFind[j]) - abs(floor(toFind[j]));
-		}
+// 		for (int j = 0; j < 3; j++)
+// 		{
+// 			if (direction[j] < 0)
+// 				distance[j] = abs(ceil(toFind[j])) - abs(toFind[j]);
+// 			else
+// 				distance[j] = abs(toFind[j]) - abs(floor(toFind[j]));
+// 		}
 
-		steps.x = abs(distance.x / direction.x);
-		steps.y = abs(distance.y / direction.y);
-		steps.z = abs(distance.z / direction.z);
+// 		steps.x = abs(distance.x / direction.x);
+// 		steps.y = abs(distance.y / direction.y);
+// 		steps.z = abs(distance.z / direction.z);
 
 
-		if (steps.x < steps.y && steps.x < steps.z)
-		{
-			toFind += steps.x * direction;
-			if (putBlock(toFind, AIR))
-				return;
-		}
-		else if (steps.y < steps.x && steps.y < steps.z)
-		{
-			toFind += steps.y * direction;
-			if (putBlock(toFind, AIR))
-				return;
-		}
-		else
-		{
-			toFind += steps.z * direction;
-			if (putBlock(toFind, AIR))
-				return;
-		}
-	}
-
-}
+// 		if (steps.x < steps.y && steps.x < steps.z)
+// 		{
+// 			toFind += steps.x * direction;
+// 			if (putBlock(toFind, AIR))
+// 				return;
+// 		}
+// 		else if (steps.y < steps.x && steps.y < steps.z)
+// 		{
+// 			toFind += steps.y * direction;
+// 			if (putBlock(toFind, AIR))
+// 				return;
+// 		}
+// 		else
+// 		{
+// 			toFind += steps.z * direction;
+// 			if (putBlock(toFind, AIR))
+// 				return;
+// 		}
+// 	}
+// }

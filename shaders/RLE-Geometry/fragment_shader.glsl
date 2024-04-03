@@ -9,14 +9,13 @@ flat in int out_type;
 uniform int TextureArraySize;
 
 uniform sampler2DArray ourTextureArray;
-uniform vec4 colorFilter;
 
 void main()
 {
-	if (out_type == 2)
+	if (out_grass == 1)
 	{
-		FragColor = texture(ourTextureArray, vec3(tex_out, out_type)) * vec4(0.4, 0.9, 0.6, 0);
+		FragColor = texture(ourTextureArray, vec3(tex_out, out_type)) * vec4(0.4, 0.9, 0.6, 0) * out_light;
 		return;
 	}
-	FragColor = texture(ourTextureArray, vec3(tex_out, out_type));
+	FragColor = texture(ourTextureArray, vec3(tex_out, out_type))  * out_light;
 }

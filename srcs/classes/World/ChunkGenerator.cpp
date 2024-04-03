@@ -69,7 +69,7 @@ int ChunkGenerator::genBedrock(u_char *data, int x, int y)
 {
 	
 	double bedrock_factor = 0;
-	int bedHigh = 1 + (int)(bedrock_factor * 5);
+	int bedHigh = 3 + (int)(bedrock_factor * 5);
 	int k = 0;
 	data[x * sizeZ + y * sizeX * sizeZ] = BEDROCK;
 	for (; k < bedHigh; k++)
@@ -306,6 +306,36 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		p_y = ((double)posY * sizeY + y);
 		
 		int z = genBedrock(data, x, y);
+
+
+		// if (y == 8 && x % 5)
+		// {
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = WATER;
+
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = WATER;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+		// if (x % 5 == 4)
+		// 	data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
+
+		// }
+
+
+		
 		genUnderLayer(pos, z);
 
 		genOverLayer(pos, z);
@@ -317,7 +347,7 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		if (GEN_NOISE3D)
 			gen3DCave(hill_height, pos, z);
 
-		gen2DCave(hill_height, pos, z);		
+		gen2DCave(hill_height, pos, z);
 		
 
 	}

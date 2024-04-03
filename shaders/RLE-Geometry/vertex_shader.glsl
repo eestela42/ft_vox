@@ -4,8 +4,8 @@ layout (location = 1) in int chunk_y;
 layout (location = 2) in int pos; 
 layout (location = 3) in int face; 
 layout (location = 4) in int type;
-layout (location = 5) in int sizeX;
-layout (location = 6) in int sizeY;
+layout (location = 5) in int longX;
+layout (location = 6) in int longY;
 
 
 
@@ -24,8 +24,8 @@ out GEO_OUT {
 	int pos;
 	int face;
 	int type;
-	int sizeX;
-	int sizeY;
+	int longX;
+	int longY;
 } geo_out;
 
 out int tmp_vertID;
@@ -39,7 +39,7 @@ void main()
 	geo_out.pos = pos;
 	geo_out.face = face;
 	geo_out.type = type;
-	geo_out.sizeX = sizeX;
-	geo_out.sizeY = sizeY;
+	geo_out.longX = longX;
+	geo_out.longY = longY;
 	
 }
