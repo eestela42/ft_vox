@@ -15,14 +15,16 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
-	Profiler::StartTracking("Chunk::PublicGenerate()");
+	if (PROFILER_ON)
+		Profiler::StartTracking("Chunk::PublicGenerate()");
 	isGenerated = true;
 	ChunkGenerator generator;
 
 	updateFromRaw(generator.generator(*this));
 
 	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate()");
+	if (PROFILER_ON)
+		Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
 
@@ -135,9 +137,11 @@ void Chunk::SetReady(bool isRecursive) {
 				neighborChunks[i]->SetReady(true);
 			}
 		}
-		Profiler::StartTracking("Chunk::CompileData()");
+		if (PROFILER_ON)
+			Profiler::StartTracking("Chunk::CompileData()");
 		CompileData();
-		Profiler::StopTracking("Chunk::CompileData()");
+		if (PROFILER_ON)
+			Profiler::StopTracking("Chunk::CompileData()");
 		didUpdate = true;
 	}
 }

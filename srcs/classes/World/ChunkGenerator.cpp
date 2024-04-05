@@ -308,31 +308,12 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		int z = genBedrock(data, x, y);
 
 
-		// if (y == 8 && x % 5)
-		// {
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
 		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
+		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
 
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = WATER;
+		
 
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = AIR;
-
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = WATER;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-		// if (x % 5 == 4)
-		// 	data[x * sizeZ + y * sizeX * sizeZ + z++] = STONE;
-
-		// }
 
 
 		

@@ -5,17 +5,56 @@
 #include <cstring>
 
 
+ChunkRLE::~ChunkRLE()
+{
+
+	delete [] this->rubans_id;
+	delete this->rubans;
+	this->data = NULL;
+
+}
+
+
+
+ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
+{
+	this->data = NULL;
+	this->rubans = NULL;
+	this->rubans_id = new u_int[Chunk::sizeZ];
+}
+
 
 		/*****	2 - methods 		*****/
-void ChunkRLE::createPointVertexGeometry(std::vector<int> &vertexes, int pos, u_char orientation, u_char type, int longX, int longY)
+void ChunkRLE::CreatePointVertexGeometry(std::vector<int> &vertexes, int pos, u_char orientation, u_char type, u_char longX, u_char longY)
 {
-		vertexes.push_back(posX);
-		vertexes.push_back(posY);
-		vertexes.push_back(pos);
-		vertexes.push_back(orientation);
-		vertexes.push_back(type);
-		vertexes.push_back(longX);
-		vertexes.push_back(longY);
+		vertexes.push_back(posX); //8 bytes
+		vertexes.push_back(posY);//8 bytes
+		int tmp = 0;
+		tmp += longY;
+		tmp = (int)pos << 16;
+		tmp += orientation << 12;
+		tmp += type << 8;
+		tmp += longX << 4;
+		// std::cout << "geo_IN_pos : " << pos << "  " << (int)orientation << "  " << (int)type << "  " << (int)longX << "  " << (int)longY << std::endl;
+		int geo_out_pos = 0;
+		u_char geo_out_face = 0;
+		u_char geo_out_type = 0;
+		u_char geo_out_longX = 0;
+		u_char geo_out_longY = 0;
+		
+		geo_out_longY = tmp & 0xF;
+		geo_out_longX = tmp >> 4 & 0xF;
+		geo_out_type = tmp >> 8 & 0xF;
+		geo_out_face = tmp >> 12 & 0xF;
+		geo_out_pos = tmp >> 16 & 0xFFFF;
+		// std::cout << "geo_out_pos : " << geo_out_pos << "  " << (int)geo_out_face << "  " << (int)geo_out_type << "  " << (int)geo_out_longX << "  " << (int)geo_out_longY << std::endl << std::endl;
+		// vertexes.push_back(tmp);
+
+		vertexes.push_back(pos);//4 bytes
+		vertexes.push_back(orientation);//1 byte (peut etre moins)
+		vertexes.push_back(type);//1 byte
+		vertexes.push_back(longX);//1 byte
+		vertexes.push_back(longY);//1 byte
 }
 
 void ChunkRLE::CreateFaceRLEGeometry(int orientation, std::vector<int> &vData, std::vector<u_int> &iData, int x, int y, int z, int offset, u_char type, int longX, int longY) {
@@ -25,12 +64,12 @@ void ChunkRLE::CreateFaceRLEGeometry(int orientation, std::vector<int> &vData, s
 
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 
-	createPointVertexGeometry(vData, pos, orientation, type, longX, longY);
+	CreatePointVertexGeometry(vData, pos, orientation, type, longX, longY);
 }
 
 
 
-void ChunkRLE::createPointVertexRegular(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
+void ChunkRLE::CreatePointVertexRegular(std::vector<int> &vertexes, int pos, u_char orientation, u_char type)
 {
 	for (char i = 0; i < 4; i++)
 	{
@@ -61,7 +100,7 @@ void ChunkRLE::CreateFaceRLERegular(int orientation, std::vector<int> &vData, st
 
 	int pos = x + y * this->sizeX + z * this->sizeX * this->sizeY;
 
-	createPointVertexRegular(vData, pos, orientation, type);
+	CreatePointVertexRegular(vData, pos, orientation, type);
 }
 
 
@@ -216,14 +255,14 @@ void 		ChunkRLE::makeTopBotFaces(std::vector<std::vector<std::vector<u_int>>> &t
 			|| tool[x][y][face_type] == 4 && tool[x][y][height] != lowest
 			|| tool[x][y][face_type] == 5 && tool[x][y][height] + ruban[tool[x][y][ruban_pos] + 1] - 1 != lowest)
 			continue ;
-
+		
 		map[x + y * Chunk::sizeX] = 1;
 		u_int longX = 1;
 		u_int longY = 1;
 		for (u_int px = x + 1; px < sizeX; px++)
 		{
 			if (map[px + y * Chunk::sizeX] != 0 || tool[px][y][height] != lowest || tool[x][y][face_type] !=  tool[px][y][face_type]
-				||  tool[x][y][block_type]  !=  tool[px][y][block_type])
+				||  tool[x][y][block_type]  !=  tool[px][y][block_type] || tool[px][y][height] != tool[x][y][height])
 				break ;
 			longX++;
 
@@ -253,7 +292,7 @@ void 		ChunkRLE::makeTopBotFaces(std::vector<std::vector<std::vector<u_int>>> &t
 			for (u_int px = x; px < longX; px++)
 			{
 				if (map[px + py * Chunk::sizeX] != 0 || tool[px][py][height] != lowest || tool[x][y][face_type] !=  tool[px][py][face_type]
-					||  tool[x][y][block_type]  !=  tool[px][py][block_type])
+					||  tool[x][y][block_type]  !=  tool[px][py][block_type]  || tool[px][py][height] != tool[x][y][height])
 					break ;
 				tmpX++;
 			}
@@ -285,7 +324,6 @@ void 		ChunkRLE::makeTopBotFaces(std::vector<std::vector<std::vector<u_int>>> &t
 
 		if (tool[x][y][face_type] == 4)
 		{
-			
 			CreateFaceRLE(tool[x][y][face_type], vertexData, shapeAssemblyData, x, y, tool[x][y][height], vertexData.size(), tool[x][y][block_type], longX, longY);
 			
 			tool[x][y][face_type] = 5;
@@ -295,7 +333,6 @@ void 		ChunkRLE::makeTopBotFaces(std::vector<std::vector<std::vector<u_int>>> &t
 
 		if (tool[x][y][face_type] == 5)
 		{
-			
 			CreateFaceRLE(tool[x][y][face_type], vertexData, shapeAssemblyData, x, y, tool[x][y][height] + ruban[tool[x][y][ruban_pos] + 1] - 1, vertexData.size(), tool[x][y][block_type], longX, longY);
 			tool[x][y][face_type] = 0;
 			tool[x][y][height] += ruban[tool[x][y][ruban_pos] + 1];
@@ -320,11 +357,10 @@ void ChunkRLE::toolInit(std::vector<std::vector<std::vector<u_int>>> &tool)
 		for (u_int x = 0; x < sizeX; x++)
 		{
 			tool[x][y].resize(4);
-			tool[x][y][0] = 0;//height
-			tool[x][y][1] = GetRubanPos(x, y, 0);//ruban pos
-			// std::cout << "ruban pos : " << tool[x][y][1] << std::endl;
-			tool[x][y][2] = this->rubans->data()[tool[x][y][1]];//block type
-			tool[x][y][3] = 4;//face type
+			tool[x][y][0] = 0;										//height
+			tool[x][y][1] = GetRubanPos(x, y, 0);					//ruban pos
+			tool[x][y][2] = this->rubans->data()[tool[x][y][ruban_pos]];	//block type
+			tool[x][y][3] = 4;										//face type
 		}
 	}
 }
@@ -339,7 +375,7 @@ void	ChunkRLE::CompileTopBotFaces()
 	u_char map[Chunk::sizeX * Chunk::sizeY];
 	for (u_int y = 0; y < Chunk::sizeY; y++)
 		for (u_int x = 0; x < Chunk::sizeX; x++)
-			map[x + y * Chunk::sizeX] = 0;
+			map[x + y * Chunk::sizeX] = 1;
 	
 	u_char *ruban = this->rubans->data();
 
@@ -384,7 +420,10 @@ void	ChunkRLE::CompileTopBotFaces()
 			}
 			break ;
 		}
-		
+		// if (posX == 0 && posY == 1 && x == 2 && (y == 4 || y == 5))
+		// {
+		// 	std::cout << "x : " << x << " y : " << y << " z : " << tool[x][y][height] << " face : " << (int)tool[x][y][face_type] << " block : " << (int)tool[x][y][block_type] << std::endl;
+		// }
 		if (tool[x][y][face_type])
 			map[x + y * Chunk::sizeX] = 0;
 		
@@ -400,10 +439,11 @@ void	ChunkRLE::CompileTopBotFaces()
 		{
 			lowest = thisLow;
 		}
+		
 	}	
 	}
 	//make face
-	makeTopBotFaces(tool, ruban, lowest, map); 
+	makeTopBotFaces(tool, ruban, lowest, map);
 	z = lowest; // find du lowest a opti !!!
 	}
 }
@@ -419,10 +459,10 @@ void	ChunkRLE::parkourRubans(u_int &x, u_int &y, u_int &pos)
 
 			u_int z_end  = z + data[pos + 1];
 			
-			/* Bottom Face
-			if ((!z && data[pos]) || (data[pos] && (data[pos - 2] == AIR || data[pos - 2] == WATER)))
-				CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos], 1, 1);
-			*/
+			/*Bottom Face*/
+			// if ((!z && data[pos]) || (data[pos] && (data[pos - 2] == AIR || data[pos - 2] == WATER)))
+			// 	CreateFaceRLE(4, vertexData, shapeAssemblyData, x, y, z, vertexData.size(), data[pos], 1, 1);
+			
 			for (u_int neighb = 0; neighb < 4; neighb++)
 			{
 				std::vector<u_char> *ruban_vec = GetAdjacentRuban(x, y , z, neighb_pos[neighb], neighb); //find neighb of our block's ruban
@@ -472,7 +512,8 @@ void	ChunkRLE::parkourRubans(u_int &x, u_int &y, u_int &pos)
 						else
 							to_draw = real_size - (real_z + real_size - z_end);
 					}
-					
+					// for (int i = 0; i < to_draw; i++)
+						// CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z + i, vertexData.size(), data[pos], 1, 1);
 					if (to_draw)
 						CreateFaceRLE(neighb, vertexData, shapeAssemblyData, x, y, real_z, vertexData.size(), data[pos], 1, to_draw);
 					while (to_draw)
@@ -483,10 +524,10 @@ void	ChunkRLE::parkourRubans(u_int &x, u_int &y, u_int &pos)
 					}
 				}
 			}
-			/* Top Face
-			if (data[pos] && z < sizeZ - 1 && (data[pos + 2] == AIR || data[pos + 2] == WATER))
-			 	CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos], 1, 1);
-			*/
+			/*Top Face*/
+			// if (data[pos] && z < sizeZ - 1 && (data[pos + 2] == AIR || data[pos + 2] == WATER))
+			//  	CreateFaceRLE(5, vertexData, shapeAssemblyData, x, y, z_end - 1, vertexData.size(), data[pos], 1, 1);
+			
 			pos += 2;
 			z = z_end;
 		}
@@ -560,28 +601,7 @@ ChunkRLE*	ChunkRLE::GetNeighbour(int cardinal)
 	
 }
 
-ChunkRLE::~ChunkRLE()
-{
 
-	delete [] this->rubans_id;
-	delete this->rubans;
-	this->data = NULL;
-
-}
-
-ChunkRLE::ChunkRLE() : Chunk(0,0)
-{
-	this->data = NULL;
-	this->rubans = NULL;
-	this->rubans_id = new u_int[Chunk::sizeZ];
-}
-
-ChunkRLE::ChunkRLE(int posX, int posY) : Chunk(posX, posY)
-{
-	this->data = NULL;
-	this->rubans = NULL;
-	this->rubans_id = new u_int[Chunk::sizeZ];
-}
 
 
 int ChunkRLE::calcX(int pos)

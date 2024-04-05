@@ -7,12 +7,15 @@ int main(int argc, __attribute__((unused)) char **argv) {
 		Profiler::SetSaveOn();
 	}
 	unsigned int numThreads = std::thread::hardware_concurrency();
-	Profiler::StartTracking("Game Constructor");
+	if (PROFILER_ON)
+		Profiler::StartTracking("Game Constructor");
 	Game *game = new Game();
-	Profiler::StopTracking("Game Constructor");
+	if (PROFILER_ON)
+		Profiler::StopTracking("Game Constructor");
 	
 	game->StartLoop();
-	Profiler::LogData();
+	if (PROFILER_ON)
+		Profiler::LogData();
 	delete game;
 	return 0;
 }

@@ -1,6 +1,7 @@
 #version 460 core
 layout (location = 0) in int chunk_x; 
 layout (location = 1) in int chunk_y; 
+// layout (location = 2) in int data;
 layout (location = 2) in int pos; 
 layout (location = 3) in int face; 
 layout (location = 4) in int type;
@@ -36,6 +37,13 @@ void main()
 
 	geo_out.chunk_x = chunk_x;
 	geo_out.chunk_y = chunk_y;
+
+	// geo_out.pos = data >> 16  & 0xFFFF;
+	// geo_out.face = data >> 12 & 0xF;
+	// geo_out.type = data >> 8 & 0xF;
+	// geo_out.longX = data >> 4 & 0xF;
+	// geo_out.longY = data & 0xF;
+
 	geo_out.pos = pos;
 	geo_out.face = face;
 	geo_out.type = type;
