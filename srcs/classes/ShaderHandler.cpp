@@ -1,5 +1,12 @@
 #include <classes/ShaderHandler.hpp>
 
+ShaderHandler::~ShaderHandler()
+{
+	for (auto& shader : shaderMap) {
+		delete shader.second;
+	}
+}
+
 ShaderHandler::ShaderHandler(const char* folderPath) {
 	for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
 		if (entry.is_directory()) {

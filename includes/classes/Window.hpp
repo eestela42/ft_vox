@@ -8,8 +8,8 @@
 
 #include <interfaces/Interface_Input.hpp>
 
-#define DEFAULT_WINDOW_WIDTH 1540
-#define DEFAULT_WINDOW_HEIGHT 840
+#define DEFAULT_WINDOW_WIDTH 1920
+#define DEFAULT_WINDOW_HEIGHT 1080
 
 enum class DrawMode {
     FILL,
@@ -20,7 +20,7 @@ class Window : I_Input
 {
     public:
         Window(const char *name, DrawMode drawMode);
-        ~Window();
+        virtual ~Window();
 
         GLFWwindow *GetWindow() const;
         int ShouldContinue();

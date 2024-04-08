@@ -1,11 +1,17 @@
 #include <classes/Window.hpp>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) //callback called by GLFW whevenever window is resized
+void framebuffer_size_callback( __attribute__((unused)) GLFWwindow* window, int width, int height) //callback called by GLFW whevenever window is resized
 {
     glViewport(0, 0, width, height); // We tell openGL the new size of the window
 }
 
+static void glfwError( __attribute__((unused)) int id, const char* description)
+{
+  std::cout << description << std::endl;
+}
+
 Window::Window(const char *name, DrawMode drawMode) {
+    glfwSetErrorCallback(&glfwError);
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
         assert(!"Window::Window glfwInit failed");
@@ -34,14 +40,14 @@ Window::Window(const char *name, DrawMode drawMode) {
     
 	glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT); // Tell OpenGL the size of the drawing window
-    glClearColor(0.2f, 0.3f, 0.6f, 1.0f); // Sets clear color
+    glClearColor(0.25f, 0.35f, 0.6f, 1.0f); // Sets clear color
     if (drawMode == DrawMode::LINE) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //draw as lines
     }
     else {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // default draw (filled)
     }
-    
+    glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // We tell glfw which function to call whenever window is resized
 }
 
@@ -62,7 +68,7 @@ void Window::SwapBuffersAndPollEvents() {
     glfwPollEvents(); //Checks for event and calls callbacks (framebuffer_size_callback wouldn't be called if it wasn't for this function)
 }
 
-void Window::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
+void Window::SendKeys(u_char *keyState, __attribute__((unused)) double mouseMoveX, __attribute__((unused)) double mouseMoveY) {
 	if(keyState[KEY_ESCAPE] & KEY_PRESS)
         glfwSetWindowShouldClose(window, true);
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <classes/World/ChunkDefault.hpp>
+#include <classes/World/ChunkRLE.hpp>
+#include <classes/World/ChunkGenerator.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/ShaderHandler.hpp>
 #include <unordered_map>
@@ -28,7 +30,9 @@ class ChunkInstantiator
 		int renderDistance;
 		ShaderHandler *shaderHandler;
 	public:
+		~ChunkInstantiator();
 		ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler);
-
-		void Update(glm::vec3 playerPos, std::chrono::milliseconds timeBudget);
+		bool	putBlock(glm::vec3 pos, u_char type);
+		// void updateGen(const char *filePath);
+		void Update(glm::vec3 playerPos);
 };

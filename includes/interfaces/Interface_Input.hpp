@@ -23,7 +23,19 @@
 
 #define KEY_SPACE				15
 
-#define KEY_LAST				15
+#define KEY_DELETE_ONE_BLOCK	16
+#define KEY_DELETE_MORE_BLOCK	18
+
+
+#define KEY_DISPLAY_INFO        17
+
+#define KEY_FLY_MODE			18
+
+
+
+#define KEY_LAST				19
+
+
 
 
 class I_Input {

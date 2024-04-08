@@ -3,6 +3,9 @@
 
 ChunkDefault::ChunkDefault() : Chunk(0, 0) {}
 
+ChunkDefault::~ChunkDefault()
+{}
+
 ChunkDefault::ChunkDefault(u_int x, u_int y) : Chunk(x, y) {}
 
 #define TOP (1 << 0)
@@ -229,6 +232,5 @@ void ChunkDefault::Generate() {
 	}
 }
 
-void ChunkDefault::Generate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {}
 
 void ChunkDefault::Generate(u_int seed) {}

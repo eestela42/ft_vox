@@ -3,10 +3,11 @@
 
 // Parameterized constructor
 ElementBufferObject::ElementBufferObject(const std::vector<unsigned int>& indices){
-	indicesSize = indices.size() * sizeof(indices[0]);
+	indicesSize = indices.size();
+    indicesDataSize = indicesSize * sizeof(indices[0]);
     glGenBuffers(1, &index);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesDataSize, indices.data(), GL_STATIC_DRAW);
 }
 
 void ElementBufferObject::Bind() {
@@ -17,6 +18,10 @@ void ElementBufferObject::DeleteBuffers() {
 	glDeleteBuffers(1, &index);
 }
 
-int ElementBufferObject::GetSize() const {
+std::size_t  ElementBufferObject::GetSize() const {
     return indicesSize;
+}
+
+std::size_t  ElementBufferObject::GetDataSize() const {
+    return indicesDataSize;
 }

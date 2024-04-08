@@ -26,6 +26,7 @@ class Shader
 	public:
 		/** @brief Compiles the shader program found at the path.*/ 
 		Shader(const std::string &folderPath);
+		~Shader();
 		void Use();
 
 		void SetBool(const std::string &name, bool value) const;  
@@ -37,8 +38,8 @@ class Shader
 		std::vector<t_vertexAttribute> &GetVertexAttributes();
 		static Shader *GetActiveShader();
 	private:
-		static Shader *activeShader;
 		unsigned int ID; // the program ID
+		static Shader *activeShader;
 		std::vector<t_vertexAttribute> attributes;
 			
 		u_int CompileSingleShader(const char *path, GLenum type, std::string sType);

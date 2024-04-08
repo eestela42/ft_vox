@@ -9,8 +9,10 @@ public:
 
 	void Bind();
 	void DeleteBuffers();
-    int GetSize() const;
+    std::size_t  GetSize() const;
+    std::size_t  GetDataSize() const;
 private:
     unsigned int index;
-    int indicesSize;
+    std::size_t  indicesSize;
+    std::size_t  indicesDataSize;
 };

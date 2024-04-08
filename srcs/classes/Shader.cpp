@@ -5,6 +5,10 @@
 #define GMTR 1 << 2
 
 Shader *Shader::activeShader = NULL;
+Shader::~Shader()
+{
+	
+}
 
 Shader::Shader(const std::string &folderPath) {
 	u_char activeShaders = 0;
@@ -77,7 +81,7 @@ void Shader::parseAttributes(const char *path) {
         std::cout << "Error opening file : " << path << std::endl;
         assert(0);
     }
-	std::cout << "Vertex Shader at " << path << std::endl;
+	// std::cout << "Vertex Shader at " << path << std::endl;
     std::string line;
     while (std::getline(file, line)) {
         std::istringstream lineStream(line);
@@ -99,17 +103,17 @@ void Shader::parseAttributes(const char *path) {
 			if (typeName == "int") {
 				attribute.type = GL_INT;
 				attribute.size = 1;
-				std::cout << "Int, size " << attribute.size << std::endl;
+				// std::cout << "Int, size " << attribute.size << std::endl;
 			}
 			else if (typeName == "float") {
 				attribute.type = GL_FLOAT;
 				attribute.size = 1;
-				std::cout << "Float, size " << attribute.size << std::endl;
+				// std::cout << "Float, size " << attribute.size << std::endl;
 			}
 			else if (typeName.find("vec") != std::string::npos) {
 				attribute.type = GL_FLOAT;
 				attribute.size = typeName[3] - '0';
-				std::cout << "Float, size " << attribute.size << std::endl;
+				// std::cout << "Float, size " << attribute.size << std::endl;
 			}
 			else {
 				std::cout << "Type not supported by current codebase : " << typeName << std::endl;
@@ -135,6 +139,7 @@ void Shader::SetInt(const std::string &name, int value) const {
 void Shader::SetFloat(const std::string &name, float value) const { 
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
 }
+
 void Shader::SetFloat4(const std::string &name, float value1, float value2, float value3, float value4) const { 
     glUniform4f(glGetUniformLocation(ID, name.c_str()), value1 , value2, value3, value4); 
 }

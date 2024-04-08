@@ -1,4 +1,7 @@
 #include <classes/World/Chunk.hpp>
+#include <classes/World/PerlinNoise.hpp>
+#include <classes/World/ChunkGenerator.hpp>
+
 
 std::vector<std::vector<Chunk*>> Chunk::loadedChunks;
 u_int Chunk::idCount = 0;
@@ -12,28 +15,19 @@ Chunk::Chunk(int posX, int posY) : posX(posX), posY(posY) {
 }
 
 void Chunk::PublicGenerate() {
-	Profiler::StartTracking("Chunk::PublicGenerate()");
+	if (PROFILER_ON)
+		Profiler::StartTracking("Chunk::PublicGenerate()");
+	ChunkGenerator generator;
+	std::cout << "Generating chunk " << posX << " " << posY << std::endl;
+	updateFromRaw(generator.generator(*this));
 	isGenerated = true;
-	Generate();
+	std::cout << "EXIT Generating chunk " << posX << " " << posY << std::endl;
+
 	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate()");
+	if (PROFILER_ON)
+		Profiler::StopTracking("Chunk::PublicGenerate()");
 }
 
-void Chunk::PublicGenerate(std::vector<glm::ivec3> positionList, std::vector<glm::ivec3> sizeList) {
-	Profiler::StartTracking("Chunk::PublicGenerate(positionList, sizeList)");
-	isGenerated = true;
-	Generate(positionList, sizeList);
-	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate(positionList, sizeList)");
-}
-
-void Chunk::PublicGenerate(u_int seed) {
-	Profiler::StartTracking("Chunk::PublicGenerate(seed)");
-	isGenerated = true;
-	Generate(seed);
-	isCompiled = false;
-	Profiler::StopTracking("Chunk::PublicGenerate(seed)");
-}
 
 void	Chunk::loadChunk() {
 	int size = loadedChunks.size();
@@ -144,9 +138,11 @@ void Chunk::SetReady(bool isRecursive) {
 				neighborChunks[i]->SetReady(true);
 			}
 		}
-		Profiler::StartTracking("Chunk::CompileData()");
+		if (PROFILER_ON)
+			Profiler::StartTracking("Chunk::CompileData()");
 		CompileData();
-		Profiler::StopTracking("Chunk::CompileData()");
+		if (PROFILER_ON)
+			Profiler::StopTracking("Chunk::CompileData()");
 		didUpdate = true;
 	}
 }
@@ -167,6 +163,13 @@ int Chunk::GetY() {
 	return posY;
 }
 
+void Chunk::MakeDirty()
+{
+	isGenerated = false;
+	isCompiled = false;
+	didUpdate = true;
+}
+
 t_vertexData &Chunk::GetVertexData() {
 	SetReady(false);
 	didUpdate = false;
@@ -179,9 +182,34 @@ std::vector<u_int>&		Chunk::GetShapeAssemblyData() {
 	return shapeAssemblyData;
 }
 
+
 Chunk::~Chunk() {
 	UnloadChunk();
-	if ((void*)data != (void*)"") {
+	if (data && (void*)data != (void*)"") {
+		std::cout << "Deleting data" << std::endl;
 		free(data);
+		std::cout << "----Deleting data" << std::endl;
 	}
+
+}
+
+bool InsideBlock(glm::vec3 position)
+{
+	int chunkX = (int)floor(position.x / Chunk::sizeX);
+	int chunkY = (int)floor(position.z / Chunk::sizeY);
+
+	int blockX = (int)floor(position.x) - chunkX * Chunk::sizeX;
+	int blockY = (int)floor(position.z) - chunkY * Chunk::sizeY;
+	int blockZ = (int)floor(position.y);	
+	for (int i = 0; i < Chunk::loadedChunks.size(); i++) {
+	for (int j = 0; j < Chunk::loadedChunks[i].size(); j++) {
+
+			if (Chunk::loadedChunks[i][j] && Chunk::loadedChunks[i][j]->GetX() == chunkX && Chunk::loadedChunks[i][j]->GetY() == chunkY)
+			{
+				if (Chunk::loadedChunks[i][j]->isFilled(blockX, blockY, blockZ))
+					return true;
+			}
+	}
+	}
+	return false;
 }

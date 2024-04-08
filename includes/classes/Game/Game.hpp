@@ -14,6 +14,15 @@
 #include <classes/ShaderHandler.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/World/ChunkInstantiator.hpp>
+#include <classes/Texture/Texture.hpp>
+#include <classes/Texture/TextureArray.hpp>
+#include <classes/Game/SkyBox.hpp>
+#include <classes/Game/CrossHair.hpp>
+#include <classes/Game/Player.hpp>
+#include <classes/Game/Entity.hpp>
+
+
+
 
 class Game : I_Input
 {
@@ -23,35 +32,48 @@ class Game : I_Input
 		ShaderHandler *shaderHandler;
 		VertexArrayObjectHandler *vertexArrayObjectHandler;
 		ChunkInstantiator *instantiator;
+		Player my_player;
 
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 50;
+		int renderDistance = 1;
 		int chunkLoadingSize = renderDistance * 2 + 1;
-		const float speed = 0.05f;
+		const float speed = 0.35f;
 		const float sensitivity = 0.05f;
+		bool isEnd = false;
 
-		float yaw = -90;
-		float pitch = 0;
-		glm::vec3 cameraPosition = glm::vec3(0, 30, 0);
-		glm::vec3 cameraDirection = glm::vec3(	cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-												sin(glm::radians(pitch)),
-												sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
-		glm::mat4 view = glm::lookAt(	cameraPosition,
-										cameraPosition + cameraDirection,
-										glm::vec3(0, 1, 0));
+		
 	public:
 		Game();
 
+		int tmp = 0;
+		
+		SkyBox *skyBox;
+		CrossHair *crossHair;
 		void SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) override;
 		void StartLoop();
+		void generationLoop();
 
 		glm::mat4 GetCameraView() const;
 		int	GetRenderDistance() const;
 		int	GetChunkLoadingSize() const;
 
-		~Game();
+		Texture blockTexture;
+		TextureArray blockTextureArray;
+
+
+		bool	putBlock(glm::vec3 pos, u_char type);
+		void 	deleteBlock();
+		glm::vec4 findColorFilter();
+		virtual ~Game();
 };
+
+// void addVaoCreateQueue(t_vertexData *vertexData, std::vector<unsigned int> *indices);
+// void addVaoDeleteQueue(u_int vao);
+
+// void vaoCreate(VertexArrayObjectHandler *vaoHandler, ShaderHandler *shaderHandler);
+// void vaoDelete(VertexArrayObjectHandler *vaoHandler);
+
 
 #endif
