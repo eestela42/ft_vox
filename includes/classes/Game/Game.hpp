@@ -14,6 +14,8 @@
 #include <classes/ShaderHandler.hpp>
 #include <classes/VAO/VertexArrayObjectHandler.hpp>
 #include <classes/World/ChunkInstantiator.hpp>
+#include <classes/Text.hpp>
+#include <thread>
 
 class Game : I_Input
 {
@@ -27,7 +29,22 @@ class Game : I_Input
 		void Loop();
 	private:
 		static glm::vec3 const cameraUp;
-		int renderDistance = 50;
+		int totalLoadWork;
+		Text *loadingPercentageText;
+		Text *fpsText;
+		Text *frameTimeText;
+		Text *chunkGenerationText;
+		Text *chunkCompilationText;
+		Text *chunkUpdateText;
+		Text *playerPosXText;
+		Text *playerPosYText;
+		Text *playerPosZText;
+		std::chrono::_V2::system_clock::time_point frameTimestamp;
+		std::chrono::duration<float, std::nano> EMA;
+		int renderDistance = 32;
+		int targetFPS = 144;
+		std::chrono::_V2::system_clock::time_point beforeSleep;
+		std::chrono::nanoseconds correction = std::chrono::nanoseconds(0);
 		int chunkLoadingSize = renderDistance * 2 + 1;
 		const float speed = 0.05f;
 		const float sensitivity = 0.05f;

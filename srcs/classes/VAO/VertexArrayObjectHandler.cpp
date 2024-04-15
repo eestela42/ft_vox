@@ -2,57 +2,71 @@
 
 VertexArrayObjectHandler::VertexArrayObjectHandler() {}
 
-void VertexArrayObjectHandler::Draw() {
-	if (activeVAO) {
-		glDrawElements(GL_TRIANGLES, vaoMap[activeVAO - 1]->GetIndicesSize(), GL_UNSIGNED_INT, 0);
+void VertexArrayObjectHandler::Draw(VertexArrayObject *toDraw) {
+	toDraw->Bind();
+	if (toDraw->GetEBO()) {
+		glDrawElements(GL_TRIANGLES, toDraw->GetIndicesSize(), GL_UNSIGNED_INT, 0);
 	}
+	else {
+		glDrawArrays(GL_POINTS, 0, toDraw->GetVerticesSize()/12);
+	}
+	toDraw->Unbind();
+}
+
+void VertexArrayObjectHandler::Draw(Text *text) {
+	text->SetUniforms();
+	Draw(textVaoMap[text]);
+}
+
+void VertexArrayObjectHandler::Draw(u_int vaoIndex) {
+	Draw(worldVaoMap[vaoIndex]);
 }
 
 void VertexArrayObjectHandler::DrawAll() {
-	Unbind();
 	int i = 0;
-	for (auto const& x : vaoMap)
+	for (auto const& x : worldVaoMap)
 	{
-		x.second->Bind();
-		glDrawElements(GL_TRIANGLES, x.second->GetIndicesSize(), GL_UNSIGNED_INT, 0);
-		x.second->Unbind();
+		Draw(x.second);
+	}
+	for (auto const& x : textVaoMap)
+	{
+		if (x.first->HasUpdated()) {
+			ReplaceTextVAO(x.first, new VertexArrayObject(new VertexBufferObject(x.first->GetVertexData()), 0, x.first->GetShader()));
+		}
+		x.first->SetUniforms();
+		Draw(x.second);
 	}
 }
 
-u_int VertexArrayObjectHandler::AddVAO(VertexArrayObject *vao) {
+u_int VertexArrayObjectHandler::AddWorldVAO(VertexArrayObject *vao) {
 	indexCount++;
-    vaoMap[indexCount] = vao;
-	activeVAO = indexCount;
+    worldVaoMap[indexCount] = vao;
     return indexCount;
 }
 
-void VertexArrayObjectHandler::RemoveVAO(u_int VAO) {
-	delete vaoMap[VAO];
-	vaoMap.erase(VAO);
-	if (VAO == activeVAO) {
-		activeVAO = 0;
-	}
+void VertexArrayObjectHandler::RemoveWorldVAO(u_int VAO) {
+	delete worldVaoMap[VAO];
+	worldVaoMap.erase(VAO);
 }
 
-void VertexArrayObjectHandler::Bind(u_int VAO) {
-	if (VAO && activeVAO != VAO) {
-		if (activeVAO) {
-			vaoMap[activeVAO]->Unbind();
-		}
-		vaoMap[VAO]->Bind();
-		activeVAO = VAO;
-	}
+void VertexArrayObjectHandler::ReplaceTextVAO(Text *text, VertexArrayObject *vao) {
+	delete textVaoMap[text];
+	textVaoMap[text] = vao;
 }
 
-void VertexArrayObjectHandler::Unbind() {
-	if (activeVAO) {
-		vaoMap[activeVAO]->Unbind();
-	}
-	glBindVertexArray(0);
+void VertexArrayObjectHandler::AddTextVAO(Text *text, VertexArrayObject *vao)
+{
+	textVaoMap[text] = vao;
+}
+
+void VertexArrayObjectHandler::RemoveTextVAO(Text *text)
+{
+	delete textVaoMap[text];
+	textVaoMap.erase(text);
 }
 
 VertexArrayObject *VertexArrayObjectHandler::GetVAO(u_int VAO) {
-	return (vaoMap[VAO]);
+	return (worldVaoMap[VAO]);
 }
 
 VertexArrayObjectHandler::~VertexArrayObjectHandler() {}

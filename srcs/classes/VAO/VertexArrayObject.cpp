@@ -1,31 +1,36 @@
 #include <classes/VAO/VertexArrayObject.hpp>
 
 VertexArrayObject::VertexArrayObject(VertexBufferObject *VBO, ElementBufferObject *EBO, Shader *shader) : VBO(VBO), EBO(EBO), shader(shader) {
-	indicesSize = EBO->GetSize();
+	if (EBO) {
+		indicesSize = EBO->GetSize();
+	}
+	verticesSize = VBO->GetSize();
 
 	glGenVertexArrays(1, &VAO);
 	
     Bind();
     VBO->Bind();
-    EBO->Bind();
+	if (EBO) {
+		EBO->Bind();
+	}
 
+	shader->Use();
 	AddVertexAttributes(shader->GetVertexAttributes());
 	Unbind();
 }
 
 void VertexArrayObject::AddVertexAttributes(std::vector<t_vertexAttribute> &vertexAttributes) {
-	totalStride = 0;
+	int totalStride = 0;
 
 	for (auto const& x : vertexAttributes) {
 		totalStride += x.size * 4;
 	}
-
     int tempStride = 0;
     for (auto const& x : vertexAttributes) {
 		if (x.type == GL_FLOAT) {
 			glVertexAttribPointer(x.location, x.size, x.type, GL_FALSE, totalStride, (void *)(u_long)tempStride);
 		}
-		else if (x.type == GL_INT) {
+		else if (x.type == GL_INT || x.type == GL_UNSIGNED_INT ) {
 			glVertexAttribIPointer(x.location, x.size, x.type, totalStride, (void *)(u_long)tempStride);
 		}
         
@@ -50,6 +55,10 @@ size_t VertexArrayObject::GetIndicesSize() {
 	return indicesSize;
 }
 
+size_t VertexArrayObject::GetVerticesSize() {
+	return verticesSize;
+}
+
 void VertexArrayObject::Bind() {
 	shader->Use();
     glBindVertexArray(VAO);
@@ -65,7 +74,9 @@ void VertexArrayObject::Unbind() {
 VertexArrayObject::~VertexArrayObject() {
     glDeleteVertexArrays(1, &VAO);
     VBO->DeleteBuffers();
-    EBO->DeleteBuffers();
-	delete EBO;
+	if (EBO) {
+		EBO->DeleteBuffers();
+		delete EBO;
+	}
 	delete VBO;
 }

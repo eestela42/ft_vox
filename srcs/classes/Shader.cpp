@@ -96,7 +96,12 @@ void Shader::parseAttributes(const char *path) {
 			lineStream >> token;
 
 			typeName = token;
-			if (typeName == "int") {
+			if (typeName == "uint") {
+				attribute.type = GL_UNSIGNED_INT;
+				attribute.size = 1;
+				std::cout << "u_int, size " << attribute.size << std::endl;
+			}
+			else if (typeName == "int") {
 				attribute.type = GL_INT;
 				attribute.size = 1;
 				std::cout << "Int, size " << attribute.size << std::endl;
@@ -130,10 +135,13 @@ void Shader::SetBool(const std::string &name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
 }
 void Shader::SetInt(const std::string &name, int value) const { 
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), value); 
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 void Shader::SetFloat(const std::string &name, float value) const { 
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
+void Shader::SetFloatArray(const std::string &name, float *value, int amount) const {
+	glUniform1fv(glGetUniformLocation(ID, name.c_str()), amount, value);
 }
 void Shader::SetFloat4(const std::string &name, float value1, float value2, float value3, float value4) const { 
     glUniform4f(glGetUniformLocation(ID, name.c_str()), value1 , value2, value3, value4); 

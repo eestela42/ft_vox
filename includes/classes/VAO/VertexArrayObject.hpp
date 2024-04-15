@@ -21,6 +21,7 @@ public:
     VertexBufferObject *GetVBO();
     ElementBufferObject *GetEBO();
 	size_t GetIndicesSize();
+	size_t GetVerticesSize();
 
 	~VertexArrayObject();
 private:
@@ -29,8 +30,8 @@ private:
     ElementBufferObject *EBO;
 	Shader *shader;
 	std::size_t indicesSize;
+	std::size_t verticesSize;
     std::vector<glm::uvec4> locationList;
-    int totalStride = 0;
 
 	void AddVertexAttributes(std::vector<t_vertexAttribute> &vertexAttributes);
 };

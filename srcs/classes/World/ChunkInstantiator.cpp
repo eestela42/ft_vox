@@ -8,6 +8,8 @@ bool isInCircle(long int x, long int y, long int radius, long int circleX, long 
 }
 
 ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObjectHandler, int renderDistance, ShaderHandler *shaderHandler) {
+	playerChunkPosX = 0;
+	playerChunkPosY = 0;
 	this->shaderHandler = shaderHandler;
 	Shader *shader = shaderHandler->GetShader(ChunkDefault::shaderName);
 	bool showChunkDebug = false;
@@ -22,19 +24,11 @@ ChunkInstantiator::ChunkInstantiator(VertexArrayObjectHandler *vertexArrayObject
 		if (isInCircle(x, y, renderDistance, 0, 0)) {
 			showChunkDebug && std::cout << "Generating chunk " << x << " " << y << std::endl;
 			Chunk* chunk = new ChunkDefault(x, y);
-			chunk->PublicGenerate();
-			chunks.push_back(chunk);
+			generationQueueMap[std::pair(x, y)] = chunk;
+			compilationQueueMap[std::pair(x, y)] = chunk;
 		}
 	}}
 	showChunkDebug && std::cout << "Chunk are generated " << std::endl;
-
-	showChunkDebug && std::cout << "Chunk compilation started " << std::endl;
-	for (auto const& x : chunks)
-	{
-		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(x->GetVertexData()), new ElementBufferObject(x->GetShapeAssemblyData()), shader);
-		chunkMap[x] = vertexArrayObjectHandler->AddVAO(VAO);
-	}
-	showChunkDebug && std::cout << "Chunk are compiled " << std::endl;
 }
 
 void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds timeBudget) {
@@ -50,7 +44,6 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 	playerChunkPosX = playerPos.x;
 	playerChunkPosY = playerPos.z;
 
-	std::cout << generationQueueMap.size() << " " << compilationQueueMap.size() << " " << updateQueueMap.size() << std::endl;
 	if (playerChunkPosX != oldPlayerChunkPosX || playerChunkPosY != oldPlayerChunkPosY) {
 		for (int x = oldPlayerChunkPosX - renderDistance; x <= oldPlayerChunkPosX + renderDistance; x++) { //Deleting chunks
 		for (int y = oldPlayerChunkPosY - renderDistance; y <= oldPlayerChunkPosY + renderDistance; y++) {
@@ -58,7 +51,7 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 				generationQueueMap.erase(std::pair(x, y));
 				compilationQueueMap.erase(std::pair(x, y));
 				updateQueueMap.erase(std::pair(x, y));
-				vertexArrayObjectHandler->RemoveVAO(chunkMap[loadedChunks[(x % size + size) % size][(y % size + size) % size]]);
+				vertexArrayObjectHandler->RemoveWorldVAO(chunkMap[loadedChunks[(x % size + size) % size][(y % size + size) % size]]);
 				chunkMap.erase(loadedChunks[(x % size + size) % size][(y % size + size) % size]);
 				delete loadedChunks[(x % size + size) % size][(y % size + size) % size];
 			}
@@ -101,7 +94,7 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			return ;
 		}
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
-		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
+		chunkMap[pos.second] = vertexArrayObjectHandler->AddWorldVAO(VAO);
 		toErase.push_back(pos.first);
 	}
 	for (auto const& erase : toErase) {
@@ -125,13 +118,29 @@ void ChunkInstantiator::Update(glm::vec3 playerPos, std::chrono::milliseconds ti
 			}
 			return ;
 		}
-		vertexArrayObjectHandler->RemoveVAO(chunkMap[pos.second]);
+		vertexArrayObjectHandler->RemoveWorldVAO(chunkMap[pos.second]);
 		chunkMap.erase(pos.second);
 		VertexArrayObject *VAO = new VertexArrayObject(new VertexBufferObject(pos.second->GetVertexData()), new ElementBufferObject(pos.second->GetShapeAssemblyData()), shader);
-		chunkMap[pos.second] = vertexArrayObjectHandler->AddVAO(VAO);
+		chunkMap[pos.second] = vertexArrayObjectHandler->AddWorldVAO(VAO);
 		toErase.push_back(pos.first);
 	}
 	for (auto const& erase : toErase) {
 		updateQueueMap.erase(erase);
 	}
+}
+
+int ChunkInstantiator::GetWorkLeft() {
+	return (generationQueueMap.size() + compilationQueueMap.size() + updateQueueMap.size());
+}
+int ChunkInstantiator::GetGenerationsLeft()
+{
+	return generationQueueMap.size();
+}
+int ChunkInstantiator::GetCompilationsLeft()
+{
+	return compilationQueueMap.size();
+}
+int ChunkInstantiator::GetUpdateLeft()
+{
+	return updateQueueMap.size();
 }

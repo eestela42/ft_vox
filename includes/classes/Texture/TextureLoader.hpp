@@ -11,7 +11,7 @@
 class TextureLoader
 {
     public:
-        static Texture LoadTexture(std::string fileName);
+        static Texture LoadTexture(std::string fileName, bool SaveData, bool blackTransparent);
     private:
         static bool isReady;
         static void Init();

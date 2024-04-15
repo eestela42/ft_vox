@@ -19,12 +19,14 @@
 		/*****	 Game		*****/
 
 # include <classes/Game/Game.hpp>
-#include <classes/Game/InputHandler.hpp>
+# include <classes/Game/InputHandler.hpp>
 
 
 		/*****	 Texture	*****/
 
-# include <classes/Texture/TextureLoader.hpp>
+#include <classes/Texture/TextureLoader.hpp>
+#include <classes/BitmapFont.hpp>
+#include <classes/Text.hpp>
 
 		/*****	 VAO		*****/		
 

@@ -2,22 +2,26 @@
 
 #include <classes/VAO/VertexArrayObject.hpp>
 #include <unordered_map>
+#include <classes/Text.hpp>
 
 class VertexArrayObjectHandler {
 public:
 	VertexArrayObjectHandler();
     ~VertexArrayObjectHandler();
 
-	void Draw();
+	void Draw(u_int vaoIndex);
+	void Draw(Text *text);
 	void DrawAll();
 	VertexArrayObject *GetVAO(u_int VAO);
 	
-	u_int AddVAO(VertexArrayObject*);
-	void RemoveVAO(u_int VAO);
-	void Bind(u_int VAO);
-	void Unbind();
+	u_int AddWorldVAO(VertexArrayObject*);
+	void RemoveWorldVAO(u_int VAO);
+	void ReplaceTextVAO(Text *text, VertexArrayObject *vao);
+	void AddTextVAO(Text *, VertexArrayObject *);
+	void RemoveTextVAO(Text*);
 private:
-	std::unordered_map<u_int, VertexArrayObject*> vaoMap;
-	u_int activeVAO = 0;
+	void Draw(VertexArrayObject *toDraw);
+	std::unordered_map<u_int, VertexArrayObject *> worldVaoMap;
+	std::unordered_map<Text*, VertexArrayObject*> textVaoMap;
 	u_int indexCount = 0;
 };

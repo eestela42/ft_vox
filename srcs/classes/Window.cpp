@@ -5,7 +5,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) //call
     glViewport(0, 0, width, height); // We tell openGL the new size of the window
 }
 
-Window::Window(const char *name, DrawMode drawMode) {
+Window::Window(const char *name, DrawMode drawMode) : width(defaultWindowWidth), height(defaultWindowHeight){
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
         assert(!"Window::Window glfwInit failed");
@@ -15,7 +15,7 @@ Window::Window(const char *name, DrawMode drawMode) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);  //OpenGL version   4.6<-
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We use the core profile because we want to use the modulable part of OpenGL
 
-    window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, name, NULL, NULL);
+    window = glfwCreateWindow(defaultWindowWidth, defaultWindowHeight, name, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -33,8 +33,11 @@ Window::Window(const char *name, DrawMode drawMode) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Tell OpenGL that we want to capture and hide the cursor
     
 	glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT); // Tell OpenGL the size of the drawing window
-    glClearColor(0.2f, 0.3f, 0.6f, 1.0f); // Sets clear color
+    glViewport(0, 0, defaultWindowWidth, defaultWindowHeight); // Tell OpenGL the size of the drawing window
+    glClearColor(0,0,0,1); // Sets clear color
+	glEnable(GL_BLEND);// Enable blending
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// Set the blending function
+	glfwSwapInterval(0);//Removes V-Sync
     if (drawMode == DrawMode::LINE) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //draw as lines
     }
@@ -53,6 +56,10 @@ int Window::ShouldContinue() {
     return 1;
 }
 
+void Window::SetClearColor(u_char r, u_char g, u_char b) {
+	glClearColor((float)r / 255, (float)g / 255, (float)b / 255, 1.0f); 
+}
+
 void Window::Clear() {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // Clears window with set clear color
 }
@@ -65,6 +72,16 @@ void Window::SwapBuffersAndPollEvents() {
 void Window::SendKeys(u_char *keyState, double mouseMoveX, double mouseMoveY) {
 	if(keyState[KEY_ESCAPE] & KEY_PRESS)
         glfwSetWindowShouldClose(window, true);
+}
+
+int Window::GetWidth() {
+	glfwGetWindowSize(window, &width, &height);
+	return width;
+}
+
+int Window::GetHeight() {
+	glfwGetWindowSize(window, &width, &height);
+	return height;
 }
 
 Window::~Window() {}
