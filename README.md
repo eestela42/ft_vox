@@ -19,3 +19,10 @@ Each face info includes the position of the block, its type, and the 'size of th
 reducing the number of triangles to display.
 
 Inside the GPU, we create our triangles. However, this does not significantly improve the FPS
+
+--eestela main dev       ChunkRLE/Shaders/World logic/Generation
+--leocrabe225 main dev   tools/managing data
+--jdamoise main dev      Makefile
+
+We will implement an easy way to install in the next version
+If you want to try, it runs on linux and we more or less followed learnopengl.com/Getting-started/Creating-a-window
