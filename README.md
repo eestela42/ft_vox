@@ -1,35 +1,35 @@
-# ft_vox
-C++ OpenGL voxel with advanced procedural generation
+# ft_vox <br>
+C++ OpenGL voxel with advanced procedural generation <br>
 
-We generate a world using Perlin noise in the Classes/World/ChunkGenerator class.
-The player can move their camera, flying in the air indefinitely throughout the world.
-The Perlin noises that define the generation loop around every few thousand blocks, but not at the same pace,
-making it almost an infinite world.
-There is a simple gravity, block collision, and entity management system in place.
+We generate a world using Perlin noise in the Classes/World/ChunkGenerator class. <br>
+The player can move their camera, flying in the air indefinitely throughout the world. <br>
+The Perlin noises that define the generation loop around every few thousand blocks, but not at the same pace, <br>
+making it almost an infinite world. <br>
+There is a simple gravity, block collision, and entity management system in place. <br>
 
-The abstract class Chunk allows us to use different types of child classes, enabling us to manage the data as needed.
-The main child class we utilize is RLEChunk,
-where we manage the blocks of the chunk as ribbons (rubans).
+The abstract class Chunk allows us to use different types of child classes, enabling us to manage the data as needed. <br>
+The main child class we utilize is RLEChunk, <br>
+where we manage the blocks of the chunk as ribbons (rubans). <br>
 
-We experimented with the geometry shader.
-In the CPU, we generate a buffer containing our face information.
-Each face info includes the position of the block, its type, and the 'size of the face.'
+We experimented with the geometry shader. <br>
+In the CPU, we generate a buffer containing our face information. <br>
+Each face info includes the position of the block, its type, and the 'size of the face. <br>
 
-'Size of the face' refers to grouping multiple faces of the same wall and block type,
-reducing the number of triangles to display.
+'Size of the face' refers to grouping multiple faces of the same wall and block type, <br>
+reducing the number of triangles to display. <br>
 
-Inside the GPU, we create our triangles. However, this does not significantly improve the FPS
+Inside the GPU, we create our triangles. However, this does not significantly improve the FPS <br>
 
 ![Montains](assets/montain.png)
 
 ![Desert](assets/desert.png)
 
 
---eestela main dev       ChunkRLE/Shaders/World logic/Generation
---leocrabe225 main dev   tools/managing data
---jdamoise main dev      Makefile
+--eestela main dev       ChunkRLE/Shaders/World logic/Generation <br>
+--leocrabe225 main dev   tools/managing data <br>
+--jdamoise main dev      Makefile <br>
 
-We will implement an easy way to install in the next version
-If you want to try, it runs on linux and we more or less followed learnopengl.com/Getting-started/Creating-a-window
+We will implement an easy way to install in the next version <br>
+If you want to try, it runs on linux and we more or less followed learnopengl.com/Getting-started/Creating-a-window <br>
 
-The window says not responding while loading the world for the first time, it is normal, we will change that later.
+The window says not responding while loading the world for the first time, it is normal, we will change that later. <br>
