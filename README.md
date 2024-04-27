@@ -20,9 +20,16 @@ reducing the number of triangles to display.
 
 Inside the GPU, we create our triangles. However, this does not significantly improve the FPS
 
+![Montains](assets/montain.png)
+
+![Desert](assets/desert.png)
+
+
 --eestela main dev       ChunkRLE/Shaders/World logic/Generation
 --leocrabe225 main dev   tools/managing data
 --jdamoise main dev      Makefile
 
 We will implement an easy way to install in the next version
 If you want to try, it runs on linux and we more or less followed learnopengl.com/Getting-started/Creating-a-window
+
+The window says not responding while loading the world for the first time, it is normal, we will change that later.
