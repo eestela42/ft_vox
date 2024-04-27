@@ -8,7 +8,7 @@ making it almost an infinite world. <br>
 There is a simple gravity, block collision, and entity management system in place. <br>
 
 The abstract class Chunk allows us to use different types of child classes, enabling us to manage the data as needed. <br>
-The main child class we utilize is RLEChunk, <br>
+The main child class we utilize is ChunkRLE, <br>
 where we manage the blocks of the chunk as ribbons (rubans). <br>
 
 We experimented with the geometry shader. <br>
