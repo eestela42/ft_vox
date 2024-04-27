@@ -24,6 +24,8 @@ Inside the GPU, we create our triangles. However, this does not significantly im
 
 ![Desert](assets/desert.png)
 
+![Desert](assets/eaublock.png)
+
 [![Watch the video](assets/video.jpg)](https://www.youtube.com/watch?v=5nc3raWCv7w)
 
 
