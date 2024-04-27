@@ -24,7 +24,7 @@ Inside the GPU, we create our triangles. However, this does not significantly im
 
 ![Desert](assets/desert.png)
 
-[![Watch the video](assets/desert.png)](https://www.youtube.com/watch?v=5nc3raWCv7w)
+[![Watch the video](assets/video.jpg)](https://www.youtube.com/watch?v=5nc3raWCv7w)
 
 
 --eestela main dev       ChunkRLE/Shaders/World logic/Generation <br>
