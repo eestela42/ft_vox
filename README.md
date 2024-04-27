@@ -13,7 +13,7 @@ where we manage the blocks of the chunk as ribbons (rubans). <br>
 
 We experimented with the geometry shader. <br>
 In the CPU, we generate a buffer containing our face information. <br>
-Each face info includes the position of the block, its type, and the 'size of the face. <br>
+Each face info includes the position of the block, its type, and the 'size of the face'. <br>
 
 'Size of the face' refers to grouping multiple faces of the same wall and block type, <br>
 reducing the number of triangles to display. <br>
