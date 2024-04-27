@@ -339,7 +339,9 @@ u_char		*ChunkGenerator::generator(Chunk &chunk) {
 		return data;
 	}
 
-		
+	
+	
+
 	std::vector<u_char> *modif = modifMap[position(posX, posY)];
 	for (int i = 0; i < modif->size(); i+=4)
 	{

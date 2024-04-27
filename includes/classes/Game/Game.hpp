@@ -71,4 +71,5 @@ class Game : I_Input
 		virtual ~Game();
 };
 
+
 #endif
