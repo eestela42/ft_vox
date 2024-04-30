@@ -18,7 +18,7 @@ Each face info includes the position of the block, its type, and the 'size of th
 'Size of the face' refers to grouping multiple faces of the same wall and block type, <br>
 reducing the number of triangles to display. <br>
 
-Inside the GPU, we create our triangles. However, this does not significantly improve the FPS <br>
+Inside the GPU, we create our triangles using the geometry shader. It reduces the amount of RAM used however this does not significantly improve the FPS <br>
 
 ![Montains](assets/montain.png)
 
