@@ -1,7 +1,7 @@
 # ft_vox <br>
 C++ OpenGL voxel with advanced procedural generation <br>
 
-We generate a world using Perlin noise in the Classes/World/ChunkGenerator class. <br>
+We generate a world using Perlin noise in  Classes/World/ChunkGenerator. <br>
 The player can move their camera, flying in the air indefinitely throughout the world. <br>
 The Perlin noises that define the generation loop around every few thousand blocks, but not at the same pace, <br>
 making it almost an infinite world. <br>
